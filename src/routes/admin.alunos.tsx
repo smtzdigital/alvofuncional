@@ -31,10 +31,16 @@ function AlunosAdmin() {
 
   const load = async () => {
     const { data, error } = await supabase.from("students")
-      .select("id,user_id,total_points,plan_id,teacher_id,plan_expires_at,is_active,profile:profiles(full_name,email,phone),plan:plans(name)")
+      .select("id,user_id,total_points,plan_id,teacher_id,plan_expires_at,is_active,plan:plans(name)")
       .order("created_at", { ascending: false });
     if (error) { toast.error(error.message); return; }
-    setRows((data ?? []) as unknown as Row[]);
+    const userIds = (data ?? []).map((s) => s.user_id);
+    const { data: profs } = userIds.length
+      ? await supabase.from("profiles").select("id,full_name,email,phone").in("id", userIds)
+      : { data: [] as { id: string; full_name: string; email: string; phone: string | null }[] };
+    const profMap = new Map((profs ?? []).map((p) => [p.id, p]));
+    const merged = (data ?? []).map((s) => ({ ...s, profile: profMap.get(s.user_id) ?? null })) as unknown as Row[];
+    setRows(merged);
   };
   useEffect(() => {
     load();
