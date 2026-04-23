@@ -1,0 +1,104 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+
+export type AppRole = "admin" | "professor" | "aluno";
+
+export interface PlanInfo {
+  id: string;
+  name: string;
+  has_workouts: boolean;
+  has_ranking: boolean;
+  has_diet: boolean;
+  has_goals: boolean;
+  presential_per_week: number;
+}
+
+export interface StudentInfo {
+  id: string;
+  total_points: number;
+  plan_started_at: string | null;
+  plan_expires_at: string | null;
+  plan: PlanInfo | null;
+}
+
+interface AuthContextValue {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  roles: AppRole[];
+  isAdmin: boolean;
+  student: StudentInfo | null;
+  planActive: boolean;
+  refresh: () => Promise<void>;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [student, setStudent] = useState<StudentInfo | null>(null);
+
+  const loadProfile = async (uid: string) => {
+    const [{ data: rolesData }, { data: studentData }] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", uid),
+      supabase
+        .from("students")
+        .select("id,total_points,plan_started_at,plan_expires_at,plan:plans(id,name,has_workouts,has_ranking,has_diet,has_goals,presential_per_week)")
+        .eq("user_id", uid)
+        .maybeSingle(),
+    ]);
+    setRoles((rolesData ?? []).map((r) => r.role as AppRole));
+    setStudent(studentData as unknown as StudentInfo | null);
+  };
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+      setSession(sess);
+      setUser(sess?.user ?? null);
+      if (sess?.user) {
+        setTimeout(() => loadProfile(sess.user.id), 0);
+      } else {
+        setRoles([]);
+        setStudent(null);
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      setSession(sess);
+      setUser(sess?.user ?? null);
+      if (sess?.user) loadProfile(sess.user.id).finally(() => setLoading(false));
+      else setLoading(false);
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const refresh = async () => {
+    if (user) await loadProfile(user.id);
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  };
+
+  const isAdmin = roles.includes("admin");
+  const planActive = !!student && (!student.plan_expires_at || new Date(student.plan_expires_at) > new Date());
+
+  return (
+    <AuthContext.Provider value={{ user, session, loading, roles, isAdmin, student, planActive, refresh, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+}
