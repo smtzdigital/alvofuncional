@@ -14,6 +14,12 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTreinosRouteImport } from './routes/app.treinos'
+import { Route as AppRankingRouteImport } from './routes/app.ranking'
+import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppMetasRouteImport } from './routes/app.metas'
+import { Route as AppDietaRouteImport } from './routes/app.dieta'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -40,41 +46,121 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTreinosRoute = AppTreinosRouteImport.update({
+  id: '/treinos',
+  path: '/treinos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRankingRoute = AppRankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMetasRoute = AppMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDietaRoute = AppDietaRouteImport.update({
+  id: '/dieta',
+  path: '/dieta',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/app/dieta': typeof AppDietaRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/ranking': typeof AppRankingRoute
+  '/app/treinos': typeof AppTreinosRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/app': typeof AppRoute
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/app/dieta': typeof AppDietaRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/ranking': typeof AppRankingRoute
+  '/app/treinos': typeof AppTreinosRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/app/dieta': typeof AppDietaRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/ranking': typeof AppRankingRoute
+  '/app/treinos': typeof AppTreinosRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/app' | '/cadastro' | '/login'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/cadastro'
+    | '/login'
+    | '/app/dieta'
+    | '/app/metas'
+    | '/app/perfil'
+    | '/app/ranking'
+    | '/app/treinos'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/app' | '/cadastro' | '/login'
-  id: '__root__' | '/' | '/admin' | '/app' | '/cadastro' | '/login'
+  to:
+    | '/'
+    | '/admin'
+    | '/cadastro'
+    | '/login'
+    | '/app/dieta'
+    | '/app/metas'
+    | '/app/perfil'
+    | '/app/ranking'
+    | '/app/treinos'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/cadastro'
+    | '/login'
+    | '/app/dieta'
+    | '/app/metas'
+    | '/app/perfil'
+    | '/app/ranking'
+    | '/app/treinos'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   LoginRoute: typeof LoginRoute
 }
@@ -116,13 +202,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/treinos': {
+      id: '/app/treinos'
+      path: '/treinos'
+      fullPath: '/app/treinos'
+      preLoaderRoute: typeof AppTreinosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ranking': {
+      id: '/app/ranking'
+      path: '/ranking'
+      fullPath: '/app/ranking'
+      preLoaderRoute: typeof AppRankingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/perfil': {
+      id: '/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/metas': {
+      id: '/app/metas'
+      path: '/metas'
+      fullPath: '/app/metas'
+      preLoaderRoute: typeof AppMetasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dieta': {
+      id: '/app/dieta'
+      path: '/dieta'
+      fullPath: '/app/dieta'
+      preLoaderRoute: typeof AppDietaRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
+
+interface AppRouteChildren {
+  AppDietaRoute: typeof AppDietaRoute
+  AppMetasRoute: typeof AppMetasRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppRankingRoute: typeof AppRankingRoute
+  AppTreinosRoute: typeof AppTreinosRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDietaRoute: AppDietaRoute,
+  AppMetasRoute: AppMetasRoute,
+  AppPerfilRoute: AppPerfilRoute,
+  AppRankingRoute: AppRankingRoute,
+  AppTreinosRoute: AppTreinosRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   CadastroRoute: CadastroRoute,
   LoginRoute: LoginRoute,
 }
