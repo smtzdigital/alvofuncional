@@ -30,9 +30,10 @@ function AlunosAdmin() {
   const [editing, setEditing] = useState<Row | null>(null);
 
   const load = async () => {
-    const { data } = await supabase.from("students")
-      .select("id,user_id,total_points,plan_id,teacher_id,plan_expires_at,is_active,profile:profiles!inner(full_name,email,phone),plan:plans(name)")
+    const { data, error } = await supabase.from("students")
+      .select("id,user_id,total_points,plan_id,teacher_id,plan_expires_at,is_active,profile:profiles(full_name,email,phone),plan:plans(name)")
       .order("created_at", { ascending: false });
+    if (error) { toast.error(error.message); return; }
     setRows((data ?? []) as unknown as Row[]);
   };
   useEffect(() => {
