@@ -48,18 +48,16 @@ function AlunosAdmin() {
     const planId = fd.get("plan_id") as string;
     const teacherId = fd.get("teacher_id") as string;
     const renew = fd.get("renew") === "on";
-    const update: Record<string, unknown> = {
+    const plan = renew && planId ? plans.find((p) => p.id === planId) : null;
+    const update = {
       plan_id: planId || null,
       teacher_id: teacherId || null,
       is_active: fd.get("is_active") === "on",
+      ...(plan ? {
+        plan_started_at: new Date().toISOString(),
+        plan_expires_at: new Date(Date.now() + plan.duration_days * 86400000).toISOString(),
+      } : {}),
     };
-    if (renew && planId) {
-      const plan = plans.find((p) => p.id === planId);
-      if (plan) {
-        update.plan_started_at = new Date().toISOString();
-        update.plan_expires_at = new Date(Date.now() + plan.duration_days * 86400000).toISOString();
-      }
-    }
     const { error } = await supabase.from("students").update(update).eq("id", editing.id);
     if (error) return toast.error(error.message);
     toast.success("Aluno atualizado");

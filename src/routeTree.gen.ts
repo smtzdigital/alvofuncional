@@ -9,18 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AppTreinosRouteImport } from './routes/app.treinos'
 import { Route as AppRankingRouteImport } from './routes/app.ranking'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppMetasRouteImport } from './routes/app.metas'
 import { Route as AppDietaRouteImport } from './routes/app.dieta'
+import { Route as AdminTreinosRouteImport } from './routes/admin.treinos'
+import { Route as AdminProfessoresRouteImport } from './routes/admin.professores'
+import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
+import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
+import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
+import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -51,6 +65,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AppTreinosRoute = AppTreinosRouteImport.update({
   id: '/treinos',
   path: '/treinos',
@@ -76,44 +95,105 @@ const AppDietaRoute = AppDietaRouteImport.update({
   path: '/dieta',
   getParentRoute: () => AppRoute,
 } as any)
+const AdminTreinosRoute = AdminTreinosRouteImport.update({
+  id: '/treinos',
+  path: '/treinos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfessoresRoute = AdminProfessoresRouteImport.update({
+  id: '/professores',
+  path: '/professores',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPresencasRoute = AdminPresencasRouteImport.update({
+  id: '/presencas',
+  path: '/presencas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPlanosRoute = AdminPlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
+  id: '/pagamentos',
+  path: '/pagamentos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDietasRoute = AdminDietasRouteImport.update({
+  id: '/dietas',
+  path: '/dietas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAlunosRoute = AdminAlunosRouteImport.update({
+  id: '/alunos',
+  path: '/alunos',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/ranking': typeof RankingRoute
+  '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/dietas': typeof AdminDietasRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/planos': typeof AdminPlanosRoute
+  '/admin/presencas': typeof AdminPresencasRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/treinos': typeof AdminTreinosRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/ranking': typeof RankingRoute
+  '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/dietas': typeof AdminDietasRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/planos': typeof AdminPlanosRoute
+  '/admin/presencas': typeof AdminPresencasRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/treinos': typeof AdminTreinosRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
+  '/ranking': typeof RankingRoute
+  '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/dietas': typeof AdminDietasRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/planos': typeof AdminPlanosRoute
+  '/admin/presencas': typeof AdminPresencasRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/treinos': typeof AdminTreinosRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -124,23 +204,40 @@ export interface FileRouteTypes {
     | '/app'
     | '/cadastro'
     | '/login'
+    | '/ranking'
+    | '/admin/alunos'
+    | '/admin/dietas'
+    | '/admin/pagamentos'
+    | '/admin/planos'
+    | '/admin/presencas'
+    | '/admin/professores'
+    | '/admin/treinos'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/admin/'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/cadastro'
     | '/login'
+    | '/ranking'
+    | '/admin/alunos'
+    | '/admin/dietas'
+    | '/admin/pagamentos'
+    | '/admin/planos'
+    | '/admin/presencas'
+    | '/admin/professores'
+    | '/admin/treinos'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/admin'
     | '/app'
   id:
     | '__root__'
@@ -149,24 +246,41 @@ export interface FileRouteTypes {
     | '/app'
     | '/cadastro'
     | '/login'
+    | '/ranking'
+    | '/admin/alunos'
+    | '/admin/dietas'
+    | '/admin/pagamentos'
+    | '/admin/planos'
+    | '/admin/presencas'
+    | '/admin/professores'
+    | '/admin/treinos'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/admin/'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   LoginRoute: typeof LoginRoute
+  RankingRoute: typeof RankingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -209,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/app/treinos': {
       id: '/app/treinos'
       path: '/treinos'
@@ -244,8 +365,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDietaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/treinos': {
+      id: '/admin/treinos'
+      path: '/treinos'
+      fullPath: '/admin/treinos'
+      preLoaderRoute: typeof AdminTreinosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/professores': {
+      id: '/admin/professores'
+      path: '/professores'
+      fullPath: '/admin/professores'
+      preLoaderRoute: typeof AdminProfessoresRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/presencas': {
+      id: '/admin/presencas'
+      path: '/presencas'
+      fullPath: '/admin/presencas'
+      preLoaderRoute: typeof AdminPresencasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/planos': {
+      id: '/admin/planos'
+      path: '/planos'
+      fullPath: '/admin/planos'
+      preLoaderRoute: typeof AdminPlanosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pagamentos': {
+      id: '/admin/pagamentos'
+      path: '/pagamentos'
+      fullPath: '/admin/pagamentos'
+      preLoaderRoute: typeof AdminPagamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dietas': {
+      id: '/admin/dietas'
+      path: '/dietas'
+      fullPath: '/admin/dietas'
+      preLoaderRoute: typeof AdminDietasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/alunos': {
+      id: '/admin/alunos'
+      path: '/alunos'
+      fullPath: '/admin/alunos'
+      preLoaderRoute: typeof AdminAlunosRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAlunosRoute: typeof AdminAlunosRoute
+  AdminDietasRoute: typeof AdminDietasRoute
+  AdminPagamentosRoute: typeof AdminPagamentosRoute
+  AdminPlanosRoute: typeof AdminPlanosRoute
+  AdminPresencasRoute: typeof AdminPresencasRoute
+  AdminProfessoresRoute: typeof AdminProfessoresRoute
+  AdminTreinosRoute: typeof AdminTreinosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAlunosRoute: AdminAlunosRoute,
+  AdminDietasRoute: AdminDietasRoute,
+  AdminPagamentosRoute: AdminPagamentosRoute,
+  AdminPlanosRoute: AdminPlanosRoute,
+  AdminPresencasRoute: AdminPresencasRoute,
+  AdminProfessoresRoute: AdminProfessoresRoute,
+  AdminTreinosRoute: AdminTreinosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppDietaRoute: typeof AppDietaRoute
@@ -269,10 +463,11 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   CadastroRoute: CadastroRoute,
   LoginRoute: LoginRoute,
+  RankingRoute: RankingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
