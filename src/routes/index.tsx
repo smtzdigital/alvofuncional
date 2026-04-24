@@ -87,6 +87,70 @@ function Landing() {
         ))}
       </section>
 
+      <section id="planos" className="container mx-auto px-6 pb-20">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold md:text-4xl">Escolha seu <span className="bg-gradient-primary bg-clip-text text-transparent">plano</span></h2>
+          <p className="mt-3 text-muted-foreground">Comece grátis ou acelere seus resultados com acompanhamento presencial.</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {plans.map((plan, idx) => {
+            const featured = idx === 1;
+            const features = [
+              { ok: plan.has_workouts, label: "Treinos em vídeo" },
+              { ok: plan.presential_per_week > 0, label: `${plan.presential_per_week}x por semana presencial` },
+              { ok: plan.has_diet, label: "Dieta personalizada" },
+              { ok: plan.has_goals, label: "Metas e progresso" },
+              { ok: plan.has_ranking, label: "Ranking público" },
+            ];
+            return (
+              <div
+                key={plan.id}
+                className={`relative rounded-2xl border p-6 shadow-elevated transition-all hover:-translate-y-1 ${
+                  featured
+                    ? "border-primary bg-gradient-card ring-2 ring-primary/40"
+                    : "border-border bg-gradient-card"
+                }`}
+              >
+                {featured && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-glow">
+                    Mais popular
+                  </div>
+                )}
+                <h3 className="text-2xl font-bold">{plan.name}</h3>
+                <p className="mt-1 min-h-10 text-sm text-muted-foreground">{plan.description}</p>
+                <div className="mt-5 flex items-end gap-1">
+                  <span className="text-4xl font-bold">{formatPrice(Number(plan.price))}</span>
+                  {Number(plan.price) > 0 && <span className="mb-1 text-sm text-muted-foreground">/mês</span>}
+                </div>
+                <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar size={12} /> {plan.duration_days} dias de acesso
+                </div>
+                <ul className="mt-6 space-y-2.5 text-sm">
+                  {features.map((f) => (
+                    <li key={f.label} className="flex items-center gap-2">
+                      {f.ok ? (
+                        <Check size={16} className="text-primary" />
+                      ) : (
+                        <X size={16} className="text-muted-foreground/50" />
+                      )}
+                      <span className={f.ok ? "" : "text-muted-foreground/60 line-through"}>{f.label}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/cadastro" className="mt-6 block">
+                  <Button
+                    className={`w-full ${featured ? "bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90" : ""}`}
+                    variant={featured ? "default" : "outline"}
+                  >
+                    {Number(plan.price) === 0 ? "Começar grátis" : "Assinar agora"}
+                  </Button>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} ForgeFit · Plataforma da Academia
       </footer>
