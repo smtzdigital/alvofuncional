@@ -59,7 +59,7 @@ function Landing() {
           <Trophy size={14} /> Treine, pontue, lidere o ranking
         </div>
         <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-bold leading-tight md:text-7xl">
-          Treino com proposito.<br />
+          Treino com propósito<br />
           <span className="bg-gradient-primary bg-clip-text text-transparent">Resultados reais!</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
