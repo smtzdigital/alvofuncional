@@ -59,7 +59,8 @@ function Landing() {
           <Trophy size={14} /> Treine, pontue, lidere o ranking
         </div>
         <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-bold leading-tight md:text-7xl">
-          Sua jornada fitness, <span className="bg-gradient-primary bg-clip-text text-transparent">gamificada.</span>
+          Treino com proposito.<br />
+          <span className="bg-gradient-primary bg-clip-text text-transparent">Resultados reais!</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
           Treinos em vídeo, dieta personalizada, metas e ranking público. Conquiste pontos a cada treino e suba no topo.
