@@ -30,6 +30,20 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const [plans, setPlans] = useState<Plan[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("plans")
+      .select("id,name,description,price,duration_days,presential_per_week,has_workouts,has_ranking,has_diet,has_goals,sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => setPlans((data ?? []) as Plan[]));
+  }, []);
+
+  const formatPrice = (p: number) =>
+    p === 0 ? "Grátis" : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(p);
+
   return (
     <div className="min-h-screen bg-gradient-hero">
       <header className="container mx-auto flex items-center justify-between px-6 py-6">
