@@ -71,6 +71,7 @@ function RootComponent() {
     <AuthProvider>
       <Outlet />
       <Toaster />
+      <PwaInstallPrompt />
     </AuthProvider>
   );
 }
