@@ -1,7 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Trophy, Dumbbell, Apple, Target, Users, BarChart3 } from "lucide-react";
+import { Trophy, Dumbbell, Apple, Target, Users, BarChart3, Check, X, Calendar } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Plan {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  duration_days: number;
+  presential_per_week: number;
+  has_workouts: boolean;
+  has_ranking: boolean;
+  has_diet: boolean;
+  has_goals: boolean;
+  sort_order: number;
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
