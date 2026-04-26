@@ -32,8 +32,8 @@ function SignupPage() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Conta criada! Você ganhou 14 dias grátis.");
-    navigate({ to: "/app" });
+    toast.success("Conta criada! Complete sua avaliação para começar.");
+    navigate({ to: "/app/avaliacao" });
   };
 
   return (
