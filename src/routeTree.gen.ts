@@ -22,6 +22,7 @@ import { Route as AppRankingRouteImport } from './routes/app.ranking'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppMetasRouteImport } from './routes/app.metas'
 import { Route as AppDietaRouteImport } from './routes/app.dieta'
+import { Route as AppAvaliacaoRouteImport } from './routes/app.avaliacao'
 import { Route as AdminTreinosRouteImport } from './routes/admin.treinos'
 import { Route as AdminProfessoresRouteImport } from './routes/admin.professores'
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
@@ -95,6 +96,11 @@ const AppDietaRoute = AppDietaRouteImport.update({
   path: '/dieta',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAvaliacaoRoute = AppAvaliacaoRouteImport.update({
+  id: '/avaliacao',
+  path: '/avaliacao',
+  getParentRoute: () => AppRoute,
+} as any)
 const AdminTreinosRoute = AdminTreinosRouteImport.update({
   id: '/treinos',
   path: '/treinos',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
     | '/app/perfil'
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDietaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/avaliacao': {
+      id: '/app/avaliacao'
+      path: '/avaliacao'
+      fullPath: '/app/avaliacao'
+      preLoaderRoute: typeof AppAvaliacaoRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/admin/treinos': {
       id: '/admin/treinos'
       path: '/treinos'
@@ -442,6 +461,7 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
+  AppAvaliacaoRoute: typeof AppAvaliacaoRoute
   AppDietaRoute: typeof AppDietaRoute
   AppMetasRoute: typeof AppMetasRoute
   AppPerfilRoute: typeof AppPerfilRoute
@@ -451,6 +471,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAvaliacaoRoute: AppAvaliacaoRoute,
   AppDietaRoute: AppDietaRoute,
   AppMetasRoute: AppMetasRoute,
   AppPerfilRoute: AppPerfilRoute,
