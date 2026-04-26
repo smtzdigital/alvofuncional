@@ -310,34 +310,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assessment_completed_at: string | null
           avatar_url: string | null
           birth_date: string | null
           created_at: string
           email: string
           full_name: string
+          gender: Database["public"]["Enums"]["gender"] | null
           id: string
           phone: string | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
+          assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
           email: string
           full_name: string
+          gender?: Database["public"]["Enums"]["gender"] | null
           id: string
           phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
+          assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
           email?: string
           full_name?: string
+          gender?: Database["public"]["Enums"]["gender"] | null
           id?: string
           phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -577,6 +586,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "professor" | "aluno"
+      gender: "masculino" | "feminino"
       goal_status: "ativa" | "concluida" | "cancelada"
       payment_method: "pix" | "dinheiro" | "cartao" | "transferencia" | "outro"
       payment_status: "pendente" | "pago" | "atrasado" | "cancelado"
@@ -708,6 +718,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "professor", "aluno"],
+      gender: ["masculino", "feminino"],
       goal_status: ["ativa", "concluida", "cancelada"],
       payment_method: ["pix", "dinheiro", "cartao", "transferencia", "outro"],
       payment_status: ["pendente", "pago", "atrasado", "cancelado"],
