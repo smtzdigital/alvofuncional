@@ -19,13 +19,20 @@ const NAV = [
 ];
 
 function AppLayout() {
-  const { user, loading, isAdmin, signOut, student } = useAuth();
+  const { user, loading, isAdmin, signOut, student, assessmentCompleted } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
-  }, [loading, user, navigate]);
+    if (loading) return;
+    if (!user) {
+      navigate({ to: "/login" });
+      return;
+    }
+    if (!assessmentCompleted && path !== "/app/avaliacao") {
+      navigate({ to: "/app/avaliacao" });
+    }
+  }, [loading, user, assessmentCompleted, path, navigate]);
 
   if (loading || !user) {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
