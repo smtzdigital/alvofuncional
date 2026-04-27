@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
@@ -19,6 +19,7 @@ const NAV = [
   { to: "/admin/treinos", label: "Treinos", icon: Dumbbell },
   { to: "/admin/dietas", label: "Dietas", icon: Apple },
   { to: "/admin/presencas", label: "Presenças", icon: ClipboardCheck },
+  { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ];
 
 function AdminLayout() {
