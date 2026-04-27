@@ -46,7 +46,7 @@ export function StudentCombobox({ students, value, onChange, placeholder = "Sele
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Buscar aluno..." icon={<Search className="mr-2 h-4 w-4 opacity-50" />} />
+          <CommandInput placeholder="Buscar aluno..." />
           <CommandList>
             <CommandEmpty>Nenhum aluno encontrado.</CommandEmpty>
             <CommandGroup>
