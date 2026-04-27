@@ -108,7 +108,12 @@ function AlunosAdmin() {
                 <td className="p-3">{r.plan?.name ?? "—"}</td>
                 <td className="p-3 text-muted-foreground">{r.plan_expires_at ? new Date(r.plan_expires_at).toLocaleDateString("pt-BR") : "—"}</td>
                 <td className="p-3 text-right font-bold text-primary">{r.total_points}</td>
-                <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => setEditing(r)}><Pencil size={14} /></Button></td>
+                <td className="p-3 text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => openAvaliacao(r)} title="Ver avaliação"><FileText size={14} /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar"><Pencil size={14} /></Button>
+                  </div>
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhum aluno.</td></tr>}
