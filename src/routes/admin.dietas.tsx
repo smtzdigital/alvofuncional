@@ -56,10 +56,7 @@ function DietsAdmin() {
             <DialogHeader><DialogTitle>{form.id ? "Editar" : "Nova"} dieta</DialogTitle></DialogHeader>
             <form onSubmit={submit} className="space-y-3">
               <div><Label>Aluno</Label>
-                <Select value={form.student_id ?? ""} onValueChange={(v) => setForm({ ...form, student_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>{students.map((s) => <SelectItem key={s.id} value={s.id}>{s.profile?.full_name}</SelectItem>)}</SelectContent>
-                </Select>
+                <StudentCombobox students={students} value={form.student_id ?? ""} onChange={(v) => setForm({ ...form, student_id: v })} />
               </div>
               <div><Label>Título</Label><Input required value={form.title ?? ""} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
               <div><Label>Descrição</Label><Input value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
