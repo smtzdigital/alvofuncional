@@ -29,6 +29,17 @@ function AlunosAdmin() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
+  const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
+
+  const openAvaliacao = async (r: Row) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", r.user_id)
+      .maybeSingle();
+    if (error) return toast.error(error.message);
+    setViewing({ name: r.profile?.full_name ?? "Aluno", data: (data ?? {}) as AssessmentData });
+  };
 
   const load = async () => {
     const { data, error } = await supabase.from("students")
