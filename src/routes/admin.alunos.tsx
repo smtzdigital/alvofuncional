@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pencil, Search } from "lucide-react";
+import { Pencil, Search, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 
 export const Route = createFileRoute("/admin/alunos")({
   component: AlunosAdmin,
@@ -28,6 +29,17 @@ function AlunosAdmin() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
+  const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
+
+  const openAvaliacao = async (r: Row) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", r.user_id)
+      .maybeSingle();
+    if (error) return toast.error(error.message);
+    setViewing({ name: r.profile?.full_name ?? "Aluno", data: (data ?? {}) as AssessmentData });
+  };
 
   const load = async () => {
     const { data, error } = await supabase.from("students")
@@ -96,7 +108,12 @@ function AlunosAdmin() {
                 <td className="p-3">{r.plan?.name ?? "—"}</td>
                 <td className="p-3 text-muted-foreground">{r.plan_expires_at ? new Date(r.plan_expires_at).toLocaleDateString("pt-BR") : "—"}</td>
                 <td className="p-3 text-right font-bold text-primary">{r.total_points}</td>
-                <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => setEditing(r)}><Pencil size={14} /></Button></td>
+                <td className="p-3 text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => openAvaliacao(r)} title="Ver avaliação"><FileText size={14} /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar"><Pencil size={14} /></Button>
+                  </div>
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhum aluno.</td></tr>}
@@ -127,6 +144,13 @@ function AlunosAdmin() {
               <DialogFooter><Button type="submit" className="bg-gradient-primary text-primary-foreground">Salvar</Button></DialogFooter>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader><DialogTitle>Avaliação — {viewing?.name}</DialogTitle></DialogHeader>
+          {viewing && <AvaliacaoView data={viewing.data} />}
         </DialogContent>
       </Dialog>
     </div>
