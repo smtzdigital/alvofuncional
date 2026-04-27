@@ -30,6 +30,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   student: StudentInfo | null;
   planActive: boolean;
+  assessmentCompleted: boolean;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 }
