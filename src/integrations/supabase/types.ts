@@ -310,6 +310,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: Database["public"]["Enums"]["activity_level"] | null
           assessment_completed_at: string | null
           avatar_url: string | null
           birth_date: string | null
@@ -317,12 +318,28 @@ export type Database = {
           email: string
           full_name: string
           gender: Database["public"]["Enums"]["gender"] | null
+          gives_up_easily: boolean | null
+          goal: Database["public"]["Enums"]["fitness_goal"] | null
+          goal_other: string | null
+          health_conditions: string[] | null
+          health_details: string | null
+          height_cm: number | null
           id: string
+          medications: string | null
+          motivation: Database["public"]["Enums"]["motivation_type"] | null
           phone: string | null
+          sleep_quality: Database["public"]["Enums"]["sleep_quality"] | null
+          stress_level: Database["public"]["Enums"]["stress_level"] | null
           updated_at: string
+          uses_medication: boolean | null
+          weight_kg: number | null
           whatsapp: string | null
+          workout_preference:
+            | Database["public"]["Enums"]["workout_preference"]
+            | null
         }
         Insert: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
           assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
@@ -330,12 +347,28 @@ export type Database = {
           email: string
           full_name: string
           gender?: Database["public"]["Enums"]["gender"] | null
+          gives_up_easily?: boolean | null
+          goal?: Database["public"]["Enums"]["fitness_goal"] | null
+          goal_other?: string | null
+          health_conditions?: string[] | null
+          health_details?: string | null
+          height_cm?: number | null
           id: string
+          medications?: string | null
+          motivation?: Database["public"]["Enums"]["motivation_type"] | null
           phone?: string | null
+          sleep_quality?: Database["public"]["Enums"]["sleep_quality"] | null
+          stress_level?: Database["public"]["Enums"]["stress_level"] | null
           updated_at?: string
+          uses_medication?: boolean | null
+          weight_kg?: number | null
           whatsapp?: string | null
+          workout_preference?:
+            | Database["public"]["Enums"]["workout_preference"]
+            | null
         }
         Update: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
           assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
@@ -343,10 +376,25 @@ export type Database = {
           email?: string
           full_name?: string
           gender?: Database["public"]["Enums"]["gender"] | null
+          gives_up_easily?: boolean | null
+          goal?: Database["public"]["Enums"]["fitness_goal"] | null
+          goal_other?: string | null
+          health_conditions?: string[] | null
+          health_details?: string | null
+          height_cm?: number | null
           id?: string
+          medications?: string | null
+          motivation?: Database["public"]["Enums"]["motivation_type"] | null
           phone?: string | null
+          sleep_quality?: Database["public"]["Enums"]["sleep_quality"] | null
+          stress_level?: Database["public"]["Enums"]["stress_level"] | null
           updated_at?: string
+          uses_medication?: boolean | null
+          weight_kg?: number | null
           whatsapp?: string | null
+          workout_preference?:
+            | Database["public"]["Enums"]["workout_preference"]
+            | null
         }
         Relationships: []
       }
@@ -585,11 +633,23 @@ export type Database = {
       student_plan_active: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      activity_level: "sedentario" | "iniciante" | "intermediario" | "avancado"
       app_role: "admin" | "professor" | "aluno"
+      fitness_goal:
+        | "emagrecimento"
+        | "ganho_massa"
+        | "condicionamento"
+        | "reabilitacao"
+        | "saude_geral"
+        | "outro"
       gender: "masculino" | "feminino"
       goal_status: "ativa" | "concluida" | "cancelada"
+      motivation_type: "estetica" | "saude" | "autoestima"
       payment_method: "pix" | "dinheiro" | "cartao" | "transferencia" | "outro"
       payment_status: "pendente" | "pago" | "atrasado" | "cancelado"
+      sleep_quality: "boa" | "media" | "ruim"
+      stress_level: "baixo" | "medio" | "alto"
+      workout_preference: "curto_intenso" | "longo_moderado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -717,11 +777,24 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      activity_level: ["sedentario", "iniciante", "intermediario", "avancado"],
       app_role: ["admin", "professor", "aluno"],
+      fitness_goal: [
+        "emagrecimento",
+        "ganho_massa",
+        "condicionamento",
+        "reabilitacao",
+        "saude_geral",
+        "outro",
+      ],
       gender: ["masculino", "feminino"],
       goal_status: ["ativa", "concluida", "cancelada"],
+      motivation_type: ["estetica", "saude", "autoestima"],
       payment_method: ["pix", "dinheiro", "cartao", "transferencia", "outro"],
       payment_status: ["pendente", "pago", "atrasado", "cancelado"],
+      sleep_quality: ["boa", "media", "ruim"],
+      stress_level: ["baixo", "medio", "alto"],
+      workout_preference: ["curto_intenso", "longo_moderado"],
     },
   },
 } as const
