@@ -146,6 +146,13 @@ function AlunosAdmin() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader><DialogTitle>Avaliação — {viewing?.name}</DialogTitle></DialogHeader>
+          {viewing && <AvaliacaoView data={viewing.data} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
