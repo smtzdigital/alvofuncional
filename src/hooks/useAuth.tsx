@@ -30,6 +30,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   student: StudentInfo | null;
   planActive: boolean;
+  assessmentCompleted: boolean;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -42,18 +43,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [student, setStudent] = useState<StudentInfo | null>(null);
+  const [assessmentCompleted, setAssessmentCompleted] = useState(false);
 
   const loadProfile = async (uid: string) => {
-    const [{ data: rolesData }, { data: studentData }] = await Promise.all([
+    const [{ data: rolesData }, { data: studentData }, { data: profileData }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", uid),
       supabase
         .from("students")
         .select("id,total_points,plan_started_at,plan_expires_at,plan:plans(id,name,has_workouts,has_ranking,has_diet,has_goals,presential_per_week)")
         .eq("user_id", uid)
         .maybeSingle(),
+      supabase.from("profiles").select("assessment_completed_at").eq("id", uid).maybeSingle(),
     ]);
     setRoles((rolesData ?? []).map((r) => r.role as AppRole));
     setStudent(studentData as unknown as StudentInfo | null);
+    setAssessmentCompleted(!!profileData?.assessment_completed_at);
   };
 
   useEffect(() => {
@@ -65,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setRoles([]);
         setStudent(null);
+        setAssessmentCompleted(false);
       }
     });
 
@@ -91,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const planActive = !!student && (!student.plan_expires_at || new Date(student.plan_expires_at) > new Date());
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, roles, isAdmin, student, planActive, refresh, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, roles, isAdmin, student, planActive, assessmentCompleted, refresh, signOut }}>
       {children}
     </AuthContext.Provider>
   );
