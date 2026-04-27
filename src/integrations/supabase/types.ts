@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          accent_color: string
+          app_description: string
+          app_name: string
+          app_short_name: string
+          background_color: string
+          favicon_url: string | null
+          id: boolean
+          logo_icon_url: string | null
+          logo_url: string | null
+          primary_color: string
+          primary_glow: string
+          pwa_background_color: string
+          pwa_icon_192_url: string | null
+          pwa_icon_512_url: string | null
+          pwa_theme_color: string
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          app_description?: string
+          app_name?: string
+          app_short_name?: string
+          background_color?: string
+          favicon_url?: string | null
+          id?: boolean
+          logo_icon_url?: string | null
+          logo_url?: string | null
+          primary_color?: string
+          primary_glow?: string
+          pwa_background_color?: string
+          pwa_icon_192_url?: string | null
+          pwa_icon_512_url?: string | null
+          pwa_theme_color?: string
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          app_description?: string
+          app_name?: string
+          app_short_name?: string
+          background_color?: string
+          favicon_url?: string | null
+          id?: boolean
+          logo_icon_url?: string | null
+          logo_url?: string | null
+          primary_color?: string
+          primary_glow?: string
+          pwa_background_color?: string
+          pwa_icon_192_url?: string | null
+          pwa_icon_512_url?: string | null
+          pwa_theme_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       attendances: {
         Row: {
           attended_at: string
