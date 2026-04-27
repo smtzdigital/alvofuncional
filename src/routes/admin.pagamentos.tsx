@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StudentCombobox } from "@/components/StudentCombobox";
 import { Plus, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,10 +75,7 @@ function PaymentsAdmin() {
             <DialogHeader><DialogTitle>Novo pagamento</DialogTitle></DialogHeader>
             <form onSubmit={create} className="space-y-3">
               <div><Label>Aluno</Label>
-                <Select value={form.student_id} onValueChange={(v) => setForm({ ...form, student_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>{students.map((s) => <SelectItem key={s.id} value={s.id}>{s.profile?.full_name}</SelectItem>)}</SelectContent>
-                </Select>
+                <StudentCombobox students={students} value={form.student_id} onChange={(v) => setForm({ ...form, student_id: v })} />
               </div>
               <div><Label>Plano</Label>
                 <Select value={form.plan_id} onValueChange={(v) => { const pl = plans.find((p) => p.id === v); setForm({ ...form, plan_id: v, amount: pl ? String(pl.price) : form.amount }); }}>

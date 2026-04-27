@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StudentCombobox } from "@/components/StudentCombobox";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,10 +60,7 @@ function AttendancesAdmin() {
             <DialogHeader><DialogTitle>Registrar presença</DialogTitle></DialogHeader>
             <form onSubmit={submit} className="space-y-3">
               <div><Label>Aluno</Label>
-                <Select value={form.student_id} onValueChange={(v) => setForm({ ...form, student_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>{students.map((s) => <SelectItem key={s.id} value={s.id}>{s.profile?.full_name}</SelectItem>)}</SelectContent>
-                </Select>
+                <StudentCombobox students={students} value={form.student_id} onChange={(v) => setForm({ ...form, student_id: v })} />
               </div>
               <div><Label>Professor</Label>
                 <Select value={form.teacher_id} onValueChange={(v) => setForm({ ...form, teacher_id: v })}>
