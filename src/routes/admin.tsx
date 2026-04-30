@@ -4,14 +4,22 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu, Settings, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu, Settings, ChevronLeft, ChevronRight, Eye, FolderPlus, ChevronDown, Wrench, Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  children?: { to: string; label: string; icon: typeof LayoutDashboard }[];
+};
+
+const NAV: NavItem[] = [
   { to: "/admin", label: "Painel", icon: LayoutDashboard, exact: true },
   { to: "/admin/alunos", label: "Alunos", icon: Users },
   { to: "/admin/professores", label: "Professores", icon: GraduationCap },
@@ -20,6 +28,13 @@ const NAV = [
   { to: "/admin/treinos", label: "Treinos", icon: Dumbbell },
   { to: "/admin/dietas", label: "Dietas", icon: Apple },
   { to: "/admin/presencas", label: "Presenças", icon: ClipboardCheck },
+  {
+    to: "/admin/cadastros", label: "Cadastros", icon: FolderPlus,
+    children: [
+      { to: "/admin/equipamentos", label: "Equipamentos", icon: Wrench },
+      { to: "/admin/exercicios", label: "Exercícios", icon: Activity },
+    ],
+  },
 ];
 
 const STORAGE_KEY = "admin_sidebar_collapsed";
