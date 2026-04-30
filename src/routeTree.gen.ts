@@ -28,6 +28,8 @@ import { Route as AdminProfessoresRouteImport } from './routes/admin.professores
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
+import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
@@ -127,6 +129,16 @@ const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   path: '/pagamentos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminExerciciosRoute = AdminExerciciosRouteImport.update({
+  id: '/exercicios',
+  path: '/exercicios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
+  id: '/equipamentos',
+  path: '/equipamentos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDietasRoute = AdminDietasRouteImport.update({
   id: '/dietas',
   path: '/dietas',
@@ -153,6 +165,8 @@ export interface FileRoutesByFullPath {
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -175,6 +189,8 @@ export interface FileRoutesByTo {
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -200,6 +216,8 @@ export interface FileRoutesById {
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -226,6 +244,8 @@ export interface FileRouteTypes {
     | '/admin/alunos'
     | '/admin/configuracoes'
     | '/admin/dietas'
+    | '/admin/equipamentos'
+    | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
     | '/admin/presencas'
@@ -248,6 +268,8 @@ export interface FileRouteTypes {
     | '/admin/alunos'
     | '/admin/configuracoes'
     | '/admin/dietas'
+    | '/admin/equipamentos'
+    | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
     | '/admin/presencas'
@@ -272,6 +294,8 @@ export interface FileRouteTypes {
     | '/admin/alunos'
     | '/admin/configuracoes'
     | '/admin/dietas'
+    | '/admin/equipamentos'
+    | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
     | '/admin/presencas'
@@ -431,6 +455,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPagamentosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/exercicios': {
+      id: '/admin/exercicios'
+      path: '/exercicios'
+      fullPath: '/admin/exercicios'
+      preLoaderRoute: typeof AdminExerciciosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/equipamentos': {
+      id: '/admin/equipamentos'
+      path: '/equipamentos'
+      fullPath: '/admin/equipamentos'
+      preLoaderRoute: typeof AdminEquipamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/dietas': {
       id: '/admin/dietas'
       path: '/dietas'
@@ -459,6 +497,8 @@ interface AdminRouteChildren {
   AdminAlunosRoute: typeof AdminAlunosRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDietasRoute: typeof AdminDietasRoute
+  AdminEquipamentosRoute: typeof AdminEquipamentosRoute
+  AdminExerciciosRoute: typeof AdminExerciciosRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
   AdminPresencasRoute: typeof AdminPresencasRoute
@@ -471,6 +511,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAlunosRoute: AdminAlunosRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDietasRoute: AdminDietasRoute,
+  AdminEquipamentosRoute: AdminEquipamentosRoute,
+  AdminExerciciosRoute: AdminExerciciosRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
   AdminPlanosRoute: AdminPlanosRoute,
   AdminPresencasRoute: AdminPresencasRoute,

@@ -163,6 +163,71 @@ export type Database = {
           },
         ]
       }
+      equipments: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          photo_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exercises: {
+        Row: {
+          created_at: string
+          equipment_id: string | null
+          gif_url: string | null
+          id: string
+          instructions: string | null
+          muscles: string[]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_id?: string | null
+          gif_url?: string | null
+          id?: string
+          instructions?: string | null
+          muscles?: string[]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string | null
+          gif_url?: string | null
+          id?: string
+          instructions?: string | null
+          muscles?: string[]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercises_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           completed_at: string | null
