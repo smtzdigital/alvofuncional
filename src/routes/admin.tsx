@@ -226,6 +226,28 @@ function AdminLayout() {
                   <nav className="flex-1 space-y-1 px-3 overflow-y-auto">
                     {NAV.map((n) => {
                       const active = n.exact ? path === n.to : path.startsWith(n.to);
+                      if (n.children) {
+                        return (
+                          <div key={n.to} className="space-y-1">
+                            <div className="flex items-center gap-3 px-3 py-2 text-xs uppercase tracking-wide text-muted-foreground">
+                              <n.icon size={14} /> {n.label}
+                            </div>
+                            <div className="ml-4 space-y-1 border-l border-border/50 pl-2">
+                              {n.children.map((c) => {
+                                const ca = path.startsWith(c.to);
+                                return (
+                                  <Link key={c.to} to={c.to}
+                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                                      ca ? "bg-primary/15 text-primary font-semibold" : "text-sidebar-foreground hover:bg-sidebar-accent"
+                                    }`}>
+                                    <c.icon size={14} /> {c.label}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      }
                       return (
                         <Link key={n.to} to={n.to}
                           className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
