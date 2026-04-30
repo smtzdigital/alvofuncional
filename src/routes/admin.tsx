@@ -88,7 +88,61 @@ function AdminLayout() {
 
           <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
             {NAV.map((n) => {
-              const active = n.exact ? path === n.to : path.startsWith(n.to);
+              const childActive = n.children?.some((c) => path.startsWith(c.to));
+              const active = n.exact ? path === n.to : (!n.children && path.startsWith(n.to)) || !!childActive;
+
+              if (n.children) {
+                if (collapsed) {
+                  return n.children.map((c) => {
+                    const ca = path.startsWith(c.to);
+                    return (
+                      <Tooltip key={c.to}>
+                        <TooltipTrigger asChild>
+                          <Link to={c.to}
+                            className={`flex items-center justify-center gap-3 rounded-lg px-2 py-2 text-sm transition ${
+                              ca ? "bg-primary/15 text-primary font-semibold" : "text-sidebar-foreground hover:bg-sidebar-accent"
+                            }`}>
+                            <c.icon size={18} className="shrink-0" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">{c.label}</TooltipContent>
+                      </Tooltip>
+                    );
+                  });
+                }
+                const open = openGroups[n.to] ?? !!childActive;
+                return (
+                  <div key={n.to}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenGroups((g) => ({ ...g, [n.to]: !open }))}
+                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                        active ? "bg-primary/15 text-primary font-semibold" : "text-sidebar-foreground hover:bg-sidebar-accent"
+                      }`}
+                    >
+                      <n.icon size={18} className="shrink-0" />
+                      <span className="flex-1 text-left">{n.label}</span>
+                      <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+                    </button>
+                    {open && (
+                      <div className="mt-1 ml-4 space-y-1 border-l border-border/50 pl-2">
+                        {n.children.map((c) => {
+                          const ca = path.startsWith(c.to);
+                          return (
+                            <Link key={c.to} to={c.to}
+                              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                                ca ? "bg-primary/15 text-primary font-semibold" : "text-sidebar-foreground hover:bg-sidebar-accent"
+                              }`}>
+                              <c.icon size={14} className="shrink-0" /> {c.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               const link = (
                 <Link
                   key={n.to}
