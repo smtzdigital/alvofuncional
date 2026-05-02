@@ -26,12 +26,14 @@ import { Route as AppAvaliacaoRouteImport } from './routes/app.avaliacao'
 import { Route as AdminTreinosRouteImport } from './routes/admin.treinos'
 import { Route as AdminProfessoresRouteImport } from './routes/admin.professores'
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
+import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-semanais'
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
 import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
+import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 
 const RankingRoute = RankingRouteImport.update({
@@ -119,6 +121,11 @@ const AdminPresencasRoute = AdminPresencasRouteImport.update({
   path: '/presencas',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPlanosSemanaisRoute = AdminPlanosSemanaisRouteImport.update({
+  id: '/planos-semanais',
+  path: '/planos-semanais',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPlanosRoute = AdminPlanosRouteImport.update({
   id: '/planos',
   path: '/planos',
@@ -149,6 +156,11 @@ const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAtribuirTreinosRoute = AdminAtribuirTreinosRouteImport.update({
+  id: '/atribuir-treinos',
+  path: '/atribuir-treinos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAlunosRoute = AdminAlunosRouteImport.update({
   id: '/alunos',
   path: '/alunos',
@@ -163,12 +175,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
+  '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
@@ -187,12 +201,14 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
+  '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
@@ -214,12 +230,14 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/planos': typeof AdminPlanosRoute
+  '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
@@ -242,12 +260,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
+    | '/admin/planos-semanais'
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
@@ -266,12 +286,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
+    | '/admin/planos-semanais'
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
@@ -292,12 +314,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
     | '/admin/planos'
+    | '/admin/planos-semanais'
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
@@ -441,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPresencasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/planos-semanais': {
+      id: '/admin/planos-semanais'
+      path: '/planos-semanais'
+      fullPath: '/admin/planos-semanais'
+      preLoaderRoute: typeof AdminPlanosSemanaisRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/planos': {
       id: '/admin/planos'
       path: '/planos'
@@ -483,6 +514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfiguracoesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/atribuir-treinos': {
+      id: '/admin/atribuir-treinos'
+      path: '/atribuir-treinos'
+      fullPath: '/admin/atribuir-treinos'
+      preLoaderRoute: typeof AdminAtribuirTreinosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/alunos': {
       id: '/admin/alunos'
       path: '/alunos'
@@ -495,12 +533,14 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAlunosRoute: typeof AdminAlunosRoute
+  AdminAtribuirTreinosRoute: typeof AdminAtribuirTreinosRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDietasRoute: typeof AdminDietasRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminExerciciosRoute: typeof AdminExerciciosRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
+  AdminPlanosSemanaisRoute: typeof AdminPlanosSemanaisRoute
   AdminPresencasRoute: typeof AdminPresencasRoute
   AdminProfessoresRoute: typeof AdminProfessoresRoute
   AdminTreinosRoute: typeof AdminTreinosRoute
@@ -509,12 +549,14 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAlunosRoute: AdminAlunosRoute,
+  AdminAtribuirTreinosRoute: AdminAtribuirTreinosRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDietasRoute: AdminDietasRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminExerciciosRoute: AdminExerciciosRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
   AdminPlanosRoute: AdminPlanosRoute,
+  AdminPlanosSemanaisRoute: AdminPlanosSemanaisRoute,
   AdminPresencasRoute: AdminPresencasRoute,
   AdminProfessoresRoute: AdminProfessoresRoute,
   AdminTreinosRoute: AdminTreinosRoute,

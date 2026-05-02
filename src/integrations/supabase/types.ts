@@ -520,6 +520,47 @@ export type Database = {
         }
         Relationships: []
       }
+      student_workouts: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          position: number
+          student_id: string
+          weekday: Database["public"]["Enums"]["weekday"] | null
+          workout_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          student_id: string
+          weekday?: Database["public"]["Enums"]["weekday"] | null
+          workout_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          student_id?: string
+          weekday?: Database["public"]["Enums"]["weekday"] | null
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_workouts_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
           created_at: string
@@ -644,6 +685,41 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_workout_plans: {
+        Row: {
+          created_at: string
+          gender: Database["public"]["Enums"]["workout_gender"]
+          id: string
+          position: number
+          weekday: Database["public"]["Enums"]["weekday"]
+          workout_id: string
+        }
+        Insert: {
+          created_at?: string
+          gender: Database["public"]["Enums"]["workout_gender"]
+          id?: string
+          position?: number
+          weekday: Database["public"]["Enums"]["weekday"]
+          workout_id: string
+        }
+        Update: {
+          created_at?: string
+          gender?: Database["public"]["Enums"]["workout_gender"]
+          id?: string
+          position?: number
+          weekday?: Database["public"]["Enums"]["weekday"]
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_workout_plans_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_checkins: {
         Row: {
           created_at: string
@@ -686,16 +762,74 @@ export type Database = {
           },
         ]
       }
+      workout_exercises: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          id: string
+          load_suggestion: string | null
+          notes: string | null
+          position: number
+          reps: string | null
+          rest_seconds: number | null
+          sets: number | null
+          workout_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          id?: string
+          load_suggestion?: string | null
+          notes?: string | null
+          position?: number
+          reps?: string | null
+          rest_seconds?: number | null
+          sets?: number | null
+          workout_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          load_suggestion?: string | null
+          notes?: string | null
+          position?: number
+          reps?: string | null
+          rest_seconds?: number | null
+          sets?: number | null
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_exercises_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_exercises_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workouts: {
         Row: {
+          audience: Database["public"]["Enums"]["workout_audience"]
           category: string | null
           created_at: string
           created_by: string | null
           description: string | null
           difficulty: string | null
           duration_minutes: number | null
+          gender: Database["public"]["Enums"]["workout_gender"]
           id: string
           is_published: boolean
+          level: string | null
+          muscle_group: string | null
           points_reward: number
           thumbnail_url: string | null
           title: string
@@ -703,14 +837,18 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          audience?: Database["public"]["Enums"]["workout_audience"]
           category?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           difficulty?: string | null
           duration_minutes?: number | null
+          gender?: Database["public"]["Enums"]["workout_gender"]
           id?: string
           is_published?: boolean
+          level?: string | null
+          muscle_group?: string | null
           points_reward?: number
           thumbnail_url?: string | null
           title: string
@@ -718,14 +856,18 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          audience?: Database["public"]["Enums"]["workout_audience"]
           category?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           difficulty?: string | null
           duration_minutes?: number | null
+          gender?: Database["public"]["Enums"]["workout_gender"]
           id?: string
           is_published?: boolean
+          level?: string | null
+          muscle_group?: string | null
           points_reward?: number
           thumbnail_url?: string | null
           title?: string
@@ -778,6 +920,9 @@ export type Database = {
       payment_status: "pendente" | "pago" | "atrasado" | "cancelado"
       sleep_quality: "boa" | "media" | "ruim"
       stress_level: "baixo" | "medio" | "alto"
+      weekday: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom"
+      workout_audience: "app" | "personal"
+      workout_gender: "masculino" | "feminino" | "unissex"
       workout_preference: "curto_intenso" | "longo_moderado"
     }
     CompositeTypes: {
@@ -923,6 +1068,9 @@ export const Constants = {
       payment_status: ["pendente", "pago", "atrasado", "cancelado"],
       sleep_quality: ["boa", "media", "ruim"],
       stress_level: ["baixo", "medio", "alto"],
+      weekday: ["seg", "ter", "qua", "qui", "sex", "sab", "dom"],
+      workout_audience: ["app", "personal"],
+      workout_gender: ["masculino", "feminino", "unissex"],
       workout_preference: ["curto_intenso", "longo_moderado"],
     },
   },
