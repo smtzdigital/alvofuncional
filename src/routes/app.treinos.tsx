@@ -263,6 +263,23 @@ function WorkoutCard({ w, note, done, allowed, onCheckin, onView }: {
   w: Workout; note?: string | null; done: boolean; allowed: boolean;
   onCheckin: () => void; onView: () => void;
 }) {
+  const [preview, setPreview] = useState<{ name: string }[]>([]);
+  const [count, setCount] = useState<number>(0);
+  useEffect(() => {
+    supabase
+      .from("workout_exercises")
+      .select("exercise:exercises(name)", { count: "exact" })
+      .eq("workout_id", w.id)
+      .order("position")
+      .limit(4)
+      .then(({ data, count: c }) => {
+        setPreview(((data ?? []) as unknown as { exercise: { name: string } | null }[])
+          .map((r) => ({ name: r.exercise?.name ?? "" }))
+          .filter((x) => x.name));
+        setCount(c ?? 0);
+      });
+  }, [w.id]);
+
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-gradient-card shadow-elevated">
       <button onClick={onView} className="flex aspect-video w-full items-center justify-center bg-secondary">
@@ -277,9 +294,18 @@ function WorkoutCard({ w, note, done, allowed, onCheckin, onView }: {
           {w.muscle_group && <span className="rounded-full bg-primary/15 px-2 py-0.5 text-primary">{w.muscle_group}</span>}
           {w.level && <span className="rounded-full bg-secondary px-2 py-0.5 text-muted-foreground">{w.level}</span>}
           {w.duration_minutes && <span className="text-muted-foreground">{w.duration_minutes} min</span>}
+          {count > 0 && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-accent-foreground">{count} exercício{count > 1 ? "s" : ""}</span>}
         </div>
         <h3 className="font-bold cursor-pointer" onClick={onView}>{w.title}</h3>
         {w.description && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{w.description}</p>}
+        {preview.length > 0 && (
+          <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+            {preview.map((e, i) => (
+              <li key={i} className="truncate">• {e.name}</li>
+            ))}
+            {count > preview.length && <li className="italic">+ {count - preview.length} mais...</li>}
+          </ul>
+        )}
         {note && <p className="mt-1 text-xs italic text-primary">📌 {note}</p>}
         <div className="mt-3 flex items-center justify-between">
           <span className="text-sm font-semibold text-primary">+{w.points_reward} pts</span>
@@ -298,13 +324,19 @@ function WorkoutCard({ w, note, done, allowed, onCheckin, onView }: {
 
 function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: () => void }) {
   const [items, setItems] = useState<WorkoutExercise[]>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
+    setLoading(true);
     supabase
       .from("workout_exercises")
-      .select("*, exercise:exercises(id,name,gif_url,instructions,muscles)")
+      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles)")
       .eq("workout_id", workout.id)
       .order("position")
-      .then(({ data }) => setItems((data ?? []) as unknown as WorkoutExercise[]));
+      .then(({ data, error }) => {
+        if (error) toast.error("Erro ao carregar exercícios: " + error.message);
+        setItems((data ?? []) as unknown as WorkoutExercise[]);
+        setLoading(false);
+      });
   }, [workout.id]);
 
   return (
