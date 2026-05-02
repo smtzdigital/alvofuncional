@@ -354,7 +354,9 @@ function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: 
 
         <div className="space-y-3">
           <h3 className="font-semibold">Exercícios</h3>
-          {items.length === 0 ? (
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Carregando exercícios...</p>
+          ) : items.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sem exercícios cadastrados.</p>
           ) : items.map((it, idx) => (
             <div key={it.id} className="flex gap-3 rounded-lg border border-border p-3">
