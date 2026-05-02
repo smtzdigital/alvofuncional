@@ -4,7 +4,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu, Settings, ChevronLeft, ChevronRight, Eye, FolderPlus, ChevronDown, Wrench, Activity } from "lucide-react";
+import { LayoutDashboard, Users, GraduationCap, Package, CreditCard, Dumbbell, Apple, ClipboardCheck, LogOut, Menu, Settings, ChevronLeft, ChevronRight, Eye, FolderPlus, ChevronDown, Wrench, Activity, CalendarDays, UserCog } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
@@ -25,7 +25,14 @@ const NAV: NavItem[] = [
   { to: "/admin/professores", label: "Professores", icon: GraduationCap },
   { to: "/admin/planos", label: "Planos", icon: Package },
   { to: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
-  { to: "/admin/treinos", label: "Treinos", icon: Dumbbell },
+  {
+    to: "/admin/treinos-grupo", label: "Treinos", icon: Dumbbell,
+    children: [
+      { to: "/admin/treinos", label: "Biblioteca", icon: Dumbbell },
+      { to: "/admin/planos-semanais", label: "Plano semanal (App)", icon: CalendarDays },
+      { to: "/admin/atribuir-treinos", label: "Atribuir aos alunos", icon: UserCog },
+    ],
+  },
   { to: "/admin/dietas", label: "Dietas", icon: Apple },
   { to: "/admin/presencas", label: "Presenças", icon: ClipboardCheck },
   {
