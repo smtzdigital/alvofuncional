@@ -333,7 +333,7 @@ function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: 
     setLoading(true);
     supabase
       .from("workout_exercises")
-      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles,equipment:equipments(id,name,image_url))")
+      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles,equipment:equipments(id,name,photo_url))")
       .eq("workout_id", workout.id)
       .order("position")
       .then(({ data, error }) => {
