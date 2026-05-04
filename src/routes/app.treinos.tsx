@@ -27,7 +27,7 @@ interface WorkoutExercise {
   rest_seconds: number | null; load_suggestion: string | null; notes: string | null;
   exercise: {
     id: string; name: string; gif_url: string | null; instructions: string | null; muscles: string[];
-    equipment?: { id: string; name: string; image_url: string | null } | null;
+    equipment?: { id: string; name: string; photo_url: string | null } | null;
   } | null;
 }
 
@@ -442,8 +442,8 @@ function ExerciseDetailDialog({ item, onClose }: { item: WorkoutExercise; onClos
             <TabsContent value="equipamento" className="mt-4">
               {ex.equipment ? (
                 <div className="flex items-center gap-4 rounded-xl border border-border p-4">
-                  {ex.equipment.image_url && (
-                    <img src={ex.equipment.image_url} alt={ex.equipment.name} className="h-20 w-20 rounded-lg object-cover" />
+                  {ex.equipment.photo_url && (
+                    <img src={ex.equipment.photo_url} alt={ex.equipment.name} className="h-20 w-20 rounded-lg object-cover" />
                   )}
                   <div className="font-semibold">{ex.equipment.name}</div>
                 </div>
