@@ -25,7 +25,10 @@ interface Workout {
 interface WorkoutExercise {
   id: string; position: number; sets: number | null; reps: string | null;
   rest_seconds: number | null; load_suggestion: string | null; notes: string | null;
-  exercise: { id: string; name: string; gif_url: string | null; instructions: string | null; muscles: string[] } | null;
+  exercise: {
+    id: string; name: string; gif_url: string | null; instructions: string | null; muscles: string[];
+    equipment?: { id: string; name: string; image_url: string | null } | null;
+  } | null;
 }
 
 const WEEKDAYS: { v: Weekday; l: string }[] = [
