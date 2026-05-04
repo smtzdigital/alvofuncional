@@ -27,7 +27,7 @@ interface WorkoutExercise {
   rest_seconds: number | null; load_suggestion: string | null; notes: string | null;
   exercise: {
     id: string; name: string; gif_url: string | null; instructions: string | null; muscles: string[];
-    equipment?: { id: string; name: string; image_url: string | null } | null;
+    equipment?: { id: string; name: string; photo_url: string | null } | null;
   } | null;
 }
 
@@ -333,7 +333,7 @@ function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: 
     setLoading(true);
     supabase
       .from("workout_exercises")
-      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles,equipment:equipments(id,name,image_url))")
+      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles,equipment:equipments(id,name,photo_url))")
       .eq("workout_id", workout.id)
       .order("position")
       .then(({ data, error }) => {
@@ -442,8 +442,8 @@ function ExerciseDetailDialog({ item, onClose }: { item: WorkoutExercise; onClos
             <TabsContent value="equipamento" className="mt-4">
               {ex.equipment ? (
                 <div className="flex items-center gap-4 rounded-xl border border-border p-4">
-                  {ex.equipment.image_url && (
-                    <img src={ex.equipment.image_url} alt={ex.equipment.name} className="h-20 w-20 rounded-lg object-cover" />
+                  {ex.equipment.photo_url && (
+                    <img src={ex.equipment.photo_url} alt={ex.equipment.name} className="h-20 w-20 rounded-lg object-cover" />
                   )}
                   <div className="font-semibold">{ex.equipment.name}</div>
                 </div>
