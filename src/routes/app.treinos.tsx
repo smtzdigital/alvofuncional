@@ -328,11 +328,12 @@ function WorkoutCard({ w, note, done, allowed, onCheckin, onView }: {
 function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: () => void }) {
   const [items, setItems] = useState<WorkoutExercise[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<WorkoutExercise | null>(null);
   useEffect(() => {
     setLoading(true);
     supabase
       .from("workout_exercises")
-      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles)")
+      .select("id, position, sets, reps, rest_seconds, load_suggestion, notes, exercise:exercises(id,name,gif_url,instructions,muscles,equipment:equipments(id,name,image_url))")
       .eq("workout_id", workout.id)
       .order("position")
       .then(({ data, error }) => {
@@ -355,31 +356,102 @@ function WorkoutDetailDialog({ workout, onClose }: { workout: Workout; onClose: 
           </a>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           <h3 className="font-semibold">Exercícios</h3>
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando exercícios...</p>
           ) : items.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sem exercícios cadastrados.</p>
           ) : items.map((it, idx) => (
-            <div key={it.id} className="flex gap-3 rounded-lg border border-border p-3">
-              {it.exercise?.gif_url && <img src={it.exercise.gif_url} alt="" className="h-20 w-20 rounded object-cover shrink-0" />}
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold">{idx + 1}. {it.exercise?.name}</div>
-                <div className="mt-1 text-sm text-muted-foreground">
-                  {it.sets ?? "-"} séries × {it.reps ?? "-"} reps · descanso {it.rest_seconds ?? "-"}s
-                  {it.load_suggestion && ` · ${it.load_suggestion}`}
-                </div>
-                {it.exercise?.muscles?.length ? (
-                  <div className="mt-1 flex flex-wrap gap-1 text-xs">
-                    {it.exercise.muscles.map((m) => <span key={m} className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">{m}</span>)}
-                  </div>
-                ) : null}
-                {it.exercise?.instructions && <p className="mt-1 text-xs text-muted-foreground">{it.exercise.instructions}</p>}
-                {it.notes && <p className="mt-1 text-xs italic text-primary">📌 {it.notes}</p>}
+            <button
+              key={it.id}
+              onClick={() => setSelected(it)}
+              className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-accent/40"
+            >
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary">
+                {it.exercise?.gif_url ? (
+                  <img src={it.exercise.gif_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <Dumbbell size={24} className="text-muted-foreground" />
+                )}
               </div>
-            </div>
+              <div className="flex-1 min-w-0">
+                <div className="truncate font-semibold">{idx + 1}. {it.exercise?.name}</div>
+                <div className="mt-0.5 flex flex-wrap gap-x-3 text-sm text-muted-foreground">
+                  <span><strong className="text-foreground">{it.sets ?? "-"}x{it.reps ?? "-"}</strong> reps</span>
+                  {it.load_suggestion && <span>⚖️ {it.load_suggestion}</span>}
+                </div>
+              </div>
+            </button>
           ))}
+        </div>
+
+        {selected && <ExerciseDetailDialog item={selected} onClose={() => setSelected(null)} />}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ExerciseDetailDialog({ item, onClose }: { item: WorkoutExercise; onClose: () => void }) {
+  const ex = item.exercise;
+  if (!ex) return null;
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0">
+        <div className="flex aspect-square w-full items-center justify-center bg-secondary">
+          {ex.gif_url ? (
+            <img src={ex.gif_url} alt={ex.name} className="h-full w-full object-contain" />
+          ) : (
+            <Dumbbell size={64} className="text-muted-foreground" />
+          )}
+        </div>
+        <div className="space-y-4 p-6">
+          <div className="flex flex-wrap gap-2">
+            {ex.muscles?.map((m) => (
+              <span key={m} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wide">{m}</span>
+            ))}
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{ex.name}</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-3 rounded-xl bg-secondary/50 p-3 text-sm">
+            <div><span className="text-muted-foreground">Séries × Reps:</span> <strong>{item.sets ?? "-"} × {item.reps ?? "-"}</strong></div>
+            <div><span className="text-muted-foreground">Descanso:</span> <strong>{item.rest_seconds ?? "-"}s</strong></div>
+            {item.load_suggestion && <div><span className="text-muted-foreground">Carga:</span> <strong>{item.load_suggestion}</strong></div>}
+          </div>
+
+          <Tabs defaultValue="instrucoes">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="instrucoes">Instruções</TabsTrigger>
+              <TabsTrigger value="equipamento">Equipamento</TabsTrigger>
+            </TabsList>
+            <TabsContent value="instrucoes" className="mt-4 space-y-3">
+              {ex.instructions ? (
+                ex.instructions.split(/\n+/).filter(Boolean).map((line, i) => (
+                  <div key={i} className="flex gap-3 border-b border-border/50 pb-3 last:border-0">
+                    <span className="text-lg font-bold text-muted-foreground">{i + 1}</span>
+                    <p className="flex-1 text-sm text-muted-foreground">{line.replace(/^\d+[.)\-\s]+/, "")}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">Sem instruções cadastradas.</p>
+              )}
+              {item.notes && <p className="rounded-lg bg-primary/10 p-3 text-sm italic text-primary">📌 {item.notes}</p>}
+            </TabsContent>
+            <TabsContent value="equipamento" className="mt-4">
+              {ex.equipment ? (
+                <div className="flex items-center gap-4 rounded-xl border border-border p-4">
+                  {ex.equipment.image_url && (
+                    <img src={ex.equipment.image_url} alt={ex.equipment.name} className="h-20 w-20 rounded-lg object-cover" />
+                  )}
+                  <div className="font-semibold">{ex.equipment.name}</div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Nenhum equipamento necessário (peso corporal).</p>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </DialogContent>
     </Dialog>
