@@ -15,6 +15,7 @@ export const Route = createFileRoute("/admin/configuracoes")({
 });
 
 type Field = keyof AppSettings;
+type UploadField = "logo_url" | "logo_icon_url" | "favicon_url" | "pwa_icon_192_url" | "pwa_icon_512_url";
 
 const HEX_TO_OKLCH_HINT = "Use formato CSS: oklch(0.85 0.22 130) ou hsl(...) ou #hex";
 
@@ -24,21 +25,44 @@ function ConfigPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<Field | null>(null);
 
+  const getAccessToken = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    return session?.access_token ?? null;
+  };
+
   useEffect(() => { setForm(settings); }, [settings]);
 
   const set = (k: Field, v: string | null) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleUpload = async (e: ChangeEvent<HTMLInputElement>, field: Field) => {
+  const handleUpload = async (e: ChangeEvent<HTMLInputElement>, field: UploadField) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(field);
     try {
-      const ext = file.name.split(".").pop();
-      const path = `${field}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("branding").upload(path, file, { upsert: true });
-      if (error) throw error;
-      const { data } = supabase.storage.from("branding").getPublicUrl(path);
-      set(field, data.publicUrl);
+      const token = await getAccessToken();
+      if (!token) throw new Error("Sessão expirada. Faça login novamente.");
+
+      const body = new FormData();
+      body.append("file", file);
+      body.append("field", field);
+
+      const response = await fetch("/api/admin/branding-upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body,
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error ?? "Falha ao enviar imagem");
+      }
+
+      set(field, result.publicUrl ?? null);
       toast.success("Imagem enviada");
     } catch (err) {
       toast.error("Erro ao enviar: " + (err as Error).message);
@@ -49,11 +73,31 @@ function ConfigPage() {
 
   const save = async () => {
     setSaving(true);
-    const { error } = await supabase.from("app_settings").update(form).eq("id", true);
-    setSaving(false);
-    if (error) return toast.error("Erro: " + error.message);
-    toast.success("Configurações salvas");
-    await refresh();
+    try {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Sessão expirada. Faça login novamente.");
+
+      const response = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error ?? "Falha ao salvar configurações");
+      }
+
+      toast.success("Configurações salvas");
+      await refresh();
+    } catch (err) {
+      toast.error("Erro: " + (err as Error).message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -177,7 +221,7 @@ function ColorField({ label, value, onChange }: { label: string; value: string; 
   );
 }
 
-function ImageUpload({ label, value, field, onUpload, uploading, onClear }: { label: string; value: string | null; field: Field; onUpload: (e: ChangeEvent<HTMLInputElement>, f: Field) => void; uploading: boolean; onClear: () => void }) {
+function ImageUpload({ label, value, field, onUpload, uploading, onClear }: { label: string; value: string | null; field: UploadField; onUpload: (e: ChangeEvent<HTMLInputElement>, f: UploadField) => void; uploading: boolean; onClear: () => void }) {
   return (
     <div className="space-y-1.5">
       <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
