@@ -32,7 +32,14 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { settings, loading: settingsLoading } = useAppSettings();
+  const { isAdmin, loading: authLoading } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
+
+  if (!settingsLoading && !authLoading && settings.coming_soon_enabled && !isAdmin) {
+    return <Navigate to="/em-breve" />;
+  }
+
 
   useEffect(() => {
     supabase
