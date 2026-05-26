@@ -16,6 +16,7 @@ export interface AppSettings {
   pwa_icon_512_url: string | null;
   pwa_theme_color: string;
   pwa_background_color: string;
+  coming_soon_enabled: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -33,6 +34,7 @@ const DEFAULTS: AppSettings = {
   pwa_icon_512_url: null,
   pwa_theme_color: "#0b0b0f",
   pwa_background_color: "#0b0b0f",
+  coming_soon_enabled: false,
 };
 
 interface Ctx {

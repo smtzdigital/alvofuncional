@@ -21,6 +21,7 @@ export type Database = {
           app_name: string
           app_short_name: string
           background_color: string
+          coming_soon_enabled: boolean
           favicon_url: string | null
           id: boolean
           logo_icon_url: string | null
@@ -39,6 +40,7 @@ export type Database = {
           app_name?: string
           app_short_name?: string
           background_color?: string
+          coming_soon_enabled?: boolean
           favicon_url?: string | null
           id?: boolean
           logo_icon_url?: string | null
@@ -57,6 +59,7 @@ export type Database = {
           app_name?: string
           app_short_name?: string
           background_color?: string
+          coming_soon_enabled?: boolean
           favicon_url?: string | null
           id?: boolean
           logo_icon_url?: string | null
@@ -283,6 +286,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      leads_interessados: {
+        Row: {
+          activity_level: Database["public"]["Enums"]["activity_level"] | null
+          created_at: string
+          full_name: string
+          id: string
+          phone: string
+        }
+        Insert: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone: string
+        }
+        Update: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string
+        }
+        Relationships: []
       }
       payments: {
         Row: {

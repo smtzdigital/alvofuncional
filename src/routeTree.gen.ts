@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as EmBreveRouteImport } from './routes/em-breve'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -44,6 +45,11 @@ const RankingRoute = RankingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmBreveRoute = EmBreveRouteImport.update({
+  id: '/em-breve',
+  path: '/em-breve',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroRoute = CadastroRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/cadastro'
+    | '/em-breve'
     | '/login'
     | '/ranking'
     | '/admin/alunos'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
+    | '/em-breve'
     | '/login'
     | '/ranking'
     | '/admin/alunos'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/cadastro'
+    | '/em-breve'
     | '/login'
     | '/ranking'
     | '/admin/alunos'
@@ -340,6 +352,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  EmBreveRoute: typeof EmBreveRoute
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
 }
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/em-breve': {
+      id: '/em-breve'
+      path: '/em-breve'
+      fullPath: '/em-breve'
+      preLoaderRoute: typeof EmBreveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cadastro': {
@@ -592,6 +612,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  EmBreveRoute: EmBreveRoute,
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
 }

@@ -1,9 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Trophy, Dumbbell, Apple, Target, Users, BarChart3, Check, X, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Plan {
   id: string;
@@ -30,7 +32,14 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { settings, loading: settingsLoading } = useAppSettings();
+  const { isAdmin, loading: authLoading } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
+
+  if (!settingsLoading && !authLoading && settings.coming_soon_enabled && !isAdmin) {
+    return <Navigate to="/em-breve" />;
+  }
+
 
   useEffect(() => {
     supabase
