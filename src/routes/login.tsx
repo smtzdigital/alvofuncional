@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +15,15 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    navigate({ to: isAdmin ? "/admin" : "/app", replace: true });
+  }, [authLoading, user, isAdmin, navigate]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -28,12 +35,6 @@ function LoginPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-      const isAdmin = roles?.some((r) => r.role === "admin");
-      navigate({ to: isAdmin ? "/admin" : "/app" });
-    }
   };
 
   return (
