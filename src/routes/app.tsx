@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -29,12 +29,16 @@ function AppLayout() {
       navigate({ to: "/login" });
       return;
     }
+    if (isAdmin) {
+      navigate({ to: "/admin", replace: true });
+      return;
+    }
     if (!assessmentCompleted && path !== "/app/avaliacao") {
       navigate({ to: "/app/avaliacao" });
     }
-  }, [loading, user, assessmentCompleted, path, navigate]);
+  }, [loading, user, isAdmin, assessmentCompleted, path, navigate]);
 
-  if (loading || !user) {
+  if (loading || !user || isAdmin) {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
   }
 
