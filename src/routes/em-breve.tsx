@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Loader2, Target, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
-import logo from "@/assets/alvo-logo.jpg";
+import logo from "@/assets/alvo-logo.png";
 
 export const Route = createFileRoute("/em-breve")({
   head: () => ({
