@@ -36,11 +36,6 @@ function Landing() {
   const { isAdmin, loading: authLoading } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
 
-  if (!settingsLoading && !authLoading && settings.coming_soon_enabled && !isAdmin) {
-    return <Navigate to="/em-breve" />;
-  }
-
-
   useEffect(() => {
     supabase
       .from("plans")
@@ -49,6 +44,10 @@ function Landing() {
       .order("sort_order", { ascending: true })
       .then(({ data }) => setPlans((data ?? []) as Plan[]));
   }, []);
+
+  if (!settingsLoading && !authLoading && settings.coming_soon_enabled && !isAdmin) {
+    return <Navigate to="/em-breve" />;
+  }
 
   const formatPrice = (p: number) =>
     p === 0 ? "Grátis" : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(p);
