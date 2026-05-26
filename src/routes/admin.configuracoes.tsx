@@ -82,6 +82,22 @@ function ConfigPage() {
         </Field>
       </Section>
 
+      {/* Em Breve */}
+      <Section icon={Rocket} title='Modo "Em Breve"' description="Quando ativado, visitantes não-administradores são redirecionados para a página de pré-lançamento com formulário de cadastro de interessados.">
+        <div className="md:col-span-2 flex items-center justify-between rounded-xl border border-border bg-background/50 p-4">
+          <div>
+            <div className="font-semibold">Ativar página "Em Breve"</div>
+            <div className="text-xs text-muted-foreground">Substitui a página inicial pública por uma landing de captura de interessados.</div>
+          </div>
+          <Switch
+            checked={form.coming_soon_enabled}
+            onCheckedChange={(v) => setForm((p) => ({ ...p, coming_soon_enabled: v }))}
+          />
+        </div>
+      </Section>
+
+
+
       {/* Cores */}
       <Section icon={Palette} title="Cores do tema" description={HEX_TO_OKLCH_HINT}>
         <ColorField label="Primária" value={form.primary_color} onChange={(v) => set("primary_color", v)} />
