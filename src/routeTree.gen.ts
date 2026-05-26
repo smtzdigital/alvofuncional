@@ -36,6 +36,7 @@ import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
+import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -172,6 +173,11 @@ const AdminAlunosRoute = AdminAlunosRouteImport.update({
   path: '/alunos',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
+  id: '/api/me/roles',
+  path: '/api/me/roles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/app/treinos': typeof AppTreinosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/app/treinos': typeof AppTreinosRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/app/treinos': typeof AppTreinosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin/'
     | '/app/'
+    | '/api/me/roles'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin'
     | '/app'
+    | '/api/me/roles'
   id:
     | '__root__'
     | '/'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin/'
     | '/app/'
+    | '/api/me/roles'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -355,6 +367,7 @@ export interface RootRouteChildren {
   EmBreveRoute: typeof EmBreveRoute
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
+  ApiMeRolesRoute: typeof ApiMeRolesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -548,6 +561,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlunosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/me/roles': {
+      id: '/api/me/roles'
+      path: '/api/me/roles'
+      fullPath: '/api/me/roles'
+      preLoaderRoute: typeof ApiMeRolesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmBreveRoute: EmBreveRoute,
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
+  ApiMeRolesRoute: ApiMeRolesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
