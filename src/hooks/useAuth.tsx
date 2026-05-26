@@ -45,9 +45,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [student, setStudent] = useState<StudentInfo | null>(null);
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
 
+  const loadRoles = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) return [] as AppRole[];
+
+    const response = await fetch("/api/me/roles", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) return [] as AppRole[];
+
+    const data = (await response.json()) as { roles?: AppRole[] };
+    return data.roles ?? [];
+  };
+
   const loadProfile = async (uid: string) => {
-    const [{ data: rolesData }, { data: studentData }, { data: profileData }] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", uid),
+    const [rolesData, { data: studentData }, { data: profileData }] = await Promise.all([
+      loadRoles(),
       supabase
         .from("students")
         .select("id,total_points,plan_started_at,plan_expires_at,plan:plans(id,name,has_workouts,has_ranking,has_diet,has_goals,presential_per_week)")
@@ -55,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle(),
       supabase.from("profiles").select("assessment_completed_at").eq("id", uid).maybeSingle(),
     ]);
-    setRoles((rolesData ?? []).map((r) => r.role as AppRole));
+    setRoles(rolesData);
     setStudent(studentData as unknown as StudentInfo | null);
     setAssessmentCompleted(!!profileData?.assessment_completed_at);
   };
