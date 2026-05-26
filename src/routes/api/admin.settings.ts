@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Database } from "@/integrations/supabase/types";
 
 const allowedKeys = [
   "app_name",
@@ -20,6 +21,7 @@ const allowedKeys = [
 ] as const;
 
 type SettingsPayload = Partial<Record<(typeof allowedKeys)[number], string | boolean | null>>;
+type AppSettingsUpdate = Database["public"]["Tables"]["app_settings"]["Update"];
 
 async function getAdminUserId(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -65,7 +67,7 @@ export const Route = createFileRoute("/api/admin/settings")({
         const payload = (await request.json()) as SettingsPayload;
         const sanitized = Object.fromEntries(
           Object.entries(payload).filter(([key]) => allowedKeys.includes(key as (typeof allowedKeys)[number])),
-        );
+        ) as AppSettingsUpdate;
 
         const { error } = await supabaseAdmin.from("app_settings").update(sanitized).eq("id", true);
 
