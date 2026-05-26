@@ -37,6 +37,8 @@ import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configura
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
+import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
+import { Route as ApiAdminBrandingUploadRouteImport } from './routes/api/admin.branding-upload'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -178,6 +180,16 @@ const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   path: '/api/me/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
+  id: '/api/admin/settings',
+  path: '/api/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminBrandingUploadRoute = ApiAdminBrandingUploadRouteImport.update({
+  id: '/api/admin/branding-upload',
+  path: '/api/admin/branding-upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -207,6 +219,8 @@ export interface FileRoutesByFullPath {
   '/app/treinos': typeof AppTreinosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRoutesByTo {
@@ -235,6 +249,8 @@ export interface FileRoutesByTo {
   '/app/treinos': typeof AppTreinosRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRoutesById {
@@ -266,6 +282,8 @@ export interface FileRoutesById {
   '/app/treinos': typeof AppTreinosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
 export interface FileRouteTypes {
@@ -298,6 +316,8 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin/'
     | '/app/'
+    | '/api/admin/branding-upload'
+    | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -326,6 +346,8 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin'
     | '/app'
+    | '/api/admin/branding-upload'
+    | '/api/admin/settings'
     | '/api/me/roles'
   id:
     | '__root__'
@@ -356,6 +378,8 @@ export interface FileRouteTypes {
     | '/app/treinos'
     | '/admin/'
     | '/app/'
+    | '/api/admin/branding-upload'
+    | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesById: FileRoutesById
 }
@@ -367,6 +391,8 @@ export interface RootRouteChildren {
   EmBreveRoute: typeof EmBreveRoute
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
+  ApiAdminBrandingUploadRoute: typeof ApiAdminBrandingUploadRoute
+  ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
 }
 
@@ -568,6 +594,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMeRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/settings': {
+      id: '/api/admin/settings'
+      path: '/api/admin/settings'
+      fullPath: '/api/admin/settings'
+      preLoaderRoute: typeof ApiAdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/branding-upload': {
+      id: '/api/admin/branding-upload'
+      path: '/api/admin/branding-upload'
+      fullPath: '/api/admin/branding-upload'
+      preLoaderRoute: typeof ApiAdminBrandingUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -635,6 +675,8 @@ const rootRouteChildren: RootRouteChildren = {
   EmBreveRoute: EmBreveRoute,
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
+  ApiAdminBrandingUploadRoute: ApiAdminBrandingUploadRoute,
+  ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
 }
 export const routeTree = rootRouteImport
