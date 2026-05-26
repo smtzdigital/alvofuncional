@@ -61,11 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        setTimeout(() => loadProfile(sess.user.id), 0);
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+          setLoading(true);
+          setTimeout(() => {
+            loadProfile(sess.user.id).finally(() => setLoading(false));
+          }, 0);
+        } else {
+          setTimeout(() => loadProfile(sess.user.id), 0);
+        }
       } else {
         setRoles([]);
         setStudent(null);
