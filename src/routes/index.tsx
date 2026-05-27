@@ -190,7 +190,7 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} ForgeFit · Plataforma da Academia
+        © {new Date().getFullYear()} Alvo Funcional · Plataforma da Academia
       </footer>
     </div>
   );
