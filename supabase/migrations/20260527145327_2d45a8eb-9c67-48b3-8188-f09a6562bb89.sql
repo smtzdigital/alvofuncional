@@ -1,0 +1,1 @@
+ALTER TABLE public.plans ADD COLUMN IF NOT EXISTS is_custom boolean NOT NULL DEFAULT false;
