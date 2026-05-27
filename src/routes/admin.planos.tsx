@@ -84,6 +84,7 @@ function PlansAdmin() {
                 <FormSwitch label="Dieta" checked={!!form.has_diet} onChange={(v) => setForm({ ...form, has_diet: v })} />
                 <FormSwitch label="Metas" checked={!!form.has_goals} onChange={(v) => setForm({ ...form, has_goals: v })} />
                 <FormSwitch label="Ativo" checked={!!form.is_active} onChange={(v) => setForm({ ...form, is_active: v })} />
+                <FormSwitch label="Personalizado (oculto do site)" checked={!!form.is_custom} onChange={(v) => setForm({ ...form, is_custom: v })} />
                 <div><Label>Ordem</Label><Input type="number" value={form.sort_order ?? 0} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} /></div>
               </div>
               <DialogFooter><Button type="submit" className="bg-gradient-primary text-primary-foreground">Salvar</Button></DialogFooter>
