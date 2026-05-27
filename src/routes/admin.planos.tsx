@@ -18,12 +18,12 @@ interface Plan {
   id: string; name: string; description: string | null; price: number;
   duration_days: number; presential_per_week: number;
   has_workouts: boolean; has_ranking: boolean; has_diet: boolean; has_goals: boolean;
-  is_active: boolean; sort_order: number;
+  is_active: boolean; is_custom: boolean; sort_order: number;
 }
 
 const empty: Partial<Plan> = {
   name: "", description: "", price: 0, duration_days: 30, presential_per_week: 0,
-  has_workouts: true, has_ranking: true, has_diet: false, has_goals: true, is_active: true, sort_order: 0,
+  has_workouts: true, has_ranking: true, has_diet: false, has_goals: true, is_active: true, is_custom: false, sort_order: 0,
 };
 
 function PlansAdmin() {
