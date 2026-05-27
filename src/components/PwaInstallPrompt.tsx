@@ -116,10 +116,10 @@ export function PwaInstallPrompt() {
             <Smartphone size={22} />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-bold leading-tight">Instalar o ForgeFit</h3>
+            <h3 className="text-base font-bold leading-tight">Instalar o Alvo Funcional App</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {iosHint
-                ? "No Safari, toque em Compartilhar e depois em \"Adicionar à Tela de Início\"."
+                ? 'No Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início".'
                 : "Tenha acesso rápido aos seus treinos direto da tela inicial, como um app."}
             </p>
             <div className="mt-4 flex gap-2">
