@@ -1,7 +1,7 @@
 {
   "name": "Alvo Funcional — Centro de Treinamento",
   "short_name": "Alvo Funcional",
-  "description": "Treinos, dieta, metas e ranking da sua academia.",
+  "description": "Mire no resultado, acerte o alvo",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
