@@ -45,7 +45,7 @@ function PlansAdmin() {
       presential_per_week: Number(form.presential_per_week),
       has_workouts: !!form.has_workouts, has_ranking: !!form.has_ranking,
       has_diet: !!form.has_diet, has_goals: !!form.has_goals,
-      is_active: !!form.is_active, sort_order: Number(form.sort_order ?? 0),
+      is_active: !!form.is_active, is_custom: !!form.is_custom, sort_order: Number(form.sort_order ?? 0),
     };
     const { error } = form.id
       ? await supabase.from("plans").update(payload).eq("id", form.id)
