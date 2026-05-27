@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cadastro")({
-  head: () => ({ meta: [{ title: "Cadastro — ForgeFit" }] }),
+  head: () => ({ meta: [{ title: "Cadastro — Alvo Funcional" }] }),
   component: SignupPage,
 });
 
@@ -24,7 +24,8 @@ function SignupPage() {
     if (password.length < 6) return toast.error("Senha deve ter ao menos 6 caracteres");
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email, password,
+      email,
+      password,
       options: {
         emailRedirectTo: `${window.location.origin}/app`,
         data: { full_name: fullName },
@@ -39,7 +40,9 @@ function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-hero px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="mb-8 flex justify-center"><Logo size="lg" /></div>
+        <div className="mb-8 flex justify-center">
+          <Logo size="lg" />
+        </div>
         <div className="rounded-2xl border border-border bg-card p-8 shadow-elevated">
           <h1 className="mb-1 text-2xl font-bold">Comece grátis</h1>
           <p className="mb-6 text-sm text-muted-foreground">14 dias de plano Free, sem cartão.</p>
@@ -54,14 +57,28 @@ function SignupPage() {
             </div>
             <div>
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            <Button type="submit" disabled={loading} className="w-full bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90"
+            >
               {loading ? "Criando..." : "Criar conta"}
             </Button>
           </form>
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Já tem conta? <Link to="/login" className="text-primary hover:underline">Entrar</Link>
+            Já tem conta?{" "}
+            <Link to="/login" className="text-primary hover:underline">
+              Entrar
+            </Link>
           </p>
         </div>
       </div>

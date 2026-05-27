@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Entrar — ForgeFit" }] }),
+  head: () => ({ meta: [{ title: "Entrar — Alvo Funcional" }] }),
   component: LoginPage,
 });
 
@@ -40,7 +40,9 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-hero px-4">
       <div className="w-full max-w-md">
-        <div className="mb-8 flex justify-center"><Logo size="lg" /></div>
+        <div className="mb-8 flex justify-center">
+          <Logo size="lg" />
+        </div>
         <div className="rounded-2xl border border-border bg-card p-8 shadow-elevated">
           <h1 className="mb-1 text-2xl font-bold">Entrar</h1>
           <p className="mb-6 text-sm text-muted-foreground">Acesse sua conta de aluno ou admin</p>
@@ -51,14 +53,27 @@ function LoginPage() {
             </div>
             <div>
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            <Button type="submit" disabled={loading} className="w-full bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90"
+            >
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Não tem conta? <Link to="/cadastro" className="text-primary hover:underline">Cadastre-se</Link>
+            Não tem conta?{" "}
+            <Link to="/cadastro" className="text-primary hover:underline">
+              Cadastre-se
+            </Link>
           </p>
         </div>
       </div>
