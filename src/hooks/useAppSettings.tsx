@@ -56,7 +56,7 @@ function applyToDOM(s: AppSettings) {
   root.style.setProperty("--sidebar-ring", s.primary_color);
 
   // Title
-  document.title = `${s.app_name} — Plataforma da Academia`;
+  document.title = `${s.app_name} — Centro de Treinamento`;
 
   // Favicon
   if (s.favicon_url) {
