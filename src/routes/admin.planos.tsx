@@ -114,6 +114,7 @@ function PlansAdmin() {
               {p.has_diet && <Tag>Dieta</Tag>}
               {p.has_goals && <Tag>Metas</Tag>}
               {!p.is_active && <Tag warn>Inativo</Tag>}
+              {p.is_custom && <Tag warn>Personalizado</Tag>}
             </div>
           </div>
         ))}
