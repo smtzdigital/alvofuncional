@@ -43,6 +43,7 @@ function Landing() {
         "id,name,description,price,duration_days,presential_per_week,has_workouts,has_ranking,has_diet,has_goals,sort_order",
       )
       .eq("is_active", true)
+      .eq("is_custom", false)
       .order("sort_order", { ascending: true })
       .then(({ data }) => setPlans((data ?? []) as Plan[]));
   }, []);
