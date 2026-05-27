@@ -379,6 +379,7 @@ export type Database = {
           has_workouts: boolean
           id: string
           is_active: boolean
+          is_custom: boolean
           name: string
           presential_per_week: number
           price: number
@@ -395,6 +396,7 @@ export type Database = {
           has_workouts?: boolean
           id?: string
           is_active?: boolean
+          is_custom?: boolean
           name: string
           presential_per_week?: number
           price?: number
@@ -411,6 +413,7 @@ export type Database = {
           has_workouts?: boolean
           id?: string
           is_active?: boolean
+          is_custom?: boolean
           name?: string
           presential_per_week?: number
           price?: number

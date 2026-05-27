@@ -18,12 +18,12 @@ interface Plan {
   id: string; name: string; description: string | null; price: number;
   duration_days: number; presential_per_week: number;
   has_workouts: boolean; has_ranking: boolean; has_diet: boolean; has_goals: boolean;
-  is_active: boolean; sort_order: number;
+  is_active: boolean; is_custom: boolean; sort_order: number;
 }
 
 const empty: Partial<Plan> = {
   name: "", description: "", price: 0, duration_days: 30, presential_per_week: 0,
-  has_workouts: true, has_ranking: true, has_diet: false, has_goals: true, is_active: true, sort_order: 0,
+  has_workouts: true, has_ranking: true, has_diet: false, has_goals: true, is_active: true, is_custom: false, sort_order: 0,
 };
 
 function PlansAdmin() {
@@ -45,7 +45,7 @@ function PlansAdmin() {
       presential_per_week: Number(form.presential_per_week),
       has_workouts: !!form.has_workouts, has_ranking: !!form.has_ranking,
       has_diet: !!form.has_diet, has_goals: !!form.has_goals,
-      is_active: !!form.is_active, sort_order: Number(form.sort_order ?? 0),
+      is_active: !!form.is_active, is_custom: !!form.is_custom, sort_order: Number(form.sort_order ?? 0),
     };
     const { error } = form.id
       ? await supabase.from("plans").update(payload).eq("id", form.id)
@@ -84,6 +84,7 @@ function PlansAdmin() {
                 <FormSwitch label="Dieta" checked={!!form.has_diet} onChange={(v) => setForm({ ...form, has_diet: v })} />
                 <FormSwitch label="Metas" checked={!!form.has_goals} onChange={(v) => setForm({ ...form, has_goals: v })} />
                 <FormSwitch label="Ativo" checked={!!form.is_active} onChange={(v) => setForm({ ...form, is_active: v })} />
+                <FormSwitch label="Personalizado (oculto do site)" checked={!!form.is_custom} onChange={(v) => setForm({ ...form, is_custom: v })} />
                 <div><Label>Ordem</Label><Input type="number" value={form.sort_order ?? 0} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} /></div>
               </div>
               <DialogFooter><Button type="submit" className="bg-gradient-primary text-primary-foreground">Salvar</Button></DialogFooter>
@@ -113,6 +114,7 @@ function PlansAdmin() {
               {p.has_diet && <Tag>Dieta</Tag>}
               {p.has_goals && <Tag>Metas</Tag>}
               {!p.is_active && <Tag warn>Inativo</Tag>}
+              {p.is_custom && <Tag warn>Personalizado</Tag>}
             </div>
           </div>
         ))}
