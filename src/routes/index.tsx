@@ -24,7 +24,7 @@ interface Plan {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ForgeFit — Sua academia, gamificada" },
+      { title: "Alvo Funcional - Centro de Treinamento" },
       { name: "description", content: "Treinos, dieta personalizada, metas e ranking. Tudo em um só lugar." },
     ],
   }),
@@ -39,7 +39,9 @@ function Landing() {
   useEffect(() => {
     supabase
       .from("plans")
-      .select("id,name,description,price,duration_days,presential_per_week,has_workouts,has_ranking,has_diet,has_goals,sort_order")
+      .select(
+        "id,name,description,price,duration_days,presential_per_week,has_workouts,has_ranking,has_diet,has_goals,sort_order",
+      )
       .eq("is_active", true)
       .order("sort_order", { ascending: true })
       .then(({ data }) => setPlans((data ?? []) as Plan[]));
@@ -57,8 +59,14 @@ function Landing() {
       <header className="container mx-auto flex items-center justify-between px-6 py-6">
         <Logo />
         <nav className="flex items-center gap-3">
-          <Link to="/login"><Button variant="ghost">Entrar</Button></Link>
-          <Link to="/cadastro"><Button className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">Começar grátis</Button></Link>
+          <Link to="/login">
+            <Button variant="ghost">Entrar</Button>
+          </Link>
+          <Link to="/cadastro">
+            <Button className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
+              Começar grátis
+            </Button>
+          </Link>
         </nav>
       </header>
 
@@ -67,29 +75,48 @@ function Landing() {
           <Trophy size={14} /> Treine, pontue, lidere o ranking
         </div>
         <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-bold leading-tight md:text-7xl">
-          Treino com propósito<br />
+          Treino com propósito
+          <br />
           <span className="bg-gradient-primary bg-clip-text text-transparent">Resultados reais!</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
           Treinos em vídeo, dieta personalizada, metas e ranking público. Conquiste pontos a cada treino e suba no topo.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link to="/cadastro"><Button size="lg" className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">Criar conta grátis</Button></Link>
-          <Link to="/ranking"><Button size="lg" variant="outline">Ver ranking</Button></Link>
+          <Link to="/cadastro">
+            <Button size="lg" className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
+              Criar conta grátis
+            </Button>
+          </Link>
+          <Link to="/ranking">
+            <Button size="lg" variant="outline">
+              Ver ranking
+            </Button>
+          </Link>
         </div>
       </section>
 
       <section className="container mx-auto grid gap-6 px-6 pb-20 md:grid-cols-3">
         {[
-          { icon: Dumbbell, title: "Treinos guiados", desc: "Biblioteca de treinos em vídeo por categoria e dificuldade." },
-          { icon: Apple, title: "Dieta personalizada", desc: "Cardápio montado pelo seu professor, exclusivo para você." },
+          {
+            icon: Dumbbell,
+            title: "Treinos guiados",
+            desc: "Biblioteca de treinos em vídeo por categoria e dificuldade.",
+          },
+          {
+            icon: Apple,
+            title: "Dieta personalizada",
+            desc: "Cardápio montado pelo seu professor, exclusivo para você.",
+          },
           { icon: Target, title: "Metas e progresso", desc: "Defina objetivos e ganhe pontos ao concluir." },
           { icon: Trophy, title: "Ranking público", desc: "Compita com outros alunos e brilhe no pódio." },
           { icon: Users, title: "Treino presencial", desc: "Planos com 2 a 3 sessões presenciais por semana." },
           { icon: BarChart3, title: "Acompanhamento", desc: "Histórico completo de check-ins, presenças e pontos." },
         ].map((f) => (
           <div key={f.title} className="rounded-2xl border border-border bg-gradient-card p-6 shadow-elevated">
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/15 text-primary"><f.icon size={22} /></div>
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <f.icon size={22} />
+            </div>
             <h3 className="mb-1 text-lg font-bold">{f.title}</h3>
             <p className="text-sm text-muted-foreground">{f.desc}</p>
           </div>
@@ -98,8 +125,12 @@ function Landing() {
 
       <section id="planos" className="container mx-auto px-6 pb-20">
         <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">Escolha seu <span className="bg-gradient-primary bg-clip-text text-transparent">plano</span></h2>
-          <p className="mt-3 text-muted-foreground">Comece grátis ou acelere seus resultados com acompanhamento presencial.</p>
+          <h2 className="text-3xl font-bold md:text-4xl">
+            Escolha seu <span className="bg-gradient-primary bg-clip-text text-transparent">plano</span>
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Comece grátis ou acelere seus resultados com acompanhamento presencial.
+          </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {plans.map((plan, idx) => {
@@ -115,9 +146,7 @@ function Landing() {
               <div
                 key={plan.id}
                 className={`relative rounded-2xl border p-6 shadow-elevated transition-all hover:-translate-y-1 ${
-                  featured
-                    ? "border-primary bg-gradient-card ring-2 ring-primary/40"
-                    : "border-border bg-gradient-card"
+                  featured ? "border-primary bg-gradient-card ring-2 ring-primary/40" : "border-border bg-gradient-card"
                 }`}
               >
                 {featured && (
