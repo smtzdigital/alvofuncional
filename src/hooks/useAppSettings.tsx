@@ -20,8 +20,8 @@ export interface AppSettings {
 }
 
 const DEFAULTS: AppSettings = {
-  app_name: "ForgeFit",
-  app_short_name: "ForgeFit",
+  app_name: "Alvo FUncional",
+  app_short_name: "Alvo FUncional",
   app_description: "Plataforma completa de academia: treinos, dieta, metas, ranking e gestão.",
   primary_color: "oklch(0.85 0.22 130)",
   primary_glow: "oklch(0.92 0.20 135)",
@@ -122,9 +122,7 @@ export function AppSettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AppSettingsContext.Provider value={{ settings, loading, refresh: load }}>
-      {children}
-    </AppSettingsContext.Provider>
+    <AppSettingsContext.Provider value={{ settings, loading, refresh: load }}>{children}</AppSettingsContext.Provider>
   );
 }
 
