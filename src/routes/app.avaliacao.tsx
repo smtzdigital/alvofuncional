@@ -9,13 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import {
-  Target, Activity, HeartPulse, Dumbbell, Moon, Brain, ChevronLeft, ChevronRight, Check,
-} from "lucide-react";
+import { Target, Activity, HeartPulse, Dumbbell, Moon, Brain, ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/avaliacao")({
-  head: () => ({ meta: [{ title: "Avaliação inicial — ForgeFit" }] }),
+  head: () => ({ meta: [{ title: "Avaliação inicial — Alvo Funcional" }] }),
   component: AvaliacaoPage,
 });
 
@@ -98,11 +96,7 @@ function AvaliacaoPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
       if (!data) return;
       setBirthDate(data.birth_date ?? "");
       setGender((data.gender as "masculino" | "feminino" | null) ?? "");
@@ -144,9 +138,7 @@ function AvaliacaoPage() {
   }, [imc]);
 
   const toggleHealth = (id: string, checked: boolean) => {
-    setHealthConditions((prev) =>
-      checked ? [...prev, id] : prev.filter((x) => x !== id)
-    );
+    setHealthConditions((prev) => (checked ? [...prev, id] : prev.filter((x) => x !== id)));
   };
 
   const validateStep = (s: number): string | null => {
@@ -276,22 +268,38 @@ function AvaliacaoPage() {
               >
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="masculino" id="g-m" />
-                  <Label htmlFor="g-m" className="cursor-pointer font-normal">Masculino</Label>
+                  <Label htmlFor="g-m" className="cursor-pointer font-normal">
+                    Masculino
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="feminino" id="g-f" />
-                  <Label htmlFor="g-f" className="cursor-pointer font-normal">Feminino</Label>
+                  <Label htmlFor="g-f" className="cursor-pointer font-normal">
+                    Feminino
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" type="tel" placeholder="(11) 99999-9999" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(11) 99999-9999"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </div>
               <div>
                 <Label htmlFor="wpp">WhatsApp</Label>
-                <Input id="wpp" type="tel" placeholder="(11) 99999-9999" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+                <Input
+                  id="wpp"
+                  type="tel"
+                  placeholder="(11) 99999-9999"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -335,18 +343,32 @@ function AvaliacaoPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="weight">Peso (kg)</Label>
-                <Input id="weight" type="number" inputMode="decimal" step="0.1" placeholder="75.0" value={weight} onChange={(e) => setWeight(e.target.value)} />
+                <Input
+                  id="weight"
+                  type="number"
+                  inputMode="decimal"
+                  step="0.1"
+                  placeholder="75.0"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                />
               </div>
               <div>
                 <Label htmlFor="height">Altura (cm)</Label>
-                <Input id="height" type="number" inputMode="decimal" step="0.1" placeholder="175" value={height} onChange={(e) => setHeight(e.target.value)} />
+                <Input
+                  id="height"
+                  type="number"
+                  inputMode="decimal"
+                  step="0.1"
+                  placeholder="175"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                />
               </div>
             </div>
             <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 text-center">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">IMC</p>
-              <p className="mt-1 text-4xl font-bold text-primary">
-                {imc ? imc.toFixed(1) : "--"}
-              </p>
+              <p className="mt-1 text-4xl font-bold text-primary">{imc ? imc.toFixed(1) : "--"}</p>
               {imcLabel && <p className={`mt-1 text-sm font-semibold ${imcLabel.color}`}>{imcLabel.text}</p>}
               <p className="mt-2 text-xs text-muted-foreground">Cálculo automático baseado em peso e altura</p>
             </div>
@@ -368,7 +390,11 @@ function AvaliacaoPage() {
                         checked ? "border-primary bg-primary/10" : "border-border hover:bg-muted"
                       }`}
                     >
-                      <Checkbox id={`h-${opt.id}`} checked={checked} onCheckedChange={(c) => toggleHealth(opt.id, !!c)} />
+                      <Checkbox
+                        id={`h-${opt.id}`}
+                        checked={checked}
+                        onCheckedChange={(c) => toggleHealth(opt.id, !!c)}
+                      />
                       <span className="text-sm">{opt.label}</span>
                     </label>
                   );
@@ -377,18 +403,32 @@ function AvaliacaoPage() {
             </div>
             <div>
               <Label htmlFor="health-details">Quais? (detalhes)</Label>
-              <Textarea id="health-details" rows={3} value={healthDetails} onChange={(e) => setHealthDetails(e.target.value)} placeholder="Descreva condições, lesões ou cirurgias..." />
+              <Textarea
+                id="health-details"
+                rows={3}
+                value={healthDetails}
+                onChange={(e) => setHealthDetails(e.target.value)}
+                placeholder="Descreva condições, lesões ou cirurgias..."
+              />
             </div>
             <div>
               <Label className="mb-2 block">Usa medicamentos?</Label>
-              <RadioGroup value={usesMedication} onValueChange={(v) => setUsesMedication(v as "sim" | "nao")} className="flex gap-6">
+              <RadioGroup
+                value={usesMedication}
+                onValueChange={(v) => setUsesMedication(v as "sim" | "nao")}
+                className="flex gap-6"
+              >
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="sim" id="med-s" />
-                  <Label htmlFor="med-s" className="cursor-pointer font-normal">Sim</Label>
+                  <Label htmlFor="med-s" className="cursor-pointer font-normal">
+                    Sim
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="nao" id="med-n" />
-                  <Label htmlFor="med-n" className="cursor-pointer font-normal">Não</Label>
+                  <Label htmlFor="med-n" className="cursor-pointer font-normal">
+                    Não
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
@@ -404,7 +444,11 @@ function AvaliacaoPage() {
         {step === 5 && (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">Como você descreveria seu nível atual?</p>
-            <RadioGroup value={activityLevel} onValueChange={(v) => setActivityLevel(v as Activity)} className="grid gap-2">
+            <RadioGroup
+              value={activityLevel}
+              onValueChange={(v) => setActivityLevel(v as Activity)}
+              className="grid gap-2"
+            >
               {[
                 { v: "sedentario", l: "Sedentário", d: "Pouca ou nenhuma atividade" },
                 { v: "iniciante", l: "Iniciante", d: "Atividade leve, poucas vezes por semana" },
@@ -433,7 +477,11 @@ function AvaliacaoPage() {
           <div className="space-y-5">
             <div>
               <Label className="mb-2 block">Qualidade do sono</Label>
-              <RadioGroup value={sleepQuality} onValueChange={(v) => setSleepQuality(v as Sleep)} className="grid grid-cols-3 gap-2">
+              <RadioGroup
+                value={sleepQuality}
+                onValueChange={(v) => setSleepQuality(v as Sleep)}
+                className="grid grid-cols-3 gap-2"
+              >
                 {[
                   { v: "boa", l: "Boa" },
                   { v: "media", l: "Média" },
@@ -454,7 +502,11 @@ function AvaliacaoPage() {
             </div>
             <div>
               <Label className="mb-2 block">Nível de estresse</Label>
-              <RadioGroup value={stressLevel} onValueChange={(v) => setStressLevel(v as Stress)} className="grid grid-cols-3 gap-2">
+              <RadioGroup
+                value={stressLevel}
+                onValueChange={(v) => setStressLevel(v as Stress)}
+                className="grid grid-cols-3 gap-2"
+              >
                 {[
                   { v: "baixo", l: "Baixo" },
                   { v: "medio", l: "Médio" },
@@ -483,17 +535,25 @@ function AvaliacaoPage() {
               <RadioGroup value={givesUp} onValueChange={(v) => setGivesUp(v as "sim" | "nao")} className="flex gap-6">
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="sim" id="gu-s" />
-                  <Label htmlFor="gu-s" className="cursor-pointer font-normal">Sim</Label>
+                  <Label htmlFor="gu-s" className="cursor-pointer font-normal">
+                    Sim
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="nao" id="gu-n" />
-                  <Label htmlFor="gu-n" className="cursor-pointer font-normal">Não</Label>
+                  <Label htmlFor="gu-n" className="cursor-pointer font-normal">
+                    Não
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
             <div>
               <Label className="mb-2 block">Prefere treino</Label>
-              <RadioGroup value={workoutPref} onValueChange={(v) => setWorkoutPref(v as WorkoutPref)} className="grid gap-2 sm:grid-cols-2">
+              <RadioGroup
+                value={workoutPref}
+                onValueChange={(v) => setWorkoutPref(v as WorkoutPref)}
+                className="grid gap-2 sm:grid-cols-2"
+              >
                 {[
                   { v: "curto_intenso", l: "Curto e intenso" },
                   { v: "longo_moderado", l: "Longo e moderado" },
@@ -513,7 +573,11 @@ function AvaliacaoPage() {
             </div>
             <div>
               <Label className="mb-2 block">Motivação principal</Label>
-              <RadioGroup value={motivation} onValueChange={(v) => setMotivation(v as Motivation)} className="grid gap-2 sm:grid-cols-3">
+              <RadioGroup
+                value={motivation}
+                onValueChange={(v) => setMotivation(v as Motivation)}
+                className="grid gap-2 sm:grid-cols-3"
+              >
                 {[
                   { v: "estetica", l: "Estética" },
                   { v: "saude", l: "Saúde" },
@@ -545,8 +609,18 @@ function AvaliacaoPage() {
             Próximo <ChevronRight size={16} />
           </Button>
         ) : (
-          <Button onClick={submit} disabled={loading} className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
-            {loading ? "Salvando..." : (<>Concluir <Check size={16} /></>)}
+          <Button
+            onClick={submit}
+            disabled={loading}
+            className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90"
+          >
+            {loading ? (
+              "Salvando..."
+            ) : (
+              <>
+                Concluir <Check size={16} />
+              </>
+            )}
           </Button>
         )}
       </div>
