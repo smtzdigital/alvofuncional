@@ -1,8 +1,8 @@
 
 CREATE TABLE public.app_settings (
   id BOOLEAN PRIMARY KEY DEFAULT true,
-  app_name TEXT NOT NULL DEFAULT 'ForgeFit',
-  app_short_name TEXT NOT NULL DEFAULT 'ForgeFit',
+  app_name TEXT NOT NULL DEFAULT 'Alvo Funcional',
+  app_short_name TEXT NOT NULL DEFAULT 'Alvo Funcional',
   app_description TEXT NOT NULL DEFAULT 'Plataforma completa de academia: treinos, dieta, metas, ranking e gestão.',
   primary_color TEXT NOT NULL DEFAULT 'oklch(0.85 0.22 130)',
   primary_glow TEXT NOT NULL DEFAULT 'oklch(0.92 0.20 135)',
