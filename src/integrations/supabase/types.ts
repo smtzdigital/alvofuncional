@@ -311,6 +311,229 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_audit_logs: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          error: string | null
+          id: string
+          request_summary: Json | null
+          response_summary: Json | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          request_summary?: Json | null
+          response_summary?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          request_summary?: Json | null
+          response_summary?: Json | null
+        }
+        Relationships: []
+      }
+      payment_cards: {
+        Row: {
+          brand: string | null
+          created_at: string
+          exp_month: number | null
+          exp_year: number | null
+          holder_name: string | null
+          id: string
+          is_default: boolean
+          last4: string | null
+          stone_card_id: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stone_card_id: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stone_card_id?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_cards_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_charges: {
+        Row: {
+          amount: number
+          created_at: string
+          failure_reason: string | null
+          id: string
+          metadata: Json
+          method: string | null
+          paid_at: string | null
+          payment_link_id: string | null
+          status: string
+          stone_charge_id: string | null
+          student_id: string
+          subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json
+          method?: string | null
+          paid_at?: string | null
+          payment_link_id?: string | null
+          status?: string
+          stone_charge_id?: string | null
+          student_id: string
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json
+          method?: string | null
+          paid_at?: string | null
+          payment_link_id?: string | null
+          status?: string
+          stone_charge_id?: string | null
+          student_id?: string
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_charges_payment_link_id_fkey"
+            columns: ["payment_link_id"]
+            isOneToOne: false
+            referencedRelation: "payment_links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_charges_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_charges_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_links: {
+        Row: {
+          amount: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          metadata: Json
+          paid_at: string | null
+          plan_id: string | null
+          short_token: string
+          status: string
+          stone_payment_link_id: string | null
+          student_id: string
+          subscription_id: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          paid_at?: string | null
+          plan_id?: string | null
+          short_token: string
+          status?: string
+          stone_payment_link_id?: string | null
+          student_id: string
+          subscription_id?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          paid_at?: string | null
+          plan_id?: string | null
+          short_token?: string
+          status?: string
+          stone_payment_link_id?: string | null
+          student_id?: string
+          subscription_id?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_links_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_links_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_links_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -370,6 +593,8 @@ export type Database = {
       }
       plans: {
         Row: {
+          billing_interval: string
+          billing_interval_count: number
           created_at: string
           description: string | null
           duration_days: number
@@ -378,15 +603,19 @@ export type Database = {
           has_ranking: boolean
           has_workouts: boolean
           id: string
+          installments: number
           is_active: boolean
           is_custom: boolean
           name: string
           presential_per_week: number
           price: number
           sort_order: number
+          stone_plan_id: string | null
           updated_at: string
         }
         Insert: {
+          billing_interval?: string
+          billing_interval_count?: number
           created_at?: string
           description?: string | null
           duration_days?: number
@@ -395,15 +624,19 @@ export type Database = {
           has_ranking?: boolean
           has_workouts?: boolean
           id?: string
+          installments?: number
           is_active?: boolean
           is_custom?: boolean
           name: string
           presential_per_week?: number
           price?: number
           sort_order?: number
+          stone_plan_id?: string | null
           updated_at?: string
         }
         Update: {
+          billing_interval?: string
+          billing_interval_count?: number
           created_at?: string
           description?: string | null
           duration_days?: number
@@ -412,12 +645,14 @@ export type Database = {
           has_ranking?: boolean
           has_workouts?: boolean
           id?: string
+          installments?: number
           is_active?: boolean
           is_custom?: boolean
           name?: string
           presential_per_week?: number
           price?: number
           sort_order?: number
+          stone_plan_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -600,6 +835,7 @@ export type Database = {
           plan_expires_at: string | null
           plan_id: string | null
           plan_started_at: string | null
+          stone_customer_id: string | null
           teacher_id: string | null
           total_points: number
           updated_at: string
@@ -613,6 +849,7 @@ export type Database = {
           plan_expires_at?: string | null
           plan_id?: string | null
           plan_started_at?: string | null
+          stone_customer_id?: string | null
           teacher_id?: string | null
           total_points?: number
           updated_at?: string
@@ -626,6 +863,7 @@ export type Database = {
           plan_expires_at?: string | null
           plan_id?: string | null
           plan_started_at?: string | null
+          stone_customer_id?: string | null
           teacher_id?: string | null
           total_points?: number
           updated_at?: string
@@ -651,6 +889,76 @@ export type Database = {
             columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          cancel_reason: string | null
+          canceled_at: string | null
+          created_at: string
+          current_card_id: string | null
+          id: string
+          metadata: Json
+          next_billing_date: string | null
+          plan_id: string | null
+          status: string
+          stone_subscription_id: string | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          cancel_reason?: string | null
+          canceled_at?: string | null
+          created_at?: string
+          current_card_id?: string | null
+          id?: string
+          metadata?: Json
+          next_billing_date?: string | null
+          plan_id?: string | null
+          status?: string
+          stone_subscription_id?: string | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          cancel_reason?: string | null
+          canceled_at?: string | null
+          created_at?: string
+          current_card_id?: string | null
+          id?: string
+          metadata?: Json
+          next_billing_date?: string | null
+          plan_id?: string | null
+          status?: string
+          stone_subscription_id?: string | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_current_card_id_fkey"
+            columns: ["current_card_id"]
+            isOneToOne: false
+            referencedRelation: "payment_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
@@ -712,6 +1020,42 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_events: {
+        Row: {
+          error: string | null
+          event_type: string
+          external_id: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          provider: string
+          received_at: string
+          status: string
+        }
+        Insert: {
+          error?: string | null
+          event_type: string
+          external_id: string
+          id?: string
+          payload: Json
+          processed_at?: string | null
+          provider?: string
+          received_at?: string
+          status?: string
+        }
+        Update: {
+          error?: string | null
+          event_type?: string
+          external_id?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          provider?: string
+          received_at?: string
+          status?: string
         }
         Relationships: []
       }
