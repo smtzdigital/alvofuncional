@@ -36,6 +36,7 @@ import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
+import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
 import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/admin.payments-subscription'
@@ -179,6 +180,11 @@ const AdminAlunosRoute = AdminAlunosRouteImport.update({
   path: '/alunos',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicWebhooksStoneRoute = ApiPublicWebhooksStoneRouteImport.update({
+  id: '/api/public/webhooks-stone',
+  path: '/api/public/webhooks-stone',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   id: '/api/me/roles',
   path: '/api/me/roles',
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesByTo {
@@ -285,6 +292,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesById {
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRouteTypes {
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -394,6 +404,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   id:
     | '__root__'
@@ -430,6 +441,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   fileRoutesById: FileRoutesById
 }
@@ -447,6 +459,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
+  ApiPublicWebhooksStoneRoute: typeof ApiPublicWebhooksStoneRoute
   ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
 }
 
@@ -641,6 +654,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlunosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/webhooks-stone': {
+      id: '/api/public/webhooks-stone'
+      path: '/api/public/webhooks-stone'
+      fullPath: '/api/public/webhooks-stone'
+      preLoaderRoute: typeof ApiPublicWebhooksStoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/me/roles': {
       id: '/api/me/roles'
       path: '/api/me/roles'
@@ -763,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
+  ApiPublicWebhooksStoneRoute: ApiPublicWebhooksStoneRoute,
   ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,
 }
 export const routeTree = rootRouteImport
