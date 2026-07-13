@@ -18,6 +18,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PagarTokenRouteImport } from './routes/pagar.$token'
 import { Route as AppTreinosRouteImport } from './routes/app.treinos'
 import { Route as AppRankingRouteImport } from './routes/app.ranking'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
@@ -91,6 +92,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const PagarTokenRoute = PagarTokenRouteImport.update({
+  id: '/pagar/$token',
+  path: '/pagar/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppTreinosRoute = AppTreinosRouteImport.update({
   id: '/treinos',
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin'
     | '/app'
     | '/api/admin/branding-upload'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
@@ -477,6 +489,7 @@ export interface RootRouteChildren {
   EmBreveRoute: typeof EmBreveRoute
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
+  PagarTokenRoute: typeof PagarTokenRoute
   ApiAdminBrandingUploadRoute: typeof ApiAdminBrandingUploadRoute
   ApiAdminPaymentsConfigRoute: typeof ApiAdminPaymentsConfigRoute
   ApiAdminPaymentsLinkRoute: typeof ApiAdminPaymentsLinkRoute
@@ -551,6 +564,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/pagar/$token': {
+      id: '/pagar/$token'
+      path: '/pagar/$token'
+      fullPath: '/pagar/$token'
+      preLoaderRoute: typeof PagarTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/treinos': {
       id: '/app/treinos'
@@ -819,6 +839,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmBreveRoute: EmBreveRoute,
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
+  PagarTokenRoute: PagarTokenRoute,
   ApiAdminBrandingUploadRoute: ApiAdminBrandingUploadRoute,
   ApiAdminPaymentsConfigRoute: ApiAdminPaymentsConfigRoute,
   ApiAdminPaymentsLinkRoute: ApiAdminPaymentsLinkRoute,
