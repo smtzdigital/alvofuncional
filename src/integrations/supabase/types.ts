@@ -461,6 +461,51 @@ export type Database = {
           },
         ]
       }
+      payment_gateway_config: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          environment: string
+          id: boolean
+          link_expires_days: number
+          provider: string
+          public_key: string | null
+          secret_key: string | null
+          updated_at: string
+          webhook_password: string | null
+          webhook_user: string | null
+          whatsapp_template: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          environment?: string
+          id?: boolean
+          link_expires_days?: number
+          provider?: string
+          public_key?: string | null
+          secret_key?: string | null
+          updated_at?: string
+          webhook_password?: string | null
+          webhook_user?: string | null
+          whatsapp_template?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          environment?: string
+          id?: boolean
+          link_expires_days?: number
+          provider?: string
+          public_key?: string | null
+          secret_key?: string | null
+          updated_at?: string
+          webhook_password?: string | null
+          webhook_user?: string | null
+          whatsapp_template?: string
+        }
+        Relationships: []
+      }
       payment_links: {
         Row: {
           amount: number
@@ -702,6 +747,7 @@ export type Database = {
           avatar_url: string | null
           birth_date: string | null
           created_at: string
+          document: string | null
           email: string
           full_name: string
           gender: Database["public"]["Enums"]["gender"] | null
@@ -731,6 +777,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          document?: string | null
           email: string
           full_name: string
           gender?: Database["public"]["Enums"]["gender"] | null
@@ -760,6 +807,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          document?: string | null
           email?: string
           full_name?: string
           gender?: Database["public"]["Enums"]["gender"] | null

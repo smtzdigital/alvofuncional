@@ -18,6 +18,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PagarTokenRouteImport } from './routes/pagar.$token'
 import { Route as AppTreinosRouteImport } from './routes/app.treinos'
 import { Route as AppRankingRouteImport } from './routes/app.ranking'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
@@ -29,16 +30,23 @@ import { Route as AdminProfessoresRouteImport } from './routes/admin.professores
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
 import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-semanais'
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
+import { Route as AdminPagamentosConfigRouteImport } from './routes/admin.pagamentos-config'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
 import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
+import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
+import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
+import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/admin.payments-subscription'
+import { Route as ApiAdminPaymentsLinkRouteImport } from './routes/api/admin.payments-link'
+import { Route as ApiAdminPaymentsConfigRouteImport } from './routes/api/admin.payments-config'
 import { Route as ApiAdminBrandingUploadRouteImport } from './routes/api/admin.branding-upload'
+import { Route as ApiPublicPaymentsLinkTokenRouteImport } from './routes/api/public.payments-link.$token'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -84,6 +92,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const PagarTokenRoute = PagarTokenRouteImport.update({
+  id: '/pagar/$token',
+  path: '/pagar/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppTreinosRoute = AppTreinosRouteImport.update({
   id: '/treinos',
@@ -140,6 +153,11 @@ const AdminPlanosRoute = AdminPlanosRouteImport.update({
   path: '/planos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagamentosConfigRoute = AdminPagamentosConfigRouteImport.update({
+  id: '/pagamentos-config',
+  path: '/pagamentos-config',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   id: '/pagamentos',
   path: '/pagamentos',
@@ -170,10 +188,20 @@ const AdminAtribuirTreinosRoute = AdminAtribuirTreinosRouteImport.update({
   path: '/atribuir-treinos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
+  id: '/assinaturas',
+  path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAlunosRoute = AdminAlunosRouteImport.update({
   id: '/alunos',
   path: '/alunos',
   getParentRoute: () => AdminRoute,
+} as any)
+const ApiPublicWebhooksStoneRoute = ApiPublicWebhooksStoneRouteImport.update({
+  id: '/api/public/webhooks-stone',
+  path: '/api/public/webhooks-stone',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   id: '/api/me/roles',
@@ -185,11 +213,33 @@ const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPaymentsSubscriptionRoute =
+  ApiAdminPaymentsSubscriptionRouteImport.update({
+    id: '/api/admin/payments-subscription',
+    path: '/api/admin/payments-subscription',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminPaymentsLinkRoute = ApiAdminPaymentsLinkRouteImport.update({
+  id: '/api/admin/payments-link',
+  path: '/api/admin/payments-link',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPaymentsConfigRoute = ApiAdminPaymentsConfigRouteImport.update({
+  id: '/api/admin/payments-config',
+  path: '/api/admin/payments-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminBrandingUploadRoute = ApiAdminBrandingUploadRouteImport.update({
   id: '/api/admin/branding-upload',
   path: '/api/admin/branding-upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsLinkTokenRoute =
+  ApiPublicPaymentsLinkTokenRouteImport.update({
+    id: '/api/public/payments-link/$token',
+    path: '/api/public/payments-link/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,12 +250,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -217,11 +269,17 @@ export interface FileRoutesByFullPath {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -230,12 +288,14 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -247,11 +307,17 @@ export interface FileRoutesByTo {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -263,12 +329,14 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -280,11 +348,17 @@ export interface FileRoutesById {
   '/app/perfil': typeof AppPerfilRoute
   '/app/ranking': typeof AppRankingRoute
   '/app/treinos': typeof AppTreinosRoute
+  '/pagar/$token': typeof PagarTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -297,12 +371,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -314,11 +390,17 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
+    | '/api/admin/payments-link'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
+    | '/api/public/payments-link/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -327,12 +409,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -344,11 +428,17 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin'
     | '/app'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
+    | '/api/admin/payments-link'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
+    | '/api/public/payments-link/$token'
   id:
     | '__root__'
     | '/'
@@ -359,12 +449,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -376,11 +468,17 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/app/ranking'
     | '/app/treinos'
+    | '/pagar/$token'
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
+    | '/api/admin/payments-link'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/webhooks-stone'
+    | '/api/public/payments-link/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -391,9 +489,15 @@ export interface RootRouteChildren {
   EmBreveRoute: typeof EmBreveRoute
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
+  PagarTokenRoute: typeof PagarTokenRoute
   ApiAdminBrandingUploadRoute: typeof ApiAdminBrandingUploadRoute
+  ApiAdminPaymentsConfigRoute: typeof ApiAdminPaymentsConfigRoute
+  ApiAdminPaymentsLinkRoute: typeof ApiAdminPaymentsLinkRoute
+  ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
+  ApiPublicWebhooksStoneRoute: typeof ApiPublicWebhooksStoneRoute
+  ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -460,6 +564,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/pagar/$token': {
+      id: '/pagar/$token'
+      path: '/pagar/$token'
+      fullPath: '/pagar/$token'
+      preLoaderRoute: typeof PagarTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/treinos': {
       id: '/app/treinos'
@@ -538,6 +649,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlanosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pagamentos-config': {
+      id: '/admin/pagamentos-config'
+      path: '/pagamentos-config'
+      fullPath: '/admin/pagamentos-config'
+      preLoaderRoute: typeof AdminPagamentosConfigRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pagamentos': {
       id: '/admin/pagamentos'
       path: '/pagamentos'
@@ -580,12 +698,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAtribuirTreinosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/assinaturas': {
+      id: '/admin/assinaturas'
+      path: '/assinaturas'
+      fullPath: '/admin/assinaturas'
+      preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/alunos': {
       id: '/admin/alunos'
       path: '/alunos'
       fullPath: '/admin/alunos'
       preLoaderRoute: typeof AdminAlunosRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/api/public/webhooks-stone': {
+      id: '/api/public/webhooks-stone'
+      path: '/api/public/webhooks-stone'
+      fullPath: '/api/public/webhooks-stone'
+      preLoaderRoute: typeof ApiPublicWebhooksStoneRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/me/roles': {
       id: '/api/me/roles'
@@ -601,6 +733,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/payments-subscription': {
+      id: '/api/admin/payments-subscription'
+      path: '/api/admin/payments-subscription'
+      fullPath: '/api/admin/payments-subscription'
+      preLoaderRoute: typeof ApiAdminPaymentsSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/payments-link': {
+      id: '/api/admin/payments-link'
+      path: '/api/admin/payments-link'
+      fullPath: '/api/admin/payments-link'
+      preLoaderRoute: typeof ApiAdminPaymentsLinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/payments-config': {
+      id: '/api/admin/payments-config'
+      path: '/api/admin/payments-config'
+      fullPath: '/api/admin/payments-config'
+      preLoaderRoute: typeof ApiAdminPaymentsConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/branding-upload': {
       id: '/api/admin/branding-upload'
       path: '/api/admin/branding-upload'
@@ -608,17 +761,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminBrandingUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments-link/$token': {
+      id: '/api/public/payments-link/$token'
+      path: '/api/public/payments-link/$token'
+      fullPath: '/api/public/payments-link/$token'
+      preLoaderRoute: typeof ApiPublicPaymentsLinkTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminAlunosRoute: typeof AdminAlunosRoute
+  AdminAssinaturasRoute: typeof AdminAssinaturasRoute
   AdminAtribuirTreinosRoute: typeof AdminAtribuirTreinosRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDietasRoute: typeof AdminDietasRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminExerciciosRoute: typeof AdminExerciciosRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
+  AdminPagamentosConfigRoute: typeof AdminPagamentosConfigRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
   AdminPlanosSemanaisRoute: typeof AdminPlanosSemanaisRoute
   AdminPresencasRoute: typeof AdminPresencasRoute
@@ -629,12 +791,14 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAlunosRoute: AdminAlunosRoute,
+  AdminAssinaturasRoute: AdminAssinaturasRoute,
   AdminAtribuirTreinosRoute: AdminAtribuirTreinosRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDietasRoute: AdminDietasRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminExerciciosRoute: AdminExerciciosRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
+  AdminPagamentosConfigRoute: AdminPagamentosConfigRoute,
   AdminPlanosRoute: AdminPlanosRoute,
   AdminPlanosSemanaisRoute: AdminPlanosSemanaisRoute,
   AdminPresencasRoute: AdminPresencasRoute,
@@ -675,9 +839,15 @@ const rootRouteChildren: RootRouteChildren = {
   EmBreveRoute: EmBreveRoute,
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
+  PagarTokenRoute: PagarTokenRoute,
   ApiAdminBrandingUploadRoute: ApiAdminBrandingUploadRoute,
+  ApiAdminPaymentsConfigRoute: ApiAdminPaymentsConfigRoute,
+  ApiAdminPaymentsLinkRoute: ApiAdminPaymentsLinkRoute,
+  ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
+  ApiPublicWebhooksStoneRoute: ApiPublicWebhooksStoneRoute,
+  ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
