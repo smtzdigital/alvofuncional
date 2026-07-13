@@ -42,6 +42,7 @@ import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/a
 import { Route as ApiAdminPaymentsLinkRouteImport } from './routes/api/admin.payments-link'
 import { Route as ApiAdminPaymentsConfigRouteImport } from './routes/api/admin.payments-config'
 import { Route as ApiAdminBrandingUploadRouteImport } from './routes/api/admin.branding-upload'
+import { Route as ApiPublicPaymentsLinkTokenRouteImport } from './routes/api/public.payments-link.$token'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -209,6 +210,12 @@ const ApiAdminBrandingUploadRoute = ApiAdminBrandingUploadRouteImport.update({
   path: '/api/admin/branding-upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsLinkTokenRoute =
+  ApiPublicPaymentsLinkTokenRouteImport.update({
+    id: '/api/public/payments-link/$token',
+    path: '/api/public/payments-link/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -244,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -277,6 +285,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -313,6 +322,7 @@ export interface FileRoutesById {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/payments-link/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/payments-link/$token'
   id:
     | '__root__'
     | '/'
@@ -418,6 +430,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
+    | '/api/public/payments-link/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -434,6 +447,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
+  ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -669,6 +683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminBrandingUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments-link/$token': {
+      id: '/api/public/payments-link/$token'
+      path: '/api/public/payments-link/$token'
+      fullPath: '/api/public/payments-link/$token'
+      preLoaderRoute: typeof ApiPublicPaymentsLinkTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -742,6 +763,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
+  ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
