@@ -24,7 +24,14 @@ const NAV: NavItem[] = [
   { to: "/admin/alunos", label: "Alunos", icon: Users },
   { to: "/admin/professores", label: "Professores", icon: GraduationCap },
   { to: "/admin/planos", label: "Planos", icon: Package },
-  { to: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
+  {
+    to: "/admin/financeiro", label: "Financeiro", icon: CreditCard,
+    children: [
+      { to: "/admin/assinaturas", label: "Assinaturas & Links", icon: Repeat },
+      { to: "/admin/pagamentos", label: "Registros manuais", icon: CreditCard },
+      { to: "/admin/pagamentos-config", label: "Configurar gateway", icon: KeyRound },
+    ],
+  },
   {
     to: "/admin/treinos-grupo", label: "Treinos", icon: Dumbbell,
     children: [
