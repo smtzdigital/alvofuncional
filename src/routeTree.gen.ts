@@ -38,6 +38,7 @@ import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribui
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
+import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/admin.payments-subscription'
 import { Route as ApiAdminPaymentsConfigRouteImport } from './routes/api/admin.payments-config'
 import { Route as ApiAdminBrandingUploadRouteImport } from './routes/api/admin.branding-upload'
 
@@ -186,6 +187,12 @@ const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPaymentsSubscriptionRoute =
+  ApiAdminPaymentsSubscriptionRouteImport.update({
+    id: '/api/admin/payments-subscription',
+    path: '/api/admin/payments-subscription',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminPaymentsConfigRoute = ApiAdminPaymentsConfigRouteImport.update({
   id: '/api/admin/payments-config',
   path: '/api/admin/payments-config',
@@ -227,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -258,6 +266,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -292,6 +301,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
+  '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/api/admin/branding-upload'
     | '/api/admin/payments-config'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesByTo: FileRoutesByTo
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/api/admin/branding-upload'
     | '/api/admin/payments-config'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
   id:
@@ -391,6 +403,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/api/admin/branding-upload'
     | '/api/admin/payments-config'
+    | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesById: FileRoutesById
@@ -405,6 +418,7 @@ export interface RootRouteChildren {
   RankingRoute: typeof RankingRoute
   ApiAdminBrandingUploadRoute: typeof ApiAdminBrandingUploadRoute
   ApiAdminPaymentsConfigRoute: typeof ApiAdminPaymentsConfigRoute
+  ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
 }
@@ -614,6 +628,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/payments-subscription': {
+      id: '/api/admin/payments-subscription'
+      path: '/api/admin/payments-subscription'
+      fullPath: '/api/admin/payments-subscription'
+      preLoaderRoute: typeof ApiAdminPaymentsSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/payments-config': {
       id: '/api/admin/payments-config'
       path: '/api/admin/payments-config'
@@ -697,6 +718,7 @@ const rootRouteChildren: RootRouteChildren = {
   RankingRoute: RankingRoute,
   ApiAdminBrandingUploadRoute: ApiAdminBrandingUploadRoute,
   ApiAdminPaymentsConfigRoute: ApiAdminPaymentsConfigRoute,
+  ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
 }
