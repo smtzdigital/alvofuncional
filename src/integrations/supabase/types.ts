@@ -747,6 +747,7 @@ export type Database = {
           avatar_url: string | null
           birth_date: string | null
           created_at: string
+          document: string | null
           email: string
           full_name: string
           gender: Database["public"]["Enums"]["gender"] | null
@@ -776,6 +777,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          document?: string | null
           email: string
           full_name: string
           gender?: Database["public"]["Enums"]["gender"] | null
@@ -805,6 +807,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          document?: string | null
           email?: string
           full_name?: string
           gender?: Database["public"]["Enums"]["gender"] | null
