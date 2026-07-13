@@ -36,6 +36,7 @@ import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipament
 import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
+import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
@@ -181,6 +182,11 @@ const AdminAtribuirTreinosRoute = AdminAtribuirTreinosRouteImport.update({
   path: '/atribuir-treinos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
+  id: '/assinaturas',
+  path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAlunosRoute = AdminAlunosRouteImport.update({
   id: '/alunos',
   path: '/alunos',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
   '/admin/alunos': typeof AdminAlunosRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dietas': typeof AdminDietasRoute
@@ -353,6 +362,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/ranking'
     | '/admin/alunos'
+    | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
     | '/admin/configuracoes'
     | '/admin/dietas'
@@ -666,6 +678,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAtribuirTreinosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/assinaturas': {
+      id: '/admin/assinaturas'
+      path: '/assinaturas'
+      fullPath: '/admin/assinaturas'
+      preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/alunos': {
       id: '/admin/alunos'
       path: '/alunos'
@@ -734,6 +753,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAlunosRoute: typeof AdminAlunosRoute
+  AdminAssinaturasRoute: typeof AdminAssinaturasRoute
   AdminAtribuirTreinosRoute: typeof AdminAtribuirTreinosRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDietasRoute: typeof AdminDietasRoute
@@ -751,6 +771,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAlunosRoute: AdminAlunosRoute,
+  AdminAssinaturasRoute: AdminAssinaturasRoute,
   AdminAtribuirTreinosRoute: AdminAtribuirTreinosRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDietasRoute: AdminDietasRoute,
