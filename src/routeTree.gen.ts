@@ -29,6 +29,7 @@ import { Route as AdminProfessoresRouteImport } from './routes/admin.professores
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
 import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-semanais'
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
+import { Route as AdminPagamentosConfigRouteImport } from './routes/admin.pagamentos-config'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
 import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
@@ -145,6 +146,11 @@ const AdminPlanosRoute = AdminPlanosRouteImport.update({
   path: '/planos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagamentosConfigRoute = AdminPagamentosConfigRouteImport.update({
+  id: '/pagamentos-config',
+  path: '/pagamentos-config',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   id: '/pagamentos',
   path: '/pagamentos',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
   '/admin/planos-semanais': typeof AdminPlanosSemanaisRoute
   '/admin/presencas': typeof AdminPresencasRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/pagamentos'
+    | '/admin/pagamentos-config'
     | '/admin/planos'
     | '/admin/planos-semanais'
     | '/admin/presencas'
@@ -605,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlanosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pagamentos-config': {
+      id: '/admin/pagamentos-config'
+      path: '/pagamentos-config'
+      fullPath: '/admin/pagamentos-config'
+      preLoaderRoute: typeof AdminPagamentosConfigRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pagamentos': {
       id: '/admin/pagamentos'
       path: '/pagamentos'
@@ -721,6 +740,7 @@ interface AdminRouteChildren {
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminExerciciosRoute: typeof AdminExerciciosRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
+  AdminPagamentosConfigRoute: typeof AdminPagamentosConfigRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
   AdminPlanosSemanaisRoute: typeof AdminPlanosSemanaisRoute
   AdminPresencasRoute: typeof AdminPresencasRoute
@@ -737,6 +757,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminExerciciosRoute: AdminExerciciosRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
+  AdminPagamentosConfigRoute: AdminPagamentosConfigRoute,
   AdminPlanosRoute: AdminPlanosRoute,
   AdminPlanosSemanaisRoute: AdminPlanosSemanaisRoute,
   AdminPresencasRoute: AdminPresencasRoute,
