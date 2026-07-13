@@ -38,6 +38,7 @@ import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribui
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
+import { Route as ApiAdminPaymentsConfigRouteImport } from './routes/api/admin.payments-config'
 import { Route as ApiAdminBrandingUploadRouteImport } from './routes/api/admin.branding-upload'
 
 const RankingRoute = RankingRouteImport.update({
@@ -185,6 +186,11 @@ const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPaymentsConfigRoute = ApiAdminPaymentsConfigRouteImport.update({
+  id: '/api/admin/payments-config',
+  path: '/api/admin/payments-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminBrandingUploadRoute = ApiAdminBrandingUploadRouteImport.update({
   id: '/api/admin/branding-upload',
   path: '/api/admin/branding-upload',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/admin/branding-upload': typeof ApiAdminBrandingUploadRoute
+  '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/me/roles': typeof ApiMeRolesRoute
 }
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
     | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesByTo: FileRoutesByTo
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
     | '/api/admin/settings'
     | '/api/me/roles'
   id:
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/app/'
     | '/api/admin/branding-upload'
+    | '/api/admin/payments-config'
     | '/api/admin/settings'
     | '/api/me/roles'
   fileRoutesById: FileRoutesById
@@ -392,6 +404,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RankingRoute: typeof RankingRoute
   ApiAdminBrandingUploadRoute: typeof ApiAdminBrandingUploadRoute
+  ApiAdminPaymentsConfigRoute: typeof ApiAdminPaymentsConfigRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
 }
@@ -601,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/payments-config': {
+      id: '/api/admin/payments-config'
+      path: '/api/admin/payments-config'
+      fullPath: '/api/admin/payments-config'
+      preLoaderRoute: typeof ApiAdminPaymentsConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/branding-upload': {
       id: '/api/admin/branding-upload'
       path: '/api/admin/branding-upload'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RankingRoute: RankingRoute,
   ApiAdminBrandingUploadRoute: ApiAdminBrandingUploadRoute,
+  ApiAdminPaymentsConfigRoute: ApiAdminPaymentsConfigRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
 }
