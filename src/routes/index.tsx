@@ -64,9 +64,7 @@ function Landing() {
             <Button variant="ghost">Entrar</Button>
           </Link>
           <Link to="/cadastro">
-            <Button className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
-              Começar grátis
-            </Button>
+            <Button className="bg-gradient-primary text-white shadow-glow hover:opacity-90">Começar grátis</Button>
           </Link>
         </nav>
       </header>
@@ -85,7 +83,7 @@ function Landing() {
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/cadastro">
-            <Button size="lg" className="bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
+            <Button size="lg" className="bg-gradient-primary text-white shadow-glow hover:opacity-90">
               Criar conta grátis
             </Button>
           </Link>
@@ -151,7 +149,7 @@ function Landing() {
                 }`}
               >
                 {featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-glow">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-1 text-xs font-semibold text-white shadow-glow">
                     Mais popular
                   </div>
                 )}
@@ -178,7 +176,7 @@ function Landing() {
                 </ul>
                 <Link to="/cadastro" className="mt-6 block">
                   <Button
-                    className={`w-full ${featured ? "bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90" : ""}`}
+                    className={`w-full ${featured ? "bg-gradient-primary text-white shadow-glow hover:opacity-90" : ""}`}
                     variant={featured ? "default" : "outline"}
                   >
                     {Number(plan.price) === 0 ? "Começar grátis" : "Assinar agora"}
