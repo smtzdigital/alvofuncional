@@ -18,6 +18,7 @@ const allowedKeys = [
   "pwa_theme_color",
   "pwa_background_color",
   "coming_soon_enabled",
+  "contract_template",
 ] as const;
 
 type SettingsPayload = Partial<Record<(typeof allowedKeys)[number], string | boolean | null>>;
