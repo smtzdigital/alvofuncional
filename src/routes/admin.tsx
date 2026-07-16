@@ -68,7 +68,6 @@ const NAV: NavItem[] = [
       { to: "/admin/atribuir-treinos", label: "Atribuir aos alunos", icon: UserCog },
     ],
   },
-  { to: "/admin/dietas", label: "Dietas", icon: Apple },
   { to: "/admin/presencas", label: "Presenças", icon: ClipboardCheck },
   {
     to: "/admin/cadastros",
@@ -78,6 +77,7 @@ const NAV: NavItem[] = [
       { to: "/admin/equipamentos", label: "Equipamentos", icon: Wrench },
       { to: "/admin/exercicios", label: "Exercícios", icon: Activity },
       { to: "/admin/contrato", label: "Contrato", icon: FileText },
+      { to: "/admin/dietas", label: "Dietas", icon: Apple },
     ],
   },
 ];
