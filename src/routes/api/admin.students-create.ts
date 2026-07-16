@@ -50,7 +50,12 @@ export const Route = createFileRoute("/api/admin/students-create")({
 
         // Atualiza plano/professor no student, se fornecidos.
         if (body.plan_id || body.teacher_id) {
-          const update: Record<string, unknown> = {};
+          const update: {
+            plan_id?: string;
+            teacher_id?: string;
+            plan_started_at?: string;
+            plan_expires_at?: string;
+          } = {};
           if (body.teacher_id) update.teacher_id = body.teacher_id;
           if (body.plan_id) {
             update.plan_id = body.plan_id;
