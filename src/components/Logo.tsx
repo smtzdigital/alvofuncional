@@ -1,7 +1,7 @@
 import { Dumbbell } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 
-export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+export function Logo({ size = "lg" }: { size?: "sm" | "md" | "lg" }) {
   const { settings } = useAppSettings();
   const sizes = { sm: "text-lg", md: "text-xl", lg: "text-3xl" };
   const iconSize = { sm: 18, md: 22, lg: 32 };
