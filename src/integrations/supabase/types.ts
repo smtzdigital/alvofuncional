@@ -22,6 +22,7 @@ export type Database = {
           app_short_name: string
           background_color: string
           coming_soon_enabled: boolean
+          contract_template: string | null
           favicon_url: string | null
           id: boolean
           logo_icon_url: string | null
@@ -41,6 +42,7 @@ export type Database = {
           app_short_name?: string
           background_color?: string
           coming_soon_enabled?: boolean
+          contract_template?: string | null
           favicon_url?: string | null
           id?: boolean
           logo_icon_url?: string | null
@@ -60,6 +62,7 @@ export type Database = {
           app_short_name?: string
           background_color?: string
           coming_soon_enabled?: boolean
+          contract_template?: string | null
           favicon_url?: string | null
           id?: boolean
           logo_icon_url?: string | null
@@ -743,6 +746,7 @@ export type Database = {
       profiles: {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"] | null
+          address: string | null
           assessment_completed_at: string | null
           avatar_url: string | null
           birth_date: string | null
@@ -761,6 +765,7 @@ export type Database = {
           medications: string | null
           motivation: Database["public"]["Enums"]["motivation_type"] | null
           phone: string | null
+          rg: string | null
           sleep_quality: Database["public"]["Enums"]["sleep_quality"] | null
           stress_level: Database["public"]["Enums"]["stress_level"] | null
           updated_at: string
@@ -773,6 +778,7 @@ export type Database = {
         }
         Insert: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          address?: string | null
           assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
@@ -791,6 +797,7 @@ export type Database = {
           medications?: string | null
           motivation?: Database["public"]["Enums"]["motivation_type"] | null
           phone?: string | null
+          rg?: string | null
           sleep_quality?: Database["public"]["Enums"]["sleep_quality"] | null
           stress_level?: Database["public"]["Enums"]["stress_level"] | null
           updated_at?: string
@@ -803,6 +810,7 @@ export type Database = {
         }
         Update: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          address?: string | null
           assessment_completed_at?: string | null
           avatar_url?: string | null
           birth_date?: string | null
@@ -821,6 +829,7 @@ export type Database = {
           medications?: string | null
           motivation?: Database["public"]["Enums"]["motivation_type"] | null
           phone?: string | null
+          rg?: string | null
           sleep_quality?: Database["public"]["Enums"]["sleep_quality"] | null
           stress_level?: Database["public"]["Enums"]["stress_level"] | null
           updated_at?: string
