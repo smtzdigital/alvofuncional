@@ -15,9 +15,7 @@ export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
 
   return (
     <div className="flex items-center gap-2 font-bold">
-      <div
-        className={`flex ${boxSize[size]} items-center justify-center rounded-lg bg-gradient-primary shadow-glow overflow-hidden`}
-      >
+      <div className={`flex ${boxSize[size]} items-center justify-center rounded-lg overflow-hidden`}>
         {settings.logo_icon_url ? (
           <img src={settings.logo_icon_url} alt={name} className="h-full w-full object-cover" />
         ) : (
