@@ -24,10 +24,7 @@ export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
           <Dumbbell size={iconSize[size]} className="text-primary-foreground" strokeWidth={2.5} />
         )}
       </div>
-      <span className={`${sizes[size]} tracking-tight uppercase`}>
-        {part1}
-        <span className="text-primary">{part2}</span>
-      </span>
+      <span className={`${sizes[size]} tracking-tight uppercase`}>{name}</span>
     </div>
   );
 }
