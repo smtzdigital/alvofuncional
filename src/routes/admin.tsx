@@ -46,7 +46,6 @@ type NavItem = {
 const NAV: NavItem[] = [
   { to: "/admin", label: "Painel", icon: LayoutDashboard, exact: true },
   { to: "/admin/alunos", label: "Alunos", icon: Users },
-  { to: "/admin/professores", label: "Professores", icon: GraduationCap },
   { to: "/admin/planos", label: "Planos", icon: Package },
   {
     to: "/admin/financeiro",
@@ -74,6 +73,7 @@ const NAV: NavItem[] = [
     label: "Cadastros",
     icon: FolderPlus,
     children: [
+      { to: "/admin/professores", label: "Professores", icon: GraduationCap },
       { to: "/admin/equipamentos", label: "Equipamentos", icon: Wrench },
       { to: "/admin/exercicios", label: "Exercícios", icon: Activity },
       { to: "/admin/contrato", label: "Contrato", icon: FileText },
