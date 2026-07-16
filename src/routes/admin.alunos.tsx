@@ -236,7 +236,7 @@ function AlunosAdmin() {
           <h1 className="text-3xl font-bold">Alunos</h1>
           <p className="text-muted-foreground">Cadastre manualmente ou gerencie planos, contratos e status.</p>
         </div>
-        <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-primary-foreground">
+        <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
           <Plus size={16} className="mr-1" /> Cadastrar Aluno
         </Button>
       </div>
@@ -373,7 +373,7 @@ function AlunosAdmin() {
               <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground">
+              <Button type="submit" disabled={saving} className="bg-gradient-primary text-white">
                 {saving ? "Cadastrando..." : "Cadastrar"}
               </Button>
             </DialogFooter>
