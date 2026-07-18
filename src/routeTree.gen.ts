@@ -42,6 +42,7 @@ import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
+import { Route as ApiAdminStudentsUpdateRouteImport } from './routes/api/admin.students-update'
 import { Route as ApiAdminStudentsCreateRouteImport } from './routes/api/admin.students-create'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
 import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/admin.payments-subscription'
@@ -215,6 +216,11 @@ const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   path: '/api/me/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminStudentsUpdateRoute = ApiAdminStudentsUpdateRouteImport.update({
+  id: '/api/admin/students-update',
+  path: '/api/admin/students-update',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminStudentsCreateRoute = ApiAdminStudentsCreateRouteImport.update({
   id: '/api/admin/students-create',
   path: '/api/admin/students-create',
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -331,6 +338,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -374,6 +382,7 @@ export interface FileRoutesById {
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -418,6 +427,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-update'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-update'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -500,6 +511,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-subscription'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-update'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -520,6 +532,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminStudentsCreateRoute: typeof ApiAdminStudentsCreateRoute
+  ApiAdminStudentsUpdateRoute: typeof ApiAdminStudentsUpdateRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
   ApiPublicWebhooksStoneRoute: typeof ApiPublicWebhooksStoneRoute
   ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
@@ -758,6 +771,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMeRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/students-update': {
+      id: '/api/admin/students-update'
+      path: '/api/admin/students-update'
+      fullPath: '/api/admin/students-update'
+      preLoaderRoute: typeof ApiAdminStudentsUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/students-create': {
       id: '/api/admin/students-create'
       path: '/api/admin/students-create'
@@ -887,6 +907,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminStudentsCreateRoute: ApiAdminStudentsCreateRoute,
+  ApiAdminStudentsUpdateRoute: ApiAdminStudentsUpdateRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
   ApiPublicWebhooksStoneRoute: ApiPublicWebhooksStoneRoute,
   ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,

@@ -164,24 +164,35 @@ function AlunosAdmin() {
   const save = async (e: FormEvent) => {
     e.preventDefault();
     if (!editing) return;
+    setSaving(true);
     const fd = new FormData(e.target as HTMLFormElement);
-    const planId = fd.get("plan_id") as string;
-    const teacherId = fd.get("teacher_id") as string;
-    const renew = fd.get("renew") === "on";
-    const plan = renew && planId ? plans.find((p) => p.id === planId) : null;
-    const update = {
-      plan_id: planId || null,
-      teacher_id: teacherId || null,
+    const payload = {
+      student_id: editing.id,
+      user_id: editing.user_id,
+      full_name: String(fd.get("full_name") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      password: (fd.get("password") as string) || null,
+      phone: (fd.get("phone") as string) || null,
+      document: (fd.get("document") as string) || null,
+      rg: (fd.get("rg") as string) || null,
+      birth_date: (fd.get("birth_date") as string) || null,
+      address: (fd.get("address") as string) || null,
+      plan_id: (fd.get("plan_id") as string) || null,
+      teacher_id: (fd.get("teacher_id") as string) || null,
       is_active: fd.get("is_active") === "on",
-      ...(plan
-        ? {
-            plan_started_at: new Date().toISOString(),
-            plan_expires_at: new Date(Date.now() + plan.duration_days * 86400000).toISOString(),
-          }
-        : {}),
+      renew_plan: fd.get("renew") === "on",
     };
-    const { error } = await supabase.from("students").update(update).eq("id", editing.id);
-    if (error) return toast.error(error.message);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/students-update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) return toast.error(data.error ?? "Falha ao atualizar");
     toast.success("Aluno atualizado");
     setEditing(null);
     load();
@@ -382,55 +393,88 @@ function AlunosAdmin() {
       </Dialog>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Editar aluno</DialogTitle>
           </DialogHeader>
           {editing && (
             <form onSubmit={save} className="space-y-3">
-              <div>
-                <Label>Nome</Label>
-                <Input value={editing.profile?.full_name ?? ""} disabled />
-              </div>
-              <div>
-                <Label>Plano</Label>
-                <Select name="plan_id" defaultValue={editing.plan_id ?? ""}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Professor responsável</Label>
-                <Select name="teacher_id" defaultValue={editing.teacher_id ?? ""}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nenhum" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <Label>Nome completo</Label>
+                  <Input name="full_name" defaultValue={editing.profile?.full_name ?? ""} required />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input name="email" type="email" defaultValue={editing.profile?.email ?? ""} required />
+                </div>
+                <div>
+                  <Label>Nova senha (opcional)</Label>
+                  <Input name="password" type="text" minLength={6} placeholder="deixe em branco" />
+                </div>
+                <div>
+                  <Label>Telefone/WhatsApp</Label>
+                  <Input name="phone" defaultValue={editing.profile?.phone ?? ""} />
+                </div>
+                <div>
+                  <Label>Data de nascimento</Label>
+                  <Input name="birth_date" type="date" defaultValue={editing.profile?.birth_date ?? ""} />
+                </div>
+                <div>
+                  <Label>CPF</Label>
+                  <Input name="document" defaultValue={editing.profile?.document ?? ""} />
+                </div>
+                <div>
+                  <Label>RG</Label>
+                  <Input name="rg" defaultValue={editing.profile?.rg ?? ""} />
+                </div>
+                <div className="col-span-2">
+                  <Label>Endereço</Label>
+                  <Input name="address" defaultValue={editing.profile?.address ?? ""} />
+                </div>
+                <div>
+                  <Label>Plano</Label>
+                  <Select name="plan_id" defaultValue={editing.plan_id ?? ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {plans.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Professor responsável</Label>
+                  <Select name="teacher_id" defaultValue={editing.teacher_id ?? ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Nenhum" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teachers.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="renew" defaultChecked /> Renovar prazo do plano
+                <input type="checkbox" name="renew" /> Renovar prazo do plano a partir de hoje
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" name="is_active" defaultChecked={editing.is_active} /> Ativo
               </label>
               <DialogFooter>
-                <Button type="submit" className="bg-gradient-primary text-white">
-                  Salvar
+                <Button type="button" variant="ghost" onClick={() => setEditing(null)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={saving} className="bg-gradient-primary text-white">
+                  {saving ? "Salvando..." : "Salvar"}
                 </Button>
               </DialogFooter>
             </form>
