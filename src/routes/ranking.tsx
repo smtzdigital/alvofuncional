@@ -1,75 +1,61 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Trophy, Medal, ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/ranking")({
-  head: () => ({ meta: [{ title: "Ranking público — Alvo Funcional" }] }),
+  head: () => ({ meta: [{ title: "Ranking — Em breve — Alvo Funcional" }] }),
   component: PublicRanking,
 });
 
-interface RankRow {
-  student_id: string;
-  full_name: string;
-  total_points: number;
-  plan_name: string | null;
-  rank: number;
-}
-
 function PublicRanking() {
-  const [rows, setRows] = useState<RankRow[]>([]);
-  useEffect(() => {
-    supabase.rpc("get_ranking", { _limit: 50 }).then(({ data }) => setRows((data ?? []) as RankRow[]));
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-hero">
-      <header className="container mx-auto flex items-center justify-between px-6 py-6">
-        <Link to="/">
-          <Logo />
-        </Link>
-        <Link to="/">
-          <Button variant="ghost">
-            <ArrowLeft size={16} className="mr-1" /> Voltar
-          </Button>
-        </Link>
-      </header>
-      <div className="container mx-auto max-w-3xl px-6 pb-20">
-        <h1 className="mb-2 text-4xl font-bold">🏆 Ranking</h1>
-        <p className="mb-8 text-muted-foreground">Top 50 alunos por pontuação total.</p>
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary text-muted-foreground">
-              <tr>
-                <th className="p-3 text-left">#</th>
-                <th className="p-3 text-left">Aluno</th>
-                <th className="p-3 text-left">Plano</th>
-                <th className="p-3 text-right">Pontos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.student_id} className="border-t border-border">
-                  <td className="p-3 font-bold">
-                    {r.rank <= 3 ? <Medal size={18} className="inline text-primary" /> : `#${r.rank}`}
-                  </td>
-                  <td className="p-3">{r.full_name}</td>
-                  <td className="p-3 text-muted-foreground">{r.plan_name ?? "—"}</td>
-                  <td className="p-3 text-right font-bold text-primary">{r.total_points}</td>
-                </tr>
-              ))}
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="p-10 text-center text-muted-foreground">
-                    <Trophy className="mx-auto mb-2" /> Sem rankings ainda.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+    <div className="relative min-h-screen overflow-hidden bg-[#0d1117] text-foreground">
+      {/* Glow effects */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#5ee85a]/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[#5ee85a]/5 blur-[100px]" />
+      </div>
+
+      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-12">
+        <header className="flex items-center justify-between py-6">
+          <Link to="/">
+            <Logo />
+          </Link>
+          <Link to="/">
+            <Button variant="ghost" className="text-white hover:bg-white/10">
+              <ArrowLeft size={16} className="mr-1" /> Voltar
+            </Button>
+          </Link>
+        </header>
+
+        <div className="flex flex-1 flex-col items-center justify-center text-center">
+          <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#5ee85a]/15 text-[#5ee85a] shadow-[0_0_60px_rgba(94,232,90,0.25)]">
+            <Trophy size={48} />
+          </div>
+
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#5ee85a]/40 bg-[#5ee85a]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#5ee85a]">
+            <Clock size={14} /> Em breve
+          </div>
+
+          <h1 className="text-4xl font-black uppercase leading-tight text-white md:text-6xl">
+            Ranking <span className="text-[#5ee85a]">público</span>
+          </h1>
+
+          <p className="mt-4 max-w-md text-base text-white/60 md:text-lg">
+            Estamos preparando o ranking público para você acompanhar e competir com os outros alunos. Volte em breve!
+          </p>
+
+          <Link to="/" className="mt-8">
+            <Button className="bg-[#5ee85a] px-8 py-5 text-base font-bold uppercase tracking-wider text-[#0d1117] shadow-[0_0_30px_rgba(94,232,90,0.4)] hover:bg-[#4dd049]">
+              Voltar para o início
+            </Button>
+          </Link>
         </div>
+
+        <footer className="py-8 text-center text-xs text-white/40">
+          © {new Date().getFullYear()} Alvo Funcional · Todos os direitos reservados
+        </footer>
       </div>
     </div>
   );
