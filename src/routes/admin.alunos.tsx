@@ -164,24 +164,35 @@ function AlunosAdmin() {
   const save = async (e: FormEvent) => {
     e.preventDefault();
     if (!editing) return;
+    setSaving(true);
     const fd = new FormData(e.target as HTMLFormElement);
-    const planId = fd.get("plan_id") as string;
-    const teacherId = fd.get("teacher_id") as string;
-    const renew = fd.get("renew") === "on";
-    const plan = renew && planId ? plans.find((p) => p.id === planId) : null;
-    const update = {
-      plan_id: planId || null,
-      teacher_id: teacherId || null,
+    const payload = {
+      student_id: editing.id,
+      user_id: editing.user_id,
+      full_name: String(fd.get("full_name") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      password: (fd.get("password") as string) || null,
+      phone: (fd.get("phone") as string) || null,
+      document: (fd.get("document") as string) || null,
+      rg: (fd.get("rg") as string) || null,
+      birth_date: (fd.get("birth_date") as string) || null,
+      address: (fd.get("address") as string) || null,
+      plan_id: (fd.get("plan_id") as string) || null,
+      teacher_id: (fd.get("teacher_id") as string) || null,
       is_active: fd.get("is_active") === "on",
-      ...(plan
-        ? {
-            plan_started_at: new Date().toISOString(),
-            plan_expires_at: new Date(Date.now() + plan.duration_days * 86400000).toISOString(),
-          }
-        : {}),
+      renew_plan: fd.get("renew") === "on",
     };
-    const { error } = await supabase.from("students").update(update).eq("id", editing.id);
-    if (error) return toast.error(error.message);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/students-update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) return toast.error(data.error ?? "Falha ao atualizar");
     toast.success("Aluno atualizado");
     setEditing(null);
     load();
