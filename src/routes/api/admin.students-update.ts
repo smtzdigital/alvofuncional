@@ -47,7 +47,7 @@ export const Route = createFileRoute("/api/admin/students-update")({
           if (body[f] !== undefined) profileUpdate[f] = body[f] as string | null;
         }
         if (Object.keys(profileUpdate).length > 0) {
-          const { error } = await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", body.user_id);
+          const { error } = await supabaseAdmin.from("profiles").update(profileUpdate as never).eq("id", body.user_id);
           if (error) return Response.json({ error: error.message }, { status: 400 });
         }
 
