@@ -68,7 +68,7 @@ export const Route = createFileRoute("/api/admin/students-update")({
           }
         }
         if (Object.keys(studentUpdate).length > 0) {
-          const { error } = await supabaseAdmin.from("students").update(studentUpdate).eq("id", body.student_id);
+          const { error } = await supabaseAdmin.from("students").update(studentUpdate as never).eq("id", body.student_id);
           if (error) return Response.json({ error: error.message }, { status: 400 });
         }
 
