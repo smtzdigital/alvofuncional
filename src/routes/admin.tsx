@@ -28,6 +28,7 @@ import {
   Repeat,
   KeyRound,
   FileText,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -73,6 +74,7 @@ const NAV: NavItem[] = [
     label: "Cadastros",
     icon: FolderPlus,
     children: [
+      { to: "/admin/usuarios", label: "Usuários do painel", icon: ShieldCheck },
       { to: "/admin/professores", label: "Professores", icon: GraduationCap },
       { to: "/admin/equipamentos", label: "Equipamentos", icon: Wrench },
       { to: "/admin/exercicios", label: "Exercícios", icon: Activity },
@@ -85,7 +87,7 @@ const NAV: NavItem[] = [
 const STORAGE_KEY = "admin_sidebar_collapsed";
 
 function AdminLayout() {
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, canAccessAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
@@ -108,10 +110,10 @@ function AdminLayout() {
   useEffect(() => {
     if (loading) return;
     if (!user) navigate({ to: "/login" });
-    else if (!isAdmin) navigate({ to: "/app" });
-  }, [loading, user, isAdmin, navigate]);
+    else if (!canAccessAdmin) navigate({ to: "/app" });
+  }, [loading, user, canAccessAdmin, navigate]);
 
-  if (loading || !user || !isAdmin) {
+  if (loading || !user || !canAccessAdmin) {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
   }
 
