@@ -15,15 +15,34 @@ export const Route = createFileRoute("/admin/planos")({
 });
 
 interface Plan {
-  id: string; name: string; description: string | null; price: number;
-  duration_days: number; presential_per_week: number;
-  has_workouts: boolean; has_ranking: boolean; has_diet: boolean; has_goals: boolean;
-  is_active: boolean; is_custom: boolean; sort_order: number;
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  duration_days: number;
+  presential_per_week: number;
+  has_workouts: boolean;
+  has_ranking: boolean;
+  has_diet: boolean;
+  has_goals: boolean;
+  is_active: boolean;
+  is_custom: boolean;
+  sort_order: number;
 }
 
 const empty: Partial<Plan> = {
-  name: "", description: "", price: 0, duration_days: 30, presential_per_week: 0,
-  has_workouts: true, has_ranking: true, has_diet: false, has_goals: true, is_active: true, is_custom: false, sort_order: 0,
+  name: "",
+  description: "",
+  price: 0,
+  duration_days: 30,
+  presential_per_week: 0,
+  has_workouts: true,
+  has_ranking: true,
+  has_diet: false,
+  has_goals: true,
+  is_active: true,
+  is_custom: false,
+  sort_order: 0,
 };
 
 function PlansAdmin() {
@@ -35,24 +54,34 @@ function PlansAdmin() {
     const { data } = await supabase.from("plans").select("*").order("sort_order");
     setPlans((data ?? []) as Plan[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
-      name: form.name!, description: form.description ?? null,
-      price: Number(form.price), duration_days: Number(form.duration_days),
+      name: form.name!,
+      description: form.description ?? null,
+      price: Number(form.price),
+      duration_days: Number(form.duration_days),
       presential_per_week: Number(form.presential_per_week),
-      has_workouts: !!form.has_workouts, has_ranking: !!form.has_ranking,
-      has_diet: !!form.has_diet, has_goals: !!form.has_goals,
-      is_active: !!form.is_active, is_custom: !!form.is_custom, sort_order: Number(form.sort_order ?? 0),
+      has_workouts: !!form.has_workouts,
+      has_ranking: !!form.has_ranking,
+      has_diet: !!form.has_diet,
+      has_goals: !!form.has_goals,
+      is_active: !!form.is_active,
+      is_custom: !!form.is_custom,
+      sort_order: Number(form.sort_order ?? 0),
     };
     const { error } = form.id
       ? await supabase.from("plans").update(payload).eq("id", form.id)
       : await supabase.from("plans").insert(payload);
     if (error) return toast.error(error.message);
     toast.success("Plano salvo");
-    setOpen(false); setForm(empty); load();
+    setOpen(false);
+    setForm(empty);
+    load();
   };
 
   const remove = async (id: string) => {
@@ -65,29 +94,123 @@ function PlansAdmin() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-3xl font-bold">Planos</h1><p className="text-muted-foreground">Edite valores e funcionalidades.</p></div>
-        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setForm(empty); }}>
-          <DialogTrigger asChild><Button onClick={() => setForm(empty)} className="bg-gradient-primary text-primary-foreground"><Plus size={16} className="mr-1" /> Novo plano</Button></DialogTrigger>
+        <div>
+          <h1 className="text-3xl font-bold">Planos</h1>
+          <p className="text-muted-foreground">Edite valores e funcionalidades.</p>
+        </div>
+        <Dialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) setForm(empty);
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button onClick={() => setForm(empty)} className="bg-gradient-primary text-primary-foreground">
+              <Plus size={16} className="mr-1" /> Novo plano
+            </Button>
+          </DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>{form.id ? "Editar" : "Novo"} plano</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>{form.id ? "Editar" : "Novo"} plano</DialogTitle>
+            </DialogHeader>
             <form onSubmit={submit} className="space-y-3">
-              <div><Label>Nome</Label><Input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+              <div>
+                <Label>Nome</Label>
+                <Input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div>
+                <Label>Descrição</Label>
+                <Textarea
+                  value={form.description ?? ""}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Preço (R$)</Label><Input type="number" step="0.01" value={form.price ?? 0} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></div>
-                <div><Label>Duração (dias)</Label><Input type="number" value={form.duration_days ?? 30} onChange={(e) => setForm({ ...form, duration_days: Number(e.target.value) })} /></div>
-                <div><Label>Presencial/sem</Label><Input type="number" value={form.presential_per_week ?? 0} onChange={(e) => setForm({ ...form, presential_per_week: Number(e.target.value) })} /></div>
+                <div>
+                  <Label>Preço (R$)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={form.price ?? 0}
+                    onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label>Duração (dias)</Label>
+
+                  <Select value="">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unissex">Unissex</SelectItem>
+                      <SelectItem value="masculino">Masculino</SelectItem>
+                      <SelectItem value="feminino">Feminino</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Input
+                    type="number"
+                    value={form.duration_days ?? 30}
+                    onChange={(e) => setForm({ ...form, duration_days: Number(e.target.value) })}
+                  />
+                </div>
+
+                <div>
+                  <Label>Presencial/sem</Label>
+                  <Input
+                    type="number"
+                    value={form.presential_per_week ?? 0}
+                    onChange={(e) => setForm({ ...form, presential_per_week: Number(e.target.value) })}
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3">
-                <FormSwitch label="Treinos" checked={!!form.has_workouts} onChange={(v) => setForm({ ...form, has_workouts: v })} />
-                <FormSwitch label="Ranking" checked={!!form.has_ranking} onChange={(v) => setForm({ ...form, has_ranking: v })} />
-                <FormSwitch label="Dieta" checked={!!form.has_diet} onChange={(v) => setForm({ ...form, has_diet: v })} />
-                <FormSwitch label="Metas" checked={!!form.has_goals} onChange={(v) => setForm({ ...form, has_goals: v })} />
-                <FormSwitch label="Ativo" checked={!!form.is_active} onChange={(v) => setForm({ ...form, is_active: v })} />
-                <FormSwitch label="Personalizado (oculto do site)" checked={!!form.is_custom} onChange={(v) => setForm({ ...form, is_custom: v })} />
-                <div><Label>Ordem</Label><Input type="number" value={form.sort_order ?? 0} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} /></div>
+                <FormSwitch
+                  label="Treinos"
+                  checked={!!form.has_workouts}
+                  onChange={(v) => setForm({ ...form, has_workouts: v })}
+                />
+                <FormSwitch
+                  label="Ranking"
+                  checked={!!form.has_ranking}
+                  onChange={(v) => setForm({ ...form, has_ranking: v })}
+                />
+                <FormSwitch
+                  label="Dieta"
+                  checked={!!form.has_diet}
+                  onChange={(v) => setForm({ ...form, has_diet: v })}
+                />
+                <FormSwitch
+                  label="Metas"
+                  checked={!!form.has_goals}
+                  onChange={(v) => setForm({ ...form, has_goals: v })}
+                />
+                <FormSwitch
+                  label="Ativo"
+                  checked={!!form.is_active}
+                  onChange={(v) => setForm({ ...form, is_active: v })}
+                />
+                <FormSwitch
+                  label="Personalizado (oculto do site)"
+                  checked={!!form.is_custom}
+                  onChange={(v) => setForm({ ...form, is_custom: v })}
+                />
+                <div>
+                  <Label>Ordem</Label>
+                  <Input
+                    type="number"
+                    value={form.sort_order ?? 0}
+                    onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
+                  />
+                </div>
               </div>
-              <DialogFooter><Button type="submit" className="bg-gradient-primary text-primary-foreground">Salvar</Button></DialogFooter>
+              <DialogFooter>
+                <Button type="submit" className="bg-gradient-primary text-primary-foreground">
+                  Salvar
+                </Button>
+              </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
@@ -102,12 +225,25 @@ function PlansAdmin() {
                 <p className="mt-1 text-sm text-muted-foreground">{p.description}</p>
               </div>
               <div className="flex gap-1">
-                <Button size="icon" variant="ghost" onClick={() => { setForm(p); setOpen(true); }}><Pencil size={14} /></Button>
-                <Button size="icon" variant="ghost" onClick={() => remove(p.id)}><Trash2 size={14} /></Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    setForm(p);
+                    setOpen(true);
+                  }}
+                >
+                  <Pencil size={14} />
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => remove(p.id)}>
+                  <Trash2 size={14} />
+                </Button>
               </div>
             </div>
             <div className="mt-3 text-3xl font-bold text-primary">R$ {Number(p.price).toFixed(2)}</div>
-            <div className="text-xs text-muted-foreground">por {p.duration_days} dias · {p.presential_per_week}x/sem presencial</div>
+            <div className="text-xs text-muted-foreground">
+              por {p.duration_days} dias · {p.presential_per_week}x/sem presencial
+            </div>
             <div className="mt-3 flex flex-wrap gap-1 text-xs">
               {p.has_workouts && <Tag>Treinos</Tag>}
               {p.has_ranking && <Tag>Ranking</Tag>}
@@ -124,8 +260,19 @@ function PlansAdmin() {
 }
 
 function Tag({ children, warn }: { children: React.ReactNode; warn?: boolean }) {
-  return <span className={`rounded-full px-2 py-0.5 ${warn ? "bg-destructive/20 text-destructive" : "bg-primary/15 text-primary"}`}>{children}</span>;
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 ${warn ? "bg-destructive/20 text-destructive" : "bg-primary/15 text-primary"}`}
+    >
+      {children}
+    </span>
+  );
 }
 function FormSwitch({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return <div className="flex items-center justify-between gap-2"><Label>{label}</Label><Switch checked={checked} onCheckedChange={onChange} /></div>;
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <Label>{label}</Label>
+      <Switch checked={checked} onCheckedChange={onChange} />
+    </div>
+  );
 }
