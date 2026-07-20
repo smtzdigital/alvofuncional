@@ -28,6 +28,8 @@ interface AuthContextValue {
   loading: boolean;
   roles: AppRole[];
   isAdmin: boolean;
+  isProfessor: boolean;
+  canAccessAdmin: boolean;
   student: StudentInfo | null;
   planActive: boolean;
   assessmentCompleted: boolean;
@@ -118,10 +120,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const isAdmin = roles.includes("admin");
+  const isProfessor = roles.includes("professor");
+  const canAccessAdmin = isAdmin || isProfessor;
   const planActive = !!student && (!student.plan_expires_at || new Date(student.plan_expires_at) > new Date());
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, roles, isAdmin, student, planActive, assessmentCompleted, refresh, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, roles, isAdmin, isProfessor, canAccessAdmin, student, planActive, assessmentCompleted, refresh, signOut }}>
       {children}
     </AuthContext.Provider>
   );

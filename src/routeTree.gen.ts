@@ -25,6 +25,7 @@ import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppMetasRouteImport } from './routes/app.metas'
 import { Route as AppDietaRouteImport } from './routes/app.dieta'
 import { Route as AppAvaliacaoRouteImport } from './routes/app.avaliacao'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminTreinosRouteImport } from './routes/admin.treinos'
 import { Route as AdminProfessoresRouteImport } from './routes/admin.professores'
 import { Route as AdminPresencasRouteImport } from './routes/admin.presencas'
@@ -42,6 +43,9 @@ import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
+import { Route as ApiAdminUsersListRouteImport } from './routes/api/admin.users-list'
+import { Route as ApiAdminUsersDeleteRouteImport } from './routes/api/admin.users-delete'
+import { Route as ApiAdminUsersCreateRouteImport } from './routes/api/admin.users-create'
 import { Route as ApiAdminStudentsUpdateRouteImport } from './routes/api/admin.students-update'
 import { Route as ApiAdminStudentsCreateRouteImport } from './routes/api/admin.students-create'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
@@ -131,6 +135,11 @@ const AppAvaliacaoRoute = AppAvaliacaoRouteImport.update({
   path: '/avaliacao',
   getParentRoute: () => AppRoute,
 } as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTreinosRoute = AdminTreinosRouteImport.update({
   id: '/treinos',
   path: '/treinos',
@@ -216,6 +225,21 @@ const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   path: '/api/me/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminUsersListRoute = ApiAdminUsersListRouteImport.update({
+  id: '/api/admin/users-list',
+  path: '/api/admin/users-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminUsersDeleteRoute = ApiAdminUsersDeleteRouteImport.update({
+  id: '/api/admin/users-delete',
+  path: '/api/admin/users-delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminUsersCreateRoute = ApiAdminUsersCreateRouteImport.update({
+  id: '/api/admin/users-create',
+  path: '/api/admin/users-create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminStudentsUpdateRoute = ApiAdminStudentsUpdateRouteImport.update({
   id: '/api/admin/students-update',
   path: '/api/admin/students-update',
@@ -282,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
@@ -298,6 +323,9 @@ export interface FileRoutesByFullPath {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
+  '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
+  '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
+  '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -323,6 +351,7 @@ export interface FileRoutesByTo {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
@@ -339,6 +368,9 @@ export interface FileRoutesByTo {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
+  '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
+  '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
+  '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -367,6 +399,7 @@ export interface FileRoutesById {
   '/admin/presencas': typeof AdminPresencasRoute
   '/admin/professores': typeof AdminProfessoresRoute
   '/admin/treinos': typeof AdminTreinosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/app/avaliacao': typeof AppAvaliacaoRoute
   '/app/dieta': typeof AppDietaRoute
   '/app/metas': typeof AppMetasRoute
@@ -383,6 +416,9 @@ export interface FileRoutesById {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
+  '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
+  '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
+  '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
@@ -412,6 +448,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/admin/usuarios'
     | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
@@ -428,6 +465,9 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
+    | '/api/admin/users-create'
+    | '/api/admin/users-delete'
+    | '/api/admin/users-list'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -453,6 +493,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/admin/usuarios'
     | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
@@ -469,6 +510,9 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
+    | '/api/admin/users-create'
+    | '/api/admin/users-delete'
+    | '/api/admin/users-list'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -496,6 +540,7 @@ export interface FileRouteTypes {
     | '/admin/presencas'
     | '/admin/professores'
     | '/admin/treinos'
+    | '/admin/usuarios'
     | '/app/avaliacao'
     | '/app/dieta'
     | '/app/metas'
@@ -512,6 +557,9 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
+    | '/api/admin/users-create'
+    | '/api/admin/users-delete'
+    | '/api/admin/users-list'
     | '/api/me/roles'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
@@ -533,6 +581,9 @@ export interface RootRouteChildren {
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminStudentsCreateRoute: typeof ApiAdminStudentsCreateRoute
   ApiAdminStudentsUpdateRoute: typeof ApiAdminStudentsUpdateRoute
+  ApiAdminUsersCreateRoute: typeof ApiAdminUsersCreateRoute
+  ApiAdminUsersDeleteRoute: typeof ApiAdminUsersDeleteRoute
+  ApiAdminUsersListRoute: typeof ApiAdminUsersListRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
   ApiPublicWebhooksStoneRoute: typeof ApiPublicWebhooksStoneRoute
   ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
@@ -651,6 +702,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/avaliacao'
       preLoaderRoute: typeof AppAvaliacaoRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/treinos': {
       id: '/admin/treinos'
@@ -771,6 +829,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMeRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/users-list': {
+      id: '/api/admin/users-list'
+      path: '/api/admin/users-list'
+      fullPath: '/api/admin/users-list'
+      preLoaderRoute: typeof ApiAdminUsersListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/users-delete': {
+      id: '/api/admin/users-delete'
+      path: '/api/admin/users-delete'
+      fullPath: '/api/admin/users-delete'
+      preLoaderRoute: typeof ApiAdminUsersDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/users-create': {
+      id: '/api/admin/users-create'
+      path: '/api/admin/users-create'
+      fullPath: '/api/admin/users-create'
+      preLoaderRoute: typeof ApiAdminUsersCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/students-update': {
       id: '/api/admin/students-update'
       path: '/api/admin/students-update'
@@ -846,6 +925,7 @@ interface AdminRouteChildren {
   AdminPresencasRoute: typeof AdminPresencasRoute
   AdminProfessoresRoute: typeof AdminProfessoresRoute
   AdminTreinosRoute: typeof AdminTreinosRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -865,6 +945,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPresencasRoute: AdminPresencasRoute,
   AdminProfessoresRoute: AdminProfessoresRoute,
   AdminTreinosRoute: AdminTreinosRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -908,6 +989,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminStudentsCreateRoute: ApiAdminStudentsCreateRoute,
   ApiAdminStudentsUpdateRoute: ApiAdminStudentsUpdateRoute,
+  ApiAdminUsersCreateRoute: ApiAdminUsersCreateRoute,
+  ApiAdminUsersDeleteRoute: ApiAdminUsersDeleteRoute,
+  ApiAdminUsersListRoute: ApiAdminUsersListRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
   ApiPublicWebhooksStoneRoute: ApiPublicWebhooksStoneRoute,
   ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,
@@ -915,12 +999,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
