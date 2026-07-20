@@ -139,17 +139,6 @@ function PlansAdmin() {
                 <div>
                   <Label>Duração (dias)</Label>
 
-                  <Select value="">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unissex">Unissex</SelectItem>
-                      <SelectItem value="masculino">Masculino</SelectItem>
-                      <SelectItem value="feminino">Feminino</SelectItem>
-                    </SelectContent>
-                  </Select>
-
                   <Input
                     type="number"
                     value={form.duration_days ?? 30}
