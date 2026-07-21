@@ -295,6 +295,15 @@ function AlunosAdmin() {
                     <Button size="icon" variant="ghost" onClick={() => openAvaliacao(r)} title="Ver avaliação">
                       <FileText size={14} />
                     </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => resyncPagarme(r)}
+                      disabled={syncingId === r.id}
+                      title="Ressincronizar cliente na Pagar.me"
+                    >
+                      <RefreshCw size={14} className={syncingId === r.id ? "animate-spin" : ""} />
+                    </Button>
                     <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar">
                       <Pencil size={14} />
                     </Button>
