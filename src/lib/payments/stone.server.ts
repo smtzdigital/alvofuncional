@@ -315,6 +315,70 @@ class StonePaymentGateway implements PaymentGateway {
       throw err;
     }
   }
+
+  private planBody(input: PlanSyncInput) {
+    return {
+      name: input.name,
+      description: input.description ?? input.name,
+      interval: input.interval,
+      interval_count: input.intervalCount,
+      billing_type: "prepaid",
+      payment_methods: ["credit_card"],
+      installments: [input.installments || 1],
+      pricing_scheme: { scheme_type: "unit", price: input.amountCents },
+      items: [{ name: input.name, quantity: 1, pricing_scheme: { scheme_type: "unit", price: input.amountCents } }],
+    };
+  }
+
+  async createPlan(input: PlanSyncInput) {
+    const cfg = await getGatewayConfig();
+    try {
+      const res = await stoneRequest<StonePlan>(cfg, { method: "POST", path: "/plans", body: this.planBody(input), idempotencyKey: `plan-${input.name}-${input.amountCents}` });
+      await logAudit("createPlan", { name: input.name, amount: input.amountCents }, { id: res.id }, undefined, input.actor);
+      return res;
+    } catch (e) {
+      const err = e as StoneError;
+      await logAudit("createPlan", { name: input.name }, null, err.message, input.actor);
+      throw err;
+    }
+  }
+
+  async updatePlan(input: PlanSyncInput & { stonePlanId: string }) {
+    const cfg = await getGatewayConfig();
+    try {
+      // Pagar.me v5 PUT /plans/:id atualiza dados gerais; pricing_scheme via items
+      const res = await stoneRequest<StonePlan>(cfg, {
+        method: "PUT",
+        path: `/plans/${encodeURIComponent(input.stonePlanId)}`,
+        body: {
+          name: input.name,
+          description: input.description ?? input.name,
+          installments: [input.installments || 1],
+          payment_methods: ["credit_card"],
+          statement_descriptor: input.name.slice(0, 13),
+        },
+      });
+      await logAudit("updatePlan", { id: input.stonePlanId, name: input.name }, { id: res.id }, undefined, input.actor);
+      return res;
+    } catch (e) {
+      const err = e as StoneError;
+      await logAudit("updatePlan", { id: input.stonePlanId }, null, err.message, input.actor);
+      throw err;
+    }
+  }
+
+  async deletePlan(input: { stonePlanId: string; actor?: string }) {
+    const cfg = await getGatewayConfig();
+    try {
+      await stoneRequest(cfg, { method: "DELETE", path: `/plans/${encodeURIComponent(input.stonePlanId)}` });
+      await logAudit("deletePlan", { id: input.stonePlanId }, { ok: true }, undefined, input.actor);
+      return { ok: true as const };
+    } catch (e) {
+      const err = e as StoneError;
+      await logAudit("deletePlan", { id: input.stonePlanId }, null, err.message, input.actor);
+      throw err;
+    }
+  }
 }
 
 let _gateway: PaymentGateway | null = null;
