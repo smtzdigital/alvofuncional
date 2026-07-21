@@ -105,6 +105,17 @@ function AgendaPage() {
   const [creatingLead, setCreatingLead] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [kanbanSearch, setKanbanSearch] = useState("");
+
+  const search = kanbanSearch.trim().toLowerCase();
+  const filteredLeads = useMemo(() => {
+    if (!search) return leads;
+    return leads.filter((l) =>
+      l.full_name.toLowerCase().includes(search) ||
+      l.phone.toLowerCase().includes(search) ||
+      (l.email ?? "").toLowerCase().includes(search)
+    );
+  }, [leads, search]);
 
   const load = async () => {
     setLoading(true);
