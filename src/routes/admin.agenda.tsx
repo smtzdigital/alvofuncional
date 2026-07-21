@@ -679,13 +679,113 @@ function LeadDialog({
               <Trash2 className="mr-2 h-4 w-4" /> Excluir
             </Button>
           )}
+          {lead && lead.stage === "venda" && !lead.student_id && (
+            <Button variant="secondary" onClick={() => setConverting(true)}>
+              <UserPlus className="mr-2 h-4 w-4" /> Converter em aluno
+            </Button>
+          )}
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button onClick={save} disabled={saving}>{saving ? "Salvando..." : "Salvar"}</Button>
+        </DialogFooter>
+      </DialogContent>
+      {converting && lead && (
+        <ConvertLeadDialog
+          lead={lead}
+          onClose={() => setConverting(false)}
+          onDone={() => { setConverting(false); onSaved(); onClose(); }}
+        />
+      )}
+    </Dialog>
+  );
+}
+
+function ConvertLeadDialog({
+  lead, onClose, onDone,
+}: {
+  lead: Lead;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [form, setForm] = useState({
+    full_name: lead.full_name,
+    email: lead.email ?? "",
+    password: "",
+    phone: lead.phone ?? "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const submit = async () => {
+    if (!form.full_name.trim() || !form.email.trim() || form.password.length < 6) {
+      toast.error("Nome, email e senha (mín. 6) são obrigatórios");
+      return;
+    }
+    setSaving(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/students-create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({
+        full_name: form.full_name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        phone: form.phone || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setSaving(false);
+      toast.error(data.error ?? "Falha ao cadastrar");
+      return;
+    }
+    // vincula student_id ao lead
+    const { data: studentRow } = await supabase
+      .from("students").select("id").eq("user_id", data.user_id).maybeSingle();
+    if (studentRow) {
+      await supabase.from("leads_interessados")
+        .update({ student_id: studentRow.id, notes: (lead.notes ? lead.notes + "\n" : "") + "Convertido em aluno." })
+        .eq("id", lead.id);
+    }
+    setSaving(false);
+    toast.success("Lead convertido em aluno. Vincule o plano em Alunos → Editar.");
+    onDone();
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Converter lead em aluno</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Nome completo *</Label>
+            <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+          </div>
+          <div>
+            <Label>Email *</Label>
+            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          </div>
+          <div>
+            <Label>Senha inicial *</Label>
+            <Input type="text" minLength={6} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="mín. 6 caracteres" />
+          </div>
+          <div>
+            <Label>Telefone</Label>
+            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Após criar, vincule o plano em Alunos → Editar.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button onClick={submit} disabled={saving}>{saving ? "Convertendo..." : "Converter"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
 
 function EventDialog({
   event, leads, students, presetLeadId, onClose, onSaved,
