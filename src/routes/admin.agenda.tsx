@@ -138,9 +138,9 @@ function AgendaPage() {
     const g: Record<LeadStage, Lead[]> = {
       novo: [], contato: [], experimental: [], negociacao: [], venda: [], perdido: [],
     };
-    leads.forEach((l) => g[l.stage].push(l));
+    filteredLeads.forEach((l) => g[l.stage].push(l));
     return g;
-  }, [leads]);
+  }, [filteredLeads]);
 
   const upcoming = useMemo(() => {
     const now = Date.now();
