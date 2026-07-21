@@ -35,8 +35,10 @@ import {
   XCircle,
   UserPlus,
   GripVertical,
+  Search,
+  FilterX,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/admin/agenda")({
@@ -332,6 +334,54 @@ function UpcomingAgenda({
   onChange: () => void;
 }) {
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
+  const [filterDate, setFilterDate] = useState("");
+  const [filterStartTime, setFilterStartTime] = useState("");
+  const [filterEndTime, setFilterEndTime] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterType, setFilterType] = useState<EventType | "all">("all");
+
+  const hasFilters = filterDate || filterStartTime || filterEndTime || filterName || filterType !== "all";
+
+  const clearFilters = () => {
+    setFilterDate("");
+    setFilterStartTime("");
+    setFilterEndTime("");
+    setFilterName("");
+    setFilterType("all");
+  };
+
+  const filteredEvents = useMemo(() => {
+    const name = filterName.trim().toLowerCase();
+    return events.filter((e) => {
+      const scheduled = new Date(e.scheduled_at);
+      const scheduledDate = new Date(scheduled.getFullYear(), scheduled.getMonth(), scheduled.getDate());
+      const timeStr = format(scheduled, "HH:mm");
+
+      if (filterDate && !isSameDay(scheduledDate, parseISO(filterDate))) return false;
+
+      if (filterStartTime && timeStr < filterStartTime) return false;
+      if (filterEndTime && timeStr > filterEndTime) return false;
+
+      if (filterType !== "all" && e.type !== filterType) return false;
+
+      if (name) {
+        const lead = leads.find((l) => l.id === e.lead_id);
+        const student = students.find((s) => s.id === e.student_id);
+        const searchable = [
+          e.title,
+          lead?.full_name,
+          student?.profile?.full_name,
+          e.notes,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!searchable.includes(name)) return false;
+      }
+
+      return true;
+    });
+  }, [events, leads, students, filterDate, filterStartTime, filterEndTime, filterName, filterType]);
 
   const setStatus = async (id: string, status: EventStatus) => {
     const { error } = await supabase.from("agenda_events").update({ status }).eq("id", id);
@@ -349,50 +399,98 @@ function UpcomingAgenda({
     else onChange();
   };
 
-  if (events.length === 0) {
-    return <div className="text-muted-foreground">Nenhum evento agendado.</div>;
-  }
-
   return (
     <>
-      <div className="space-y-2">
-        {events.map((e) => {
-          const lead = leads.find((l) => l.id === e.lead_id);
-          const student = students.find((s) => s.id === e.student_id);
-          return (
-            <Card key={e.id} className="flex flex-wrap items-center gap-3 p-3">
-              <div className="min-w-[140px]">
-                <div className="font-medium">
-                  {format(new Date(e.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                </div>
-                <div className="text-xs text-muted-foreground">{e.duration_minutes} min</div>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-medium">{e.title}</div>
-                <div className="text-xs text-muted-foreground">
-                  {TYPE_LABEL[e.type]}
-                  {lead && ` · Lead: ${lead.full_name}`}
-                  {student && ` · Aluno: ${student.profile?.full_name ?? ""}`}
-                </div>
-                {e.notes && <div className="mt-1 text-xs text-muted-foreground">{e.notes}</div>}
-              </div>
-              <Badge variant="outline">{STATUS_LABEL[e.status]}</Badge>
-              <div className="flex gap-1">
-                <Button size="icon" variant="ghost" onClick={() => setStatus(e.id, "concluido")} title="Concluir">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                </Button>
-                <Button size="icon" variant="ghost" onClick={() => setStatus(e.id, "cancelado")} title="Cancelar">
-                  <XCircle className="h-4 w-4 text-rose-500" />
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => setEditing(e)}>Editar</Button>
-                <Button size="icon" variant="ghost" onClick={() => remove(e.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
-          );
-        })}
+      <div className="mb-4 rounded-lg border border-border bg-card/50 p-3">
+        <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+          <Search className="h-4 w-4" />
+          Filtros da agenda
+          {hasFilters && (
+            <Button variant="ghost" size="sm" className="ml-auto h-7 gap-1 px-2" onClick={clearFilters}>
+              <FilterX className="h-3.5 w-3.5" /> Limpar
+            </Button>
+          )}
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+          <div>
+            <Label className="text-xs">Data</Label>
+            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Hora inicial</Label>
+            <Input type="time" value={filterStartTime} onChange={(e) => setFilterStartTime(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Hora final</Label>
+            <Input type="time" value={filterEndTime} onChange={(e) => setFilterEndTime(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Nome / título</Label>
+            <Input
+              placeholder="Buscar..."
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Tipo</Label>
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as EventType | "all")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(TYPE_LABEL).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
+
+      {filteredEvents.length === 0 ? (
+        <div className="text-muted-foreground">Nenhum evento encontrado com os filtros selecionados.</div>
+      ) : (
+        <div className="space-y-2">
+          {filteredEvents.map((e) => {
+            const lead = leads.find((l) => l.id === e.lead_id);
+            const student = students.find((s) => s.id === e.student_id);
+            return (
+              <Card key={e.id} className="flex flex-wrap items-center gap-3 p-3">
+                <div className="min-w-[140px]">
+                  <div className="font-medium">
+                    {format(new Date(e.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{e.duration_minutes} min</div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium">{e.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {TYPE_LABEL[e.type]}
+                    {lead && ` · Lead: ${lead.full_name}`}
+                    {student && ` · Aluno: ${student.profile?.full_name ?? ""}`}
+                  </div>
+                  {e.notes && <div className="mt-1 text-xs text-muted-foreground">{e.notes}</div>}
+                </div>
+                <Badge variant="outline">{STATUS_LABEL[e.status]}</Badge>
+                <div className="flex gap-1">
+                  <Button size="icon" variant="ghost" onClick={() => setStatus(e.id, "concluido")} title="Concluir">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setStatus(e.id, "cancelado")} title="Cancelar">
+                    <XCircle className="h-4 w-4 text-rose-500" />
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setEditing(e)}>Editar</Button>
+                  <Button size="icon" variant="ghost" onClick={() => remove(e.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
       {editing && (
         <EventDialog
           event={editing}
