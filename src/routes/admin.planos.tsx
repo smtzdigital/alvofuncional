@@ -28,6 +28,7 @@ interface Plan {
   is_active: boolean;
   is_custom: boolean;
   sort_order: number;
+  stone_plan_id: string | null;
 }
 
 const empty: Partial<Plan> = {
