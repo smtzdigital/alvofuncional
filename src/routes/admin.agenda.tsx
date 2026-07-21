@@ -35,8 +35,10 @@ import {
   XCircle,
   UserPlus,
   GripVertical,
+  Search,
+  FilterX,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO, isSameDay, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/admin/agenda")({
