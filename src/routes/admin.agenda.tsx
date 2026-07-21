@@ -185,7 +185,20 @@ function AgendaPage() {
           <TabsTrigger value="agenda">Agenda ({upcoming.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="kanban" className="mt-4">
+        <TabsContent value="kanban" className="mt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Buscar leads por nome, telefone ou email..."
+              value={kanbanSearch}
+              onChange={(e) => setKanbanSearch(e.target.value)}
+              className="max-w-md"
+            />
+            {search && (
+              <Button variant="ghost" size="sm" onClick={() => setKanbanSearch("")}>
+                Limpar
+              </Button>
+            )}
+          </div>
           {loading ? (
             <div className="text-muted-foreground">Carregando...</div>
           ) : (
