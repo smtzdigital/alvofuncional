@@ -173,6 +173,32 @@ class StonePaymentGateway implements PaymentGateway {
     }
   }
 
+  async updateCustomer(input: { customerId: string; name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }) {
+    const cfg = await getGatewayConfig();
+    const body: Record<string, unknown> = {
+      name: input.name,
+      email: input.email,
+      document: input.document.replace(/\D/g, ""),
+      document_type: input.documentType ?? (input.document.replace(/\D/g, "").length > 11 ? "CNPJ" : "CPF"),
+      type: (input.documentType ?? "CPF") === "CNPJ" ? "company" : "individual",
+    };
+    if (input.phone) {
+      const digits = input.phone.replace(/\D/g, "");
+      const area = digits.slice(-11, -9) || "11";
+      const number = digits.slice(-9);
+      body.phones = { mobile_phone: { country_code: "55", area_code: area, number } };
+    }
+    try {
+      const res = await stoneRequest<StoneCustomer>(cfg, { method: "PUT", path: `/customers/${encodeURIComponent(input.customerId)}`, body });
+      await logAudit("updateCustomer", { id: input.customerId, ...body }, { id: res.id }, undefined, input.actor);
+      return res;
+    } catch (e) {
+      const err = e as StoneError;
+      await logAudit("updateCustomer", { id: input.customerId }, null, err.message, input.actor);
+      throw err;
+    }
+  }
+
   async createCard(input: { customerId: string; cardToken: string; actor?: string }) {
     const cfg = await getGatewayConfig();
     const body = { token: input.cardToken };
