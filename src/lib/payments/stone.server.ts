@@ -116,17 +116,31 @@ export interface StoneCard { id: string; brand?: string; last_four_digits?: stri
 export interface StoneSubscription { id: string; status: string; next_billing_at?: string; card?: StoneCard; plan?: { id: string } }
 export interface StonePaymentLink { id: string; url: string; expires_at?: string; status?: string; amount?: number }
 export interface StoneCharge { id: string; status: string; amount: number; paid_at?: string; last_transaction?: { acquirer_message?: string; acquirer_return_code?: string } }
+export interface StonePlan { id: string; name: string; status?: string }
+
+export interface PlanSyncInput {
+  name: string;
+  description?: string;
+  amountCents: number;
+  interval: string;
+  intervalCount: number;
+  installments: number;
+  actor?: string;
+}
 
 // -------------------- Gateway interface --------------------
 
 export interface PaymentGateway {
   createCustomer(input: { name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }): Promise<StoneCustomer>;
   createCard(input: { customerId: string; cardToken: string; actor?: string }): Promise<StoneCard>;
-  createSubscription(input: { customerId: string; cardId: string; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; actor?: string; metadata?: Record<string, string> }): Promise<StoneSubscription>;
+  createSubscription(input: { customerId: string; cardId: string; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }): Promise<StoneSubscription>;
   cancelSubscription(input: { subscriptionId: string; actor?: string }): Promise<{ ok: true }>;
   updateSubscriptionCard(input: { subscriptionId: string; cardId: string; actor?: string }): Promise<{ ok: true }>;
   createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string }): Promise<StonePaymentLink>;
   createOneOffCharge(input: { customerId: string; cardId: string; amountCents: number; installments?: number; description?: string; actor?: string; metadata?: Record<string, string> }): Promise<StoneCharge>;
+  createPlan(input: PlanSyncInput): Promise<StonePlan>;
+  updatePlan(input: PlanSyncInput & { stonePlanId: string }): Promise<StonePlan>;
+  deletePlan(input: { stonePlanId: string; actor?: string }): Promise<{ ok: true }>;
 }
 
 // -------------------- Stone impl --------------------
