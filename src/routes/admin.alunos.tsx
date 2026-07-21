@@ -232,8 +232,6 @@ function AlunosAdmin() {
       rg: (fd.get("rg") as string) || null,
       birth_date: (fd.get("birth_date") as string) || null,
       address: (fd.get("address") as string) || null,
-      plan_id: (fd.get("plan_id") as string) || null,
-      teacher_id: (fd.get("teacher_id") as string) || null,
     };
     const {
       data: { session },
@@ -249,12 +247,13 @@ function AlunosAdmin() {
       toast.error(data.error ?? "Falha ao cadastrar");
       return;
     }
-    toast.success("Aluno cadastrado");
+    toast.success("Aluno cadastrado. Vincule o plano em Editar.");
     if (data.pagarme?.synced) toast.success("Cliente registrado na Pagar.me");
     else if (data.pagarme?.reason) toast.warning(`Pagar.me: ${data.pagarme.reason}`);
     setCreating(false);
     load();
   };
+
 
   const filtered = rows.filter(
     (r) =>
