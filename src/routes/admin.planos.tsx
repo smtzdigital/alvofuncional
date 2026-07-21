@@ -272,6 +272,7 @@ function PlansAdmin() {
               {p.has_goals && <Tag>Metas</Tag>}
               {!p.is_active && <Tag warn>Inativo</Tag>}
               {p.is_custom && <Tag warn>Personalizado</Tag>}
+              {p.stone_plan_id ? <Tag>Pagar.me ✓</Tag> : <Tag warn>Não sincronizado</Tag>}
             </div>
           </div>
         ))}
