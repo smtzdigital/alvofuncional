@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
 
           const { data: plan } = await supabaseAdmin.from("plans").select("*").eq("id", body.plan_id).maybeSingle();
           if (!plan) return Response.json({ error: "Plano não encontrado" }, { status: 404 });
-          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number };
+          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number; stone_plan_id: string | null };
 
           const customerId = await ensureCustomer(body.student_id, uid);
           const gw = getPaymentGateway();
@@ -53,6 +53,23 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
             is_default: true,
           }).select("id").single();
 
+          // Se o plano ainda não foi sincronizado com a Pagar.me, cria agora
+          let stonePlanId = p.stone_plan_id;
+          if (!stonePlanId) {
+            try {
+              const created = await gw.createPlan({
+                name: p.name,
+                amountCents: Math.round(Number(p.price) * 100),
+                interval: p.billing_interval,
+                intervalCount: p.billing_interval_count,
+                installments: p.installments,
+                actor: uid,
+              });
+              stonePlanId = created.id;
+              await supabaseAdmin.from("plans").update({ stone_plan_id: stonePlanId }).eq("id", p.id);
+            } catch { /* segue com pricing inline como fallback */ }
+          }
+
           const sub = await gw.createSubscription({
             customerId,
             cardId: card.id,
@@ -61,6 +78,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
             interval: p.billing_interval,
             intervalCount: p.billing_interval_count,
             installments: p.installments,
+            stonePlanId,
             actor: uid,
             metadata: { student_id: body.student_id, plan_id: p.id },
           });
