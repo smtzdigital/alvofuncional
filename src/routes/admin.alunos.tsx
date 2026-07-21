@@ -231,6 +231,8 @@ function AlunosAdmin() {
       return;
     }
     toast.success("Aluno cadastrado");
+    if (data.pagarme?.synced) toast.success("Cliente registrado na Pagar.me");
+    else if (data.pagarme?.reason) toast.warning(`Pagar.me: ${data.pagarme.reason}`);
     setCreating(false);
     load();
   };
