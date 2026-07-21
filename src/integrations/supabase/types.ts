@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          duration_minutes: number
+          id: string
+          lead_id: string | null
+          notes: string | null
+          scheduled_at: string
+          status: Database["public"]["Enums"]["agenda_event_status"]
+          student_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["agenda_event_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          scheduled_at: string
+          status?: Database["public"]["Enums"]["agenda_event_status"]
+          student_id?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["agenda_event_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          scheduled_at?: string
+          status?: Database["public"]["Enums"]["agenda_event_status"]
+          student_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["agenda_event_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_interessados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_events_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           accent_color: string
@@ -294,25 +354,51 @@ export type Database = {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"] | null
           created_at: string
+          email: string | null
           full_name: string
           id: string
+          next_contact_at: string | null
+          notes: string | null
           phone: string
+          stage: Database["public"]["Enums"]["lead_stage"]
+          student_id: string | null
+          updated_at: string
         }
         Insert: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
           created_at?: string
+          email?: string | null
           full_name: string
           id?: string
+          next_contact_at?: string | null
+          notes?: string | null
           phone: string
+          stage?: Database["public"]["Enums"]["lead_stage"]
+          student_id?: string | null
+          updated_at?: string
         }
         Update: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
           created_at?: string
+          email?: string | null
           full_name?: string
           id?: string
+          next_contact_at?: string | null
+          notes?: string | null
           phone?: string
+          stage?: Database["public"]["Enums"]["lead_stage"]
+          student_id?: string | null
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_interessados_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_audit_logs: {
         Row: {
@@ -1336,6 +1422,8 @@ export type Database = {
     }
     Enums: {
       activity_level: "sedentario" | "iniciante" | "intermediario" | "avancado"
+      agenda_event_status: "agendado" | "concluido" | "cancelado" | "no_show"
+      agenda_event_type: "aula" | "experimental" | "contato" | "outro"
       app_role: "admin" | "professor" | "aluno"
       fitness_goal:
         | "emagrecimento"
@@ -1346,6 +1434,13 @@ export type Database = {
         | "outro"
       gender: "masculino" | "feminino"
       goal_status: "ativa" | "concluida" | "cancelada"
+      lead_stage:
+        | "novo"
+        | "contato"
+        | "experimental"
+        | "negociacao"
+        | "venda"
+        | "perdido"
       motivation_type: "estetica" | "saude" | "autoestima"
       payment_method: "pix" | "dinheiro" | "cartao" | "transferencia" | "outro"
       payment_status: "pendente" | "pago" | "atrasado" | "cancelado"
@@ -1483,6 +1578,8 @@ export const Constants = {
   public: {
     Enums: {
       activity_level: ["sedentario", "iniciante", "intermediario", "avancado"],
+      agenda_event_status: ["agendado", "concluido", "cancelado", "no_show"],
+      agenda_event_type: ["aula", "experimental", "contato", "outro"],
       app_role: ["admin", "professor", "aluno"],
       fitness_goal: [
         "emagrecimento",
@@ -1494,6 +1591,14 @@ export const Constants = {
       ],
       gender: ["masculino", "feminino"],
       goal_status: ["ativa", "concluida", "cancelada"],
+      lead_stage: [
+        "novo",
+        "contato",
+        "experimental",
+        "negociacao",
+        "venda",
+        "perdido",
+      ],
       motivation_type: ["estetica", "saude", "autoestima"],
       payment_method: ["pix", "dinheiro", "cartao", "transferencia", "outro"],
       payment_status: ["pendente", "pago", "atrasado", "cancelado"],
