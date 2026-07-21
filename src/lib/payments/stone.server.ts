@@ -4,6 +4,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const STONE_API_URL = "https://api.pagar.me/core/v5";
+const STONE_SANDBOX_API_URL = "https://sdx-api.pagar.me/core/v5";
 
 export interface GatewayConfig {
   provider: string;
@@ -51,7 +52,7 @@ export class StoneError extends Error {
   }
 }
 
-async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestInit): Promise<T> {
+async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestInit & { useSandboxHost?: boolean }): Promise<T> {
   if (!cfg.secret_key) throw new StoneError("Chave secreta da Stone não configurada", 400, "no_secret_key");
   const auth = "Basic " + btoa(`${cfg.secret_key}:`);
   const headers: Record<string, string> = {
@@ -61,7 +62,8 @@ async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestI
   };
   if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
 
-  const res = await fetch(`${STONE_API_URL}${init.path}`, {
+  const baseUrl = init.useSandboxHost && cfg.environment === "sandbox" ? STONE_SANDBOX_API_URL : STONE_API_URL;
+  const res = await fetch(`${baseUrl}${init.path}`, {
     method: init.method,
     headers,
     body: init.body ? JSON.stringify(init.body) : undefined,
@@ -290,10 +292,12 @@ class StonePaymentGateway implements PaymentGateway {
 
   async createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string }) {
     const cfg = await getGatewayConfig();
+    const expiresInMinutes = Math.max(1, Math.round(input.expiresInSec / 60));
     const body = {
-      name: input.name,
       is_building: false,
-      expires_in: input.expiresInSec,
+      name: input.name.slice(0, 64),
+      type: "order",
+      expires_in: expiresInMinutes,
       payment_settings: {
         accepted_payment_methods: ["credit_card"],
         credit_card_settings: {
@@ -302,12 +306,12 @@ class StonePaymentGateway implements PaymentGateway {
         },
       },
       cart_settings: {
-        items: [{ amount: input.amountCents, name: input.name, description: input.description ?? input.name, default_quantity: 1 }],
+        items: [{ amount: input.amountCents, name: input.name.slice(0, 64), description: (input.description ?? input.name).slice(0, 256), default_quantity: 1 }],
       },
       metadata: input.metadata ?? {},
     };
     try {
-      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body });
+      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body, useSandboxHost: true });
       await logAudit("createPaymentLink", { name: input.name, amount: input.amountCents }, { id: res.id, url: res.url }, undefined, input.actor);
       return res;
     } catch (e) {
