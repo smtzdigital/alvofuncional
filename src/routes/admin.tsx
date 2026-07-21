@@ -46,6 +46,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/admin", label: "Painel", icon: LayoutDashboard, exact: true },
+  { to: "/admin/agenda", label: "Agenda & Funil", icon: CalendarDays },
   { to: "/admin/alunos", label: "Alunos", icon: Users },
   { to: "/admin/planos", label: "Planos", icon: Package },
   {
