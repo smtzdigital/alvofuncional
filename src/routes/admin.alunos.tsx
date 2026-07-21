@@ -194,6 +194,8 @@ function AlunosAdmin() {
     setSaving(false);
     if (!res.ok) return toast.error(data.error ?? "Falha ao atualizar");
     toast.success("Aluno atualizado");
+    if (data.pagarme?.synced) toast.success("Cliente sincronizado na Pagar.me");
+    else if (data.pagarme?.reason) toast.warning(`Pagar.me: ${data.pagarme.reason}`);
     setEditing(null);
     load();
   };
