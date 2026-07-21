@@ -105,6 +105,17 @@ function AgendaPage() {
   const [creatingLead, setCreatingLead] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [kanbanSearch, setKanbanSearch] = useState("");
+
+  const search = kanbanSearch.trim().toLowerCase();
+  const filteredLeads = useMemo(() => {
+    if (!search) return leads;
+    return leads.filter((l) =>
+      l.full_name.toLowerCase().includes(search) ||
+      l.phone.toLowerCase().includes(search) ||
+      (l.email ?? "").toLowerCase().includes(search)
+    );
+  }, [leads, search]);
 
   const load = async () => {
     setLoading(true);
@@ -127,9 +138,9 @@ function AgendaPage() {
     const g: Record<LeadStage, Lead[]> = {
       novo: [], contato: [], experimental: [], negociacao: [], venda: [], perdido: [],
     };
-    leads.forEach((l) => g[l.stage].push(l));
+    filteredLeads.forEach((l) => g[l.stage].push(l));
     return g;
-  }, [leads]);
+  }, [filteredLeads]);
 
   const upcoming = useMemo(() => {
     const now = Date.now();
@@ -174,7 +185,20 @@ function AgendaPage() {
           <TabsTrigger value="agenda">Agenda ({upcoming.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="kanban" className="mt-4">
+        <TabsContent value="kanban" className="mt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Buscar leads por nome, telefone ou email..."
+              value={kanbanSearch}
+              onChange={(e) => setKanbanSearch(e.target.value)}
+              className="max-w-md"
+            />
+            {search && (
+              <Button variant="ghost" size="sm" onClick={() => setKanbanSearch("")}>
+                Limpar
+              </Button>
+            )}
+          </div>
           {loading ? (
             <div className="text-muted-foreground">Carregando...</div>
           ) : (
@@ -199,7 +223,7 @@ function AgendaPage() {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{grouped[stage.id].length}</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
                     {grouped[stage.id].map((lead) => (
                       <Card
                         key={lead.id}
