@@ -223,7 +223,7 @@ function AgendaPage() {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{grouped[stage.id].length}</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
                     {grouped[stage.id].map((lead) => (
                       <Card
                         key={lead.id}
