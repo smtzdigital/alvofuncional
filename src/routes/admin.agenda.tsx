@@ -115,7 +115,7 @@ function AgendaPage() {
     ]);
     setLeads((leadsData ?? []) as Lead[]);
     setEvents((eventsData ?? []) as AgendaEvent[]);
-    setStudents(((studentsData ?? []) as unknown as StudentOption[]) ?? []);
+    setStudents((studentsData ?? []) as unknown as StudentOption[]);
     setLoading(false);
   };
 

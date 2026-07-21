@@ -41,6 +41,7 @@ import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configura
 import { Route as AdminAtribuirTreinosRouteImport } from './routes/admin.atribuir-treinos'
 import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
+import { Route as AdminAgendaRouteImport } from './routes/admin.agenda'
 import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminUsersListRouteImport } from './routes/api/admin.users-list'
@@ -217,6 +218,11 @@ const AdminAlunosRoute = AdminAlunosRouteImport.update({
   path: '/alunos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAgendaRoute = AdminAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiPublicWebhooksStoneRoute = ApiPublicWebhooksStoneRouteImport.update({
   id: '/api/public/webhooks-stone',
   path: '/api/public/webhooks-stone',
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
+  '/admin/agenda': typeof AdminAgendaRoute
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
@@ -351,6 +358,7 @@ export interface FileRoutesByTo {
   '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
+  '/admin/agenda': typeof AdminAgendaRoute
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
@@ -401,6 +409,7 @@ export interface FileRoutesById {
   '/em-breve': typeof EmBreveRoute
   '/login': typeof LoginRoute
   '/ranking': typeof RankingRoute
+  '/admin/agenda': typeof AdminAgendaRoute
   '/admin/alunos': typeof AdminAlunosRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/atribuir-treinos': typeof AdminAtribuirTreinosRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/em-breve'
     | '/login'
     | '/ranking'
+    | '/admin/agenda'
     | '/admin/alunos'
     | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
@@ -499,6 +509,7 @@ export interface FileRouteTypes {
     | '/em-breve'
     | '/login'
     | '/ranking'
+    | '/admin/agenda'
     | '/admin/alunos'
     | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
@@ -548,6 +559,7 @@ export interface FileRouteTypes {
     | '/em-breve'
     | '/login'
     | '/ranking'
+    | '/admin/agenda'
     | '/admin/alunos'
     | '/admin/assinaturas'
     | '/admin/atribuir-treinos'
@@ -842,6 +854,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlunosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/agenda': {
+      id: '/admin/agenda'
+      path: '/agenda'
+      fullPath: '/admin/agenda'
+      preLoaderRoute: typeof AdminAgendaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/public/webhooks-stone': {
       id: '/api/public/webhooks-stone'
       path: '/api/public/webhooks-stone'
@@ -951,6 +970,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAgendaRoute: typeof AdminAgendaRoute
   AdminAlunosRoute: typeof AdminAlunosRoute
   AdminAssinaturasRoute: typeof AdminAssinaturasRoute
   AdminAtribuirTreinosRoute: typeof AdminAtribuirTreinosRoute
@@ -971,6 +991,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAgendaRoute: AdminAgendaRoute,
   AdminAlunosRoute: AdminAlunosRoute,
   AdminAssinaturasRoute: AdminAssinaturasRoute,
   AdminAtribuirTreinosRoute: AdminAtribuirTreinosRoute,
