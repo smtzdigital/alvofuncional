@@ -63,6 +63,25 @@ function AlunosAdmin() {
   const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+
+  const resyncPagarme = async (r: Row) => {
+    setSyncingId(r.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/students-sync-customer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ student_id: r.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) return toast.error(data.error ?? "Falha ao sincronizar");
+      if (data.pagarme?.synced) toast.success("Cliente sincronizado na Pagar.me");
+      else toast.warning(`Pagar.me: ${data.pagarme?.reason ?? "não sincronizado"}`);
+    } finally {
+      setSyncingId(null);
+    }
+  };
   const [contract, setContract] = useState<{
     template: string;
     aluno: ContractStudent;
