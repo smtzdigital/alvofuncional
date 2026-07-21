@@ -38,7 +38,7 @@ import {
   Search,
   FilterX,
 } from "lucide-react";
-import { format, parseISO, isSameDay, isAfter, isBefore } from "date-fns";
+import { format, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/admin/agenda")({
