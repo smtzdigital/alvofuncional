@@ -525,6 +525,8 @@ function LeadDialog({
   });
   const [saving, setSaving] = useState(false);
   const [addingEvent, setAddingEvent] = useState(false);
+  const [converting, setConverting] = useState(false);
+
 
   const save = async () => {
     if (!form.full_name.trim() || !form.phone.trim()) {
