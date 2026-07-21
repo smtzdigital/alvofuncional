@@ -58,6 +58,19 @@ function PlansAdmin() {
     load();
   }, []);
 
+  const syncToStone = async (planId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const res = await fetch("/api/admin/plans-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ plan_id: planId }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Falha ao sincronizar com a Pagar.me");
+    return json;
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
@@ -74,18 +87,36 @@ function PlansAdmin() {
       is_custom: !!form.is_custom,
       sort_order: Number(form.sort_order ?? 0),
     };
-    const { error } = form.id
-      ? await supabase.from("plans").update(payload).eq("id", form.id)
-      : await supabase.from("plans").insert(payload);
+    const { data: saved, error } = form.id
+      ? await supabase.from("plans").update(payload).eq("id", form.id).select("id").single()
+      : await supabase.from("plans").insert(payload).select("id").single();
     if (error) return toast.error(error.message);
-    toast.success("Plano salvo");
+
+    // Sincroniza com a Pagar.me (não bloqueia se falhar; avisa)
+    try {
+      await syncToStone((saved as { id: string }).id);
+      toast.success("Plano salvo e sincronizado com a Pagar.me");
+    } catch (err) {
+      toast.warning("Plano salvo, mas falhou sincronizar na Pagar.me: " + (err as Error).message);
+    }
+
     setOpen(false);
     setForm(empty);
     load();
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Excluir este plano?")) return;
+    if (!confirm("Excluir este plano? Também será removido da Pagar.me.")) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await fetch("/api/admin/plans-sync", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ plan_id: id }),
+        });
+      }
+    } catch { /* segue apagando localmente */ }
     const { error } = await supabase.from("plans").delete().eq("id", id);
     if (error) return toast.error(error.message);
     load();

@@ -49,6 +49,7 @@ import { Route as ApiAdminUsersCreateRouteImport } from './routes/api/admin.user
 import { Route as ApiAdminStudentsUpdateRouteImport } from './routes/api/admin.students-update'
 import { Route as ApiAdminStudentsCreateRouteImport } from './routes/api/admin.students-create'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
+import { Route as ApiAdminPlansSyncRouteImport } from './routes/api/admin.plans-sync'
 import { Route as ApiAdminPaymentsSubscriptionRouteImport } from './routes/api/admin.payments-subscription'
 import { Route as ApiAdminPaymentsLinkRouteImport } from './routes/api/admin.payments-link'
 import { Route as ApiAdminPaymentsConfigRouteImport } from './routes/api/admin.payments-config'
@@ -255,6 +256,11 @@ const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPlansSyncRoute = ApiAdminPlansSyncRouteImport.update({
+  id: '/api/admin/plans-sync',
+  path: '/api/admin/plans-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminPaymentsSubscriptionRoute =
   ApiAdminPaymentsSubscriptionRouteImport.update({
     id: '/api/admin/payments-subscription',
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
+  '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
+  '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
@@ -413,6 +421,7 @@ export interface FileRoutesById {
   '/api/admin/payments-config': typeof ApiAdminPaymentsConfigRoute
   '/api/admin/payments-link': typeof ApiAdminPaymentsLinkRoute
   '/api/admin/payments-subscription': typeof ApiAdminPaymentsSubscriptionRoute
+  '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
@@ -462,6 +471,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-config'
     | '/api/admin/payments-link'
     | '/api/admin/payments-subscription'
+    | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
@@ -507,6 +517,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-config'
     | '/api/admin/payments-link'
     | '/api/admin/payments-subscription'
+    | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments-config'
     | '/api/admin/payments-link'
     | '/api/admin/payments-subscription'
+    | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
     | '/api/admin/students-update'
@@ -578,6 +590,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsConfigRoute: typeof ApiAdminPaymentsConfigRoute
   ApiAdminPaymentsLinkRoute: typeof ApiAdminPaymentsLinkRoute
   ApiAdminPaymentsSubscriptionRoute: typeof ApiAdminPaymentsSubscriptionRoute
+  ApiAdminPlansSyncRoute: typeof ApiAdminPlansSyncRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminStudentsCreateRoute: typeof ApiAdminStudentsCreateRoute
   ApiAdminStudentsUpdateRoute: typeof ApiAdminStudentsUpdateRoute
@@ -871,6 +884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/plans-sync': {
+      id: '/api/admin/plans-sync'
+      path: '/api/admin/plans-sync'
+      fullPath: '/api/admin/plans-sync'
+      preLoaderRoute: typeof ApiAdminPlansSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/payments-subscription': {
       id: '/api/admin/payments-subscription'
       path: '/api/admin/payments-subscription'
@@ -986,6 +1006,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsConfigRoute: ApiAdminPaymentsConfigRoute,
   ApiAdminPaymentsLinkRoute: ApiAdminPaymentsLinkRoute,
   ApiAdminPaymentsSubscriptionRoute: ApiAdminPaymentsSubscriptionRoute,
+  ApiAdminPlansSyncRoute: ApiAdminPlansSyncRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminStudentsCreateRoute: ApiAdminStudentsCreateRoute,
   ApiAdminStudentsUpdateRoute: ApiAdminStudentsUpdateRoute,
