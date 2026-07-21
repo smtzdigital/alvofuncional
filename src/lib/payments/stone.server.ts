@@ -52,7 +52,7 @@ export class StoneError extends Error {
   }
 }
 
-async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestInit): Promise<T> {
+async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestInit & { useSandboxHost?: boolean }): Promise<T> {
   if (!cfg.secret_key) throw new StoneError("Chave secreta da Stone não configurada", 400, "no_secret_key");
   const auth = "Basic " + btoa(`${cfg.secret_key}:`);
   const headers: Record<string, string> = {
@@ -62,7 +62,8 @@ async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestI
   };
   if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
 
-  const res = await fetch(`${STONE_API_URL}${init.path}`, {
+  const baseUrl = init.useSandboxHost && cfg.environment === "sandbox" ? STONE_SANDBOX_API_URL : STONE_API_URL;
+  const res = await fetch(`${baseUrl}${init.path}`, {
     method: init.method,
     headers,
     body: init.body ? JSON.stringify(init.body) : undefined,
