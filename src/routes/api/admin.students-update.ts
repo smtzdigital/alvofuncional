@@ -73,7 +73,8 @@ export const Route = createFileRoute("/api/admin/students-update")({
           if (error) return Response.json({ error: error.message }, { status: 400 });
         }
 
-        return Response.json({ success: true });
+        const sync = await syncStudentCustomer(body.student_id, adminId);
+        return Response.json({ success: true, pagarme: sync });
       },
     },
   },
