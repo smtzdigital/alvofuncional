@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdminUserId } from "@/lib/payments/admin-verify.server";
+import { syncStudentCustomer } from "@/lib/payments/customer-sync.server";
 
 interface Payload {
   student_id: string;
