@@ -380,36 +380,10 @@ function AlunosAdmin() {
                 <Label>Endereço</Label>
                 <Input name="address" />
               </div>
-              <div>
-                <Label>Plano</Label>
-                <Select name="plan_id">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione (opcional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="col-span-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
+                O plano e o professor podem ser vinculados depois em <strong>Editar</strong>.
               </div>
-              <div>
-                <Label>Professor</Label>
-                <Select name="teacher_id">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nenhum" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
