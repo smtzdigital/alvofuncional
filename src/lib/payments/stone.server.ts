@@ -4,6 +4,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const STONE_API_URL = "https://api.pagar.me/core/v5";
+const STONE_SANDBOX_API_URL = "https://sdx-api.pagar.me/core/v5";
 
 export interface GatewayConfig {
   provider: string;
