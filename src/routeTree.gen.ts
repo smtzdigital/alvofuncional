@@ -47,6 +47,7 @@ import { Route as ApiAdminUsersListRouteImport } from './routes/api/admin.users-
 import { Route as ApiAdminUsersDeleteRouteImport } from './routes/api/admin.users-delete'
 import { Route as ApiAdminUsersCreateRouteImport } from './routes/api/admin.users-create'
 import { Route as ApiAdminStudentsUpdateRouteImport } from './routes/api/admin.students-update'
+import { Route as ApiAdminStudentsSyncCustomerRouteImport } from './routes/api/admin.students-sync-customer'
 import { Route as ApiAdminStudentsCreateRouteImport } from './routes/api/admin.students-create'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin.settings'
 import { Route as ApiAdminPlansSyncRouteImport } from './routes/api/admin.plans-sync'
@@ -246,6 +247,12 @@ const ApiAdminStudentsUpdateRoute = ApiAdminStudentsUpdateRouteImport.update({
   path: '/api/admin/students-update',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminStudentsSyncCustomerRoute =
+  ApiAdminStudentsSyncCustomerRouteImport.update({
+    id: '/api/admin/students-sync-customer',
+    path: '/api/admin/students-sync-customer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminStudentsCreateRoute = ApiAdminStudentsCreateRouteImport.update({
   id: '/api/admin/students-create',
   path: '/api/admin/students-create',
@@ -329,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-sync-customer': typeof ApiAdminStudentsSyncCustomerRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
@@ -375,6 +383,7 @@ export interface FileRoutesByTo {
   '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-sync-customer': typeof ApiAdminStudentsSyncCustomerRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
@@ -424,6 +433,7 @@ export interface FileRoutesById {
   '/api/admin/plans-sync': typeof ApiAdminPlansSyncRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/students-create': typeof ApiAdminStudentsCreateRoute
+  '/api/admin/students-sync-customer': typeof ApiAdminStudentsSyncCustomerRoute
   '/api/admin/students-update': typeof ApiAdminStudentsUpdateRoute
   '/api/admin/users-create': typeof ApiAdminUsersCreateRoute
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-sync-customer'
     | '/api/admin/students-update'
     | '/api/admin/users-create'
     | '/api/admin/users-delete'
@@ -520,6 +531,7 @@ export interface FileRouteTypes {
     | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-sync-customer'
     | '/api/admin/students-update'
     | '/api/admin/users-create'
     | '/api/admin/users-delete'
@@ -568,6 +580,7 @@ export interface FileRouteTypes {
     | '/api/admin/plans-sync'
     | '/api/admin/settings'
     | '/api/admin/students-create'
+    | '/api/admin/students-sync-customer'
     | '/api/admin/students-update'
     | '/api/admin/users-create'
     | '/api/admin/users-delete'
@@ -593,6 +606,7 @@ export interface RootRouteChildren {
   ApiAdminPlansSyncRoute: typeof ApiAdminPlansSyncRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminStudentsCreateRoute: typeof ApiAdminStudentsCreateRoute
+  ApiAdminStudentsSyncCustomerRoute: typeof ApiAdminStudentsSyncCustomerRoute
   ApiAdminStudentsUpdateRoute: typeof ApiAdminStudentsUpdateRoute
   ApiAdminUsersCreateRoute: typeof ApiAdminUsersCreateRoute
   ApiAdminUsersDeleteRoute: typeof ApiAdminUsersDeleteRoute
@@ -870,6 +884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminStudentsUpdateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/students-sync-customer': {
+      id: '/api/admin/students-sync-customer'
+      path: '/api/admin/students-sync-customer'
+      fullPath: '/api/admin/students-sync-customer'
+      preLoaderRoute: typeof ApiAdminStudentsSyncCustomerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/students-create': {
       id: '/api/admin/students-create'
       path: '/api/admin/students-create'
@@ -1009,6 +1030,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPlansSyncRoute: ApiAdminPlansSyncRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminStudentsCreateRoute: ApiAdminStudentsCreateRoute,
+  ApiAdminStudentsSyncCustomerRoute: ApiAdminStudentsSyncCustomerRoute,
   ApiAdminStudentsUpdateRoute: ApiAdminStudentsUpdateRoute,
   ApiAdminUsersCreateRoute: ApiAdminUsersCreateRoute,
   ApiAdminUsersDeleteRoute: ApiAdminUsersDeleteRoute,
