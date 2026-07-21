@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdminUserId } from "@/lib/payments/admin-verify.server";
+import { syncStudentCustomer } from "@/lib/payments/customer-sync.server";
 
 interface Payload {
   student_id: string;
@@ -72,7 +73,8 @@ export const Route = createFileRoute("/api/admin/students-update")({
           if (error) return Response.json({ error: error.message }, { status: 400 });
         }
 
-        return Response.json({ success: true });
+        const sync = await syncStudentCustomer(body.student_id, adminId);
+        return Response.json({ success: true, pagarme: sync });
       },
     },
   },
