@@ -69,7 +69,11 @@ export const Route = createFileRoute("/api/admin/students-create")({
           await supabaseAdmin.from("students").update(update).eq("user_id", userId);
         }
 
-        return Response.json({ success: true, user_id: userId });
+        // Best-effort: sincroniza cliente com Pagar.me
+        const { data: studentRow } = await supabaseAdmin.from("students").select("id").eq("user_id", userId).maybeSingle();
+        const sync = studentRow ? await syncStudentCustomer(studentRow.id, adminId) : { synced: false, reason: "Aluno não localizado" };
+
+        return Response.json({ success: true, user_id: userId, pagarme: sync });
       },
     },
   },
