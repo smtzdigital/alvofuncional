@@ -232,8 +232,6 @@ function AlunosAdmin() {
       rg: (fd.get("rg") as string) || null,
       birth_date: (fd.get("birth_date") as string) || null,
       address: (fd.get("address") as string) || null,
-      plan_id: (fd.get("plan_id") as string) || null,
-      teacher_id: (fd.get("teacher_id") as string) || null,
     };
     const {
       data: { session },
@@ -249,12 +247,13 @@ function AlunosAdmin() {
       toast.error(data.error ?? "Falha ao cadastrar");
       return;
     }
-    toast.success("Aluno cadastrado");
+    toast.success("Aluno cadastrado. Vincule o plano em Editar.");
     if (data.pagarme?.synced) toast.success("Cliente registrado na Pagar.me");
     else if (data.pagarme?.reason) toast.warning(`Pagar.me: ${data.pagarme.reason}`);
     setCreating(false);
     load();
   };
+
 
   const filtered = rows.filter(
     (r) =>
@@ -381,36 +380,10 @@ function AlunosAdmin() {
                 <Label>Endereço</Label>
                 <Input name="address" />
               </div>
-              <div>
-                <Label>Plano</Label>
-                <Select name="plan_id">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione (opcional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="col-span-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
+                O plano e o professor podem ser vinculados depois em <strong>Editar</strong>.
               </div>
-              <div>
-                <Label>Professor</Label>
-                <Select name="teacher_id">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nenhum" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
