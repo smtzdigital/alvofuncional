@@ -292,10 +292,12 @@ class StonePaymentGateway implements PaymentGateway {
 
   async createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string }) {
     const cfg = await getGatewayConfig();
+    const expiresInMinutes = Math.max(1, Math.round(input.expiresInSec / 60));
     const body = {
-      name: input.name,
       is_building: false,
-      expires_in: input.expiresInSec,
+      name: input.name.slice(0, 64),
+      type: "order",
+      expires_in: expiresInMinutes,
       payment_settings: {
         accepted_payment_methods: ["credit_card"],
         credit_card_settings: {
@@ -304,12 +306,12 @@ class StonePaymentGateway implements PaymentGateway {
         },
       },
       cart_settings: {
-        items: [{ amount: input.amountCents, name: input.name, description: input.description ?? input.name, default_quantity: 1 }],
+        items: [{ amount: input.amountCents, name: input.name.slice(0, 64), description: (input.description ?? input.name).slice(0, 256), default_quantity: 1 }],
       },
       metadata: input.metadata ?? {},
     };
     try {
-      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body });
+      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body, useSandboxHost: true });
       await logAudit("createPaymentLink", { name: input.name, amount: input.amountCents }, { id: res.id, url: res.url }, undefined, input.actor);
       return res;
     } catch (e) {
