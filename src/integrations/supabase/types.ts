@@ -294,6 +294,434 @@ export type Database = {
           },
         ]
       }
+      financial_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          opening_balance: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          opening_balance?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          opening_balance?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_attachments: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          mime: string | null
+          size: number | null
+          transaction_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          mime?: string | null
+          size?: number | null
+          transaction_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          mime?: string | null
+          size?: number | null
+          transaction_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_attachments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_budgets: {
+        Row: {
+          amount_limit: number
+          category_id: string
+          created_at: string
+          id: string
+          month: string
+          updated_at: string
+        }
+        Insert: {
+          amount_limit: number
+          category_id: string
+          created_at?: string
+          id?: string
+          month: string
+          updated_at?: string
+        }
+        Update: {
+          amount_limit?: number
+          category_id?: string
+          created_at?: string
+          id?: string
+          month?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "financial_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_cost_centers: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          read_at: string | null
+          transaction_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          read_at?: string | null
+          transaction_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          read_at?: string | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_notifications_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_recurring: {
+        Row: {
+          created_at: string
+          day_rule: Json | null
+          direction: string
+          end_date: string | null
+          frequency: string
+          id: string
+          interval_count: number
+          is_active: boolean
+          next_run_date: string
+          start_date: string
+          template: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_rule?: Json | null
+          direction: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          interval_count?: number
+          is_active?: boolean
+          next_run_date: string
+          start_date: string
+          template: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_rule?: Json | null
+          direction?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          interval_count?: number
+          is_active?: boolean
+          next_run_date?: string
+          start_date?: string
+          template?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_transactions: {
+        Row: {
+          account_id: string | null
+          attachment_url: string | null
+          category_id: string | null
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          direction: string
+          due_date: string | null
+          fees: number
+          gross_amount: number
+          id: string
+          net_amount: number | null
+          notes: string | null
+          origin: string
+          paid_at: string | null
+          payment_method: string | null
+          recurring_id: string | null
+          source_id: string | null
+          source_type: string | null
+          status: string
+          student_id: string | null
+          supplier: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          attachment_url?: string | null
+          category_id?: string | null
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          direction: string
+          due_date?: string | null
+          fees?: number
+          gross_amount: number
+          id?: string
+          net_amount?: number | null
+          notes?: string | null
+          origin?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          recurring_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          student_id?: string | null
+          supplier?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          attachment_url?: string | null
+          category_id?: string | null
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          direction?: string
+          due_date?: string | null
+          fees?: number
+          gross_amount?: number
+          id?: string
+          net_amount?: number | null
+          notes?: string | null
+          origin?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          recurring_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          student_id?: string | null
+          supplier?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "financial_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transactions_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "financial_cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transactions_recurring_id_fkey"
+            columns: ["recurring_id"]
+            isOneToOne: false
+            referencedRelation: "financial_recurring"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transactions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          from_account_id: string
+          id: string
+          in_tx_id: string | null
+          notes: string | null
+          out_tx_id: string | null
+          to_account_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          from_account_id: string
+          id?: string
+          in_tx_id?: string | null
+          notes?: string | null
+          out_tx_id?: string | null
+          to_account_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          from_account_id?: string
+          id?: string
+          in_tx_id?: string | null
+          notes?: string | null
+          out_tx_id?: string | null
+          to_account_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_transfers_from_account_id_fkey"
+            columns: ["from_account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transfers_in_tx_id_fkey"
+            columns: ["in_tx_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transfers_out_tx_id_fkey"
+            columns: ["out_tx_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transfers_to_account_id_fkey"
+            columns: ["to_account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           completed_at: string | null
@@ -1404,6 +1832,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_finance: { Args: { _user_id: string }; Returns: boolean }
       get_ranking: {
         Args: { _limit?: number }
         Returns: {
@@ -1430,7 +1859,7 @@ export type Database = {
       activity_level: "sedentario" | "iniciante" | "intermediario" | "avancado"
       agenda_event_status: "agendado" | "concluido" | "cancelado" | "no_show"
       agenda_event_type: "aula" | "experimental" | "contato" | "outro"
-      app_role: "admin" | "professor" | "aluno"
+      app_role: "admin" | "professor" | "aluno" | "financeiro" | "recepcao"
       fitness_goal:
         | "emagrecimento"
         | "ganho_massa"
@@ -1586,7 +2015,7 @@ export const Constants = {
       activity_level: ["sedentario", "iniciante", "intermediario", "avancado"],
       agenda_event_status: ["agendado", "concluido", "cancelado", "no_show"],
       agenda_event_type: ["aula", "experimental", "contato", "outro"],
-      app_role: ["admin", "professor", "aluno"],
+      app_role: ["admin", "professor", "aluno", "financeiro", "recepcao"],
       fitness_goal: [
         "emagrecimento",
         "ganho_massa",

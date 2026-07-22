@@ -54,6 +54,12 @@ const NAV: NavItem[] = [
     label: "Financeiro",
     icon: CreditCard,
     children: [
+      { to: "/admin/financeiro", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/admin/financeiro-transacoes", label: "Receitas & Despesas", icon: CreditCard },
+      { to: "/admin/financeiro-fluxo", label: "Fluxo de caixa", icon: Activity },
+      { to: "/admin/financeiro-contas", label: "Contas a pagar/receber", icon: ClipboardCheck },
+      { to: "/admin/financeiro-recorrentes", label: "Recorrentes", icon: Repeat },
+      { to: "/admin/financeiro-categorias", label: "Categorias & contas", icon: FolderPlus },
       { to: "/admin/assinaturas", label: "Assinaturas & Links", icon: Repeat },
       { to: "/admin/pagamentos", label: "Registros manuais", icon: CreditCard },
       { to: "/admin/pagamentos-config", label: "Configurar gateway", icon: KeyRound },
