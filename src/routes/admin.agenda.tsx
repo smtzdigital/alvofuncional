@@ -37,6 +37,8 @@ import {
   GripVertical,
   Search,
   FilterX,
+  Users,
+  Clock,
 } from "lucide-react";
 import { format, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
