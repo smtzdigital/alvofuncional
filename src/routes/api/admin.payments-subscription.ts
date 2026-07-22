@@ -31,27 +31,36 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
         const uid = await getAdminUserId(request);
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
-          const body = (await request.json()) as { student_id: string; plan_id: string; card_token: string };
-          if (!body.student_id || !body.plan_id || !body.card_token) return Response.json({ error: "Dados incompletos" }, { status: 400 });
+          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_methods?: string[]; start_at?: string | null };
+          if (!body.student_id || !body.plan_id) return Response.json({ error: "Dados incompletos" }, { status: 400 });
+          const methods = (body.payment_methods && body.payment_methods.length > 0) ? body.payment_methods : ["credit_card"];
+          const needsCard = methods.includes("credit_card");
+          if (needsCard && !body.card_token) return Response.json({ error: "Cartão obrigatório para cobrança em crédito" }, { status: 400 });
 
           const { data: plan } = await supabaseAdmin.from("plans").select("*").eq("id", body.plan_id).maybeSingle();
           if (!plan) return Response.json({ error: "Plano não encontrado" }, { status: 404 });
-          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number; stone_plan_id: string | null };
+          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number; trial_period_days: number | null; stone_plan_id: string | null };
 
           const customerId = await ensureCustomer(body.student_id, uid);
           const gw = getPaymentGateway();
-          const card = await gw.createCard({ customerId, cardToken: body.card_token, actor: uid });
 
-          const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
-            student_id: body.student_id,
-            stone_card_id: card.id,
-            brand: card.brand ?? null,
-            last4: card.last_four_digits ?? null,
-            holder_name: card.holder_name ?? null,
-            exp_month: card.exp_month ?? null,
-            exp_year: card.exp_year ?? null,
-            is_default: true,
-          }).select("id").single();
+          let cardId: string | null = null;
+          let savedCardId: string | null = null;
+          if (needsCard && body.card_token) {
+            const card = await gw.createCard({ customerId, cardToken: body.card_token, actor: uid });
+            cardId = card.id;
+            const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
+              student_id: body.student_id,
+              stone_card_id: card.id,
+              brand: card.brand ?? null,
+              last4: card.last_four_digits ?? null,
+              holder_name: card.holder_name ?? null,
+              exp_month: card.exp_month ?? null,
+              exp_year: card.exp_year ?? null,
+              is_default: true,
+            }).select("id").single();
+            savedCardId = savedCard?.id ?? null;
+          }
 
           // Se o plano ainda não foi sincronizado com a Pagar.me, cria agora
           let stonePlanId = p.stone_plan_id;
@@ -63,6 +72,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
                 interval: p.billing_interval,
                 intervalCount: p.billing_interval_count,
                 installments: p.installments,
+                trialPeriodDays: p.trial_period_days ?? 0,
                 actor: uid,
               });
               stonePlanId = created.id;
@@ -72,12 +82,14 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
 
           const sub = await gw.createSubscription({
             customerId,
-            cardId: card.id,
+            cardId,
             planName: p.name,
             amountCents: Math.round(Number(p.price) * 100),
             interval: p.billing_interval,
             intervalCount: p.billing_interval_count,
             installments: p.installments,
+            paymentMethods: methods,
+            startAt: body.start_at ?? null,
             stonePlanId,
             actor: uid,
             metadata: { student_id: body.student_id, plan_id: p.id },
@@ -90,7 +102,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
             status: sub.status ?? "active",
             amount: p.price,
             next_billing_date: sub.next_billing_at ?? null,
-            current_card_id: savedCard?.id ?? null,
+            current_card_id: savedCardId,
           }).select("id").single();
 
           return Response.json({ success: true, subscription_id: dbSub?.id, stone_subscription_id: sub.id });
