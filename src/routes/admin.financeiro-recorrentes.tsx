@@ -144,13 +144,14 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
   const [accId, setAccId] = useState(rec?.template?.account_id ?? "");
   const [supplier, setSupplier] = useState(rec?.template?.supplier ?? "");
   const [notes, setNotes] = useState(rec?.template?.notes ?? "");
+  const [paymentMethod, setPaymentMethod] = useState(rec?.template?.payment_method ?? "");
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
       direction, frequency, interval_count: interval, start_date: start,
       end_date: end || null, next_run_date: next, is_active: active,
-      template: { description, gross_amount: gross, category_id: catId || null, account_id: accId || null, supplier: supplier || null, notes: notes || null },
+      template: { description, gross_amount: gross, category_id: catId || null, account_id: accId || null, supplier: supplier || null, notes: notes || null, payment_method: paymentMethod || null },
     };
     const q = rec
       ? supabase.from("financial_recurring").update(payload).eq("id", rec.id)
