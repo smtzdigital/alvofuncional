@@ -127,6 +127,7 @@ export interface PlanSyncInput {
   interval: string;
   intervalCount: number;
   installments: number;
+  trialPeriodDays?: number;
   actor?: string;
 }
 
