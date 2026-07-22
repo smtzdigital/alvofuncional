@@ -11,14 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, Edit, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
-import { brl } from "@/lib/financial/utils";
+import { brl, PAYMENT_METHODS } from "@/lib/financial/utils";
 
 export const Route = createFileRoute("/admin/financeiro-recorrentes")({ component: Page });
 
 interface Rec {
   id: string; direction: string; frequency: string; interval_count: number;
   start_date: string; end_date: string | null; next_run_date: string; is_active: boolean;
-  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null };
+  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null; payment_method?: string | null };
 }
 interface Cat { id: string; name: string; kind: string; }
 interface Acc { id: string; name: string; }
@@ -57,6 +57,7 @@ function Page() {
         account_id: tmpl.account_id ?? null,
         supplier: tmpl.supplier ?? null,
         notes: tmpl.notes ?? null,
+        payment_method: tmpl.payment_method ?? null,
         origin: "recurring",
         recurring_id: r.id,
       });
@@ -143,13 +144,14 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
   const [accId, setAccId] = useState(rec?.template?.account_id ?? "");
   const [supplier, setSupplier] = useState(rec?.template?.supplier ?? "");
   const [notes, setNotes] = useState(rec?.template?.notes ?? "");
+  const [paymentMethod, setPaymentMethod] = useState(rec?.template?.payment_method ?? "");
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
       direction, frequency, interval_count: interval, start_date: start,
       end_date: end || null, next_run_date: next, is_active: active,
-      template: { description, gross_amount: gross, category_id: catId || null, account_id: accId || null, supplier: supplier || null, notes: notes || null },
+      template: { description, gross_amount: gross, category_id: catId || null, account_id: accId || null, supplier: supplier || null, notes: notes || null, payment_method: paymentMethod || null },
     };
     const q = rec
       ? supabase.from("financial_recurring").update(payload).eq("id", rec.id)
@@ -211,7 +213,15 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
               </Select>
             </div>
           </div>
-          <div><Label>Fornecedor</Label><Input value={supplier} onChange={(e) => setSupplier(e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Fornecedor</Label><Input value={supplier} onChange={(e) => setSupplier(e.target.value)} /></div>
+            <div><Label>Forma de pagamento</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>{PAYMENT_METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
           <div><Label>Observações</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} /></div>
           <DialogFooter><Button type="submit">Salvar</Button></DialogFooter>
         </form>
