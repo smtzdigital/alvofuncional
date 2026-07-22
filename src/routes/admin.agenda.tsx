@@ -291,9 +291,6 @@ function AgendaPage() {
             events={events}
             leads={leads}
             students={students}
-            onEdit={(ev) => {
-              // reuse EventDialog via creatingEvent state trick: open via setOpenLead? simpler: inline handled inside
-            }}
             onChange={load}
           />
         </TabsContent>
