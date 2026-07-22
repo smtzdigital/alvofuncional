@@ -741,10 +741,12 @@ export type Database = {
           is_active: boolean
           is_custom: boolean
           name: string
+          plan_duration_months: number | null
           presential_per_week: number
           price: number
           sort_order: number
           stone_plan_id: string | null
+          trial_period_days: number
           updated_at: string
         }
         Insert: {
@@ -762,10 +764,12 @@ export type Database = {
           is_active?: boolean
           is_custom?: boolean
           name: string
+          plan_duration_months?: number | null
           presential_per_week?: number
           price?: number
           sort_order?: number
           stone_plan_id?: string | null
+          trial_period_days?: number
           updated_at?: string
         }
         Update: {
@@ -783,10 +787,12 @@ export type Database = {
           is_active?: boolean
           is_custom?: boolean
           name?: string
+          plan_duration_months?: number | null
           presential_per_week?: number
           price?: number
           sort_order?: number
           stone_plan_id?: string | null
+          trial_period_days?: number
           updated_at?: string
         }
         Relationships: []

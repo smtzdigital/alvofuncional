@@ -21,6 +21,11 @@ interface Plan {
   price: number;
   duration_days: number;
   presential_per_week: number;
+  billing_interval: string;
+  billing_interval_count: number;
+  installments: number;
+  trial_period_days: number;
+  plan_duration_months: number | null;
   has_workouts: boolean;
   has_ranking: boolean;
   has_diet: boolean;
@@ -37,6 +42,11 @@ const empty: Partial<Plan> = {
   price: 0,
   duration_days: 30,
   presential_per_week: 0,
+  billing_interval: "month",
+  billing_interval_count: 1,
+  installments: 1,
+  trial_period_days: 0,
+  plan_duration_months: null,
   has_workouts: true,
   has_ranking: true,
   has_diet: false,
@@ -80,6 +90,11 @@ function PlansAdmin() {
       price: Number(form.price),
       duration_days: Number(form.duration_days),
       presential_per_week: Number(form.presential_per_week),
+      billing_interval: form.billing_interval ?? "month",
+      billing_interval_count: Number(form.billing_interval_count ?? 1),
+      installments: Number(form.installments ?? 1),
+      trial_period_days: Number(form.trial_period_days ?? 0),
+      plan_duration_months: form.plan_duration_months ? Number(form.plan_duration_months) : null,
       has_workouts: !!form.has_workouts,
       has_ranking: !!form.has_ranking,
       has_diet: !!form.has_diet,
@@ -185,6 +200,51 @@ function PlansAdmin() {
                     value={form.presential_per_week ?? 0}
                     onChange={(e) => setForm({ ...form, presential_per_week: Number(e.target.value) })}
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Intervalo de cobrança</Label>
+                  <select
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={form.billing_interval ?? "month"}
+                    onChange={(e) => setForm({ ...form, billing_interval: e.target.value })}
+                  >
+                    <option value="week">Semanal</option>
+                    <option value="month">Mensal</option>
+                    <option value="year">Anual</option>
+                  </select>
+                </div>
+                <div>
+                  <Label>A cada N</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.billing_interval_count ?? 1}
+                    onChange={(e) => setForm({ ...form, billing_interval_count: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label>Dias de teste grátis</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={form.trial_period_days ?? 0}
+                    onChange={(e) => setForm({ ...form, trial_period_days: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label>Duração total</Label>
+                  <select
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={form.plan_duration_months ?? ""}
+                    onChange={(e) => setForm({ ...form, plan_duration_months: e.target.value ? Number(e.target.value) : null })}
+                  >
+                    <option value="">Sem prazo</option>
+                    <option value="4">4 meses</option>
+                    <option value="8">8 meses</option>
+                    <option value="12">12 meses</option>
+                  </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3">

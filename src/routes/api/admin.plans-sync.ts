@@ -11,6 +11,7 @@ type PlanRow = {
   billing_interval: string;
   billing_interval_count: number;
   installments: number;
+  trial_period_days: number | null;
   stone_plan_id: string | null;
   is_active: boolean;
 };
@@ -27,6 +28,7 @@ async function syncPlan(planId: string, actor: string) {
     interval: p.billing_interval,
     intervalCount: p.billing_interval_count,
     installments: p.installments,
+    trialPeriodDays: p.trial_period_days ?? 0,
     actor,
   };
   if (p.stone_plan_id) {
