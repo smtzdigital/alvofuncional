@@ -187,6 +187,7 @@ function AgendaPage() {
         <TabsList>
           <TabsTrigger value="kanban">Funil Kanban</TabsTrigger>
           <TabsTrigger value="agenda">Agenda ({upcoming.length})</TabsTrigger>
+          <TabsTrigger value="horarios">Horários</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kanban" className="mt-4 space-y-3">
