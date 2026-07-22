@@ -40,12 +40,18 @@ function Page() {
   };
   useEffect(() => { load(); }, []);
 
-  const runOne = async (r: Rec) => {
-    // Generate all occurrences up to today
+  const runOne = async (r: Rec, forceNext = false) => {
+    // Generate all occurrences up to today; if forceNext, also generate the next upcoming one.
     const today = new Date().toISOString().slice(0, 10);
     let next = r.next_run_date;
     let created = 0;
-    while (next <= today && (!r.end_date || next <= r.end_date)) {
+    const shouldRun = (d: string) => {
+      if (r.end_date && d > r.end_date) return false;
+      if (d <= today) return true;
+      if (forceNext && created === 0) return true;
+      return false;
+    };
+    while (shouldRun(next)) {
       const tmpl = r.template ?? {};
       const { error } = await supabase.from("financial_transactions").insert({
         direction: r.direction,
@@ -65,8 +71,13 @@ function Page() {
       created++;
       next = addFrequency(next, r.frequency, r.interval_count);
     }
-    await supabase.from("financial_recurring").update({ next_run_date: next }).eq("id", r.id);
-    toast.success(`${created} lançamento(s) criado(s)`); load();
+    if (created > 0) {
+      await supabase.from("financial_recurring").update({ next_run_date: next }).eq("id", r.id);
+      toast.success(`${created} lançamento(s) criado(s)`);
+    } else {
+      toast.info(`Próxima geração automática: ${r.next_run_date}`);
+    }
+    load();
   };
 
   return (
