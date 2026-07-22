@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin/financeiro-recorrentes")({ componen
 interface Rec {
   id: string; direction: string; frequency: string; interval_count: number;
   start_date: string; end_date: string | null; next_run_date: string; is_active: boolean;
-  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null };
+  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null; payment_method?: string | null };
 }
 interface Cat { id: string; name: string; kind: string; }
 interface Acc { id: string; name: string; }
