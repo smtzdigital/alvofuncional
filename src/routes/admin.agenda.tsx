@@ -822,20 +822,58 @@ function EventDialog({
     notes: event?.notes ?? "",
   });
   const [saving, setSaving] = useState(false);
+  const isEditing = !!event;
+  const [recurring, setRecurring] = useState(false);
+  const [recWeekdays, setRecWeekdays] = useState<number[]>([]);
+  const [recEndDate, setRecEndDate] = useState("");
+
+  const toggleWeekday = (d: number) => {
+    setRecWeekdays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort());
+  };
 
   const save = async () => {
     if (!form.title.trim()) { toast.error("Título obrigatório"); return; }
     setSaving(true);
-    const payload = {
+    const basePayload = {
       title: form.title.trim(),
       type: form.type,
-      scheduled_at: new Date(form.scheduled_at).toISOString(),
       duration_minutes: Number(form.duration_minutes) || 60,
       status: form.status,
       lead_id: form.lead_id || null,
       student_id: form.student_id || null,
       notes: form.notes.trim() || null,
     };
+
+    if (!isEditing && recurring) {
+      if (!recEndDate) { setSaving(false); toast.error("Informe a data final da recorrência"); return; }
+      const start = new Date(form.scheduled_at);
+      const end = new Date(recEndDate + "T23:59:59");
+      if (end < start) { setSaving(false); toast.error("Data final antes do início"); return; }
+      const weekdays = recWeekdays.length > 0 ? recWeekdays : [start.getDay()];
+      const rows: Array<typeof basePayload & { scheduled_at: string }> = [];
+      const cursor = new Date(start);
+      cursor.setHours(0, 0, 0, 0);
+      const hh = start.getHours();
+      const mm = start.getMinutes();
+      while (cursor <= end) {
+        if (weekdays.includes(cursor.getDay())) {
+          const dt = new Date(cursor);
+          dt.setHours(hh, mm, 0, 0);
+          if (dt >= start) {
+            rows.push({ ...basePayload, scheduled_at: dt.toISOString() });
+          }
+        }
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      if (rows.length === 0) { setSaving(false); toast.error("Nenhuma data gerada"); return; }
+      const { error } = await supabase.from("agenda_events").insert(rows);
+      setSaving(false);
+      if (error) toast.error(error.message);
+      else { toast.success(`${rows.length} eventos criados`); onSaved(); }
+      return;
+    }
+
+    const payload = { ...basePayload, scheduled_at: new Date(form.scheduled_at).toISOString() };
     const { error } = event
       ? await supabase.from("agenda_events").update(payload).eq("id", event.id)
       : await supabase.from("agenda_events").insert(payload);
