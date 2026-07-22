@@ -221,29 +221,29 @@ class StonePaymentGateway implements PaymentGateway {
     }
   }
 
-  async createSubscription(input: { customerId: string; cardId: string; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }) {
+  async createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }) {
     const cfg = await getGatewayConfig();
     const usePlan = !!input.stonePlanId;
+    const methods = (input.paymentMethods && input.paymentMethods.length > 0) ? input.paymentMethods : ["credit_card"];
+    const primary = methods[0];
+    const metadata = { ...(input.metadata ?? {}), payment_methods: methods.join(",") };
+    const common: Record<string, unknown> = {
+      customer_id: input.customerId,
+      payment_method: primary,
+      installments: input.installments || 1,
+      metadata,
+    };
+    if (primary === "credit_card" && input.cardId) common.card_id = input.cardId;
+    if (input.startAt) common.start_at = input.startAt;
     const body: Record<string, unknown> = usePlan
-      ? {
-          customer_id: input.customerId,
-          card_id: input.cardId,
-          plan_id: input.stonePlanId,
-          payment_method: "credit_card",
-          installments: input.installments || 1,
-          metadata: input.metadata ?? {},
-        }
+      ? { ...common, plan_id: input.stonePlanId }
       : {
-          customer_id: input.customerId,
-          card_id: input.cardId,
-          payment_method: "credit_card",
-          installments: input.installments || 1,
+          ...common,
           interval: input.interval,
           interval_count: input.intervalCount,
           billing_type: "prepaid",
           pricing_scheme: { scheme_type: "unit", price: input.amountCents },
           items: [{ description: input.planName, quantity: 1, pricing_scheme: { scheme_type: "unit", price: input.amountCents } }],
-          metadata: input.metadata ?? {},
         };
     try {
       const res = await stoneRequest<StoneSubscription>(cfg, {
@@ -252,7 +252,7 @@ class StonePaymentGateway implements PaymentGateway {
         body,
         idempotencyKey: `sub-${input.customerId}-${Date.now()}`,
       });
-      await logAudit("createSubscription", { customerId: input.customerId, amount: input.amountCents, plan_id: input.stonePlanId ?? null }, { id: res.id, status: res.status }, undefined, input.actor);
+      await logAudit("createSubscription", { customerId: input.customerId, amount: input.amountCents, plan_id: input.stonePlanId ?? null, methods, start_at: input.startAt ?? null }, { id: res.id, status: res.status }, undefined, input.actor);
       return res;
     } catch (e) {
       const err = e as StoneError;
