@@ -917,3 +917,188 @@ function EventDialog({
     </Dialog>
   );
 }
+
+const SLOT_COLORS = [
+  "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  "bg-purple-500/15 text-purple-300 border-purple-500/30",
+  "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  "bg-rose-500/15 text-rose-300 border-rose-500/30",
+  "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+];
+
+function TimeSlotsView({
+  events, leads, students, onChange,
+}: {
+  events: AgendaEvent[];
+  leads: Lead[];
+  students: StudentOption[];
+  onChange: () => void;
+}) {
+  const [filterDate, setFilterDate] = useState("");
+  const [filterType, setFilterType] = useState<EventType | "all">("all");
+  const [showPast, setShowPast] = useState(false);
+  const [editing, setEditing] = useState<AgendaEvent | null>(null);
+
+  const slots = useMemo(() => {
+    const now = Date.now();
+    const filtered = events.filter((e) => {
+      if (e.status === "cancelado") return false;
+      const t = new Date(e.scheduled_at).getTime();
+      if (!showPast && t < now - 3600 * 1000) return false;
+      if (filterType !== "all" && e.type !== filterType) return false;
+      if (filterDate && !isSameDay(new Date(e.scheduled_at), parseISO(filterDate))) return false;
+      return true;
+    });
+
+    // group by day+HH:mm
+    const map = new Map<string, { key: string; date: Date; timeLabel: string; dayLabel: string; items: AgendaEvent[] }>();
+    filtered.forEach((e) => {
+      const d = new Date(e.scheduled_at);
+      const key = format(d, "yyyy-MM-dd_HH:mm");
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          date: d,
+          timeLabel: format(d, "HH:mm"),
+          dayLabel: format(d, "EEEE, dd/MM", { locale: ptBR }),
+          items: [],
+        });
+      }
+      map.get(key)!.items.push(e);
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [events, filterDate, filterType, showPast]);
+
+  // group slots by day for headers
+  const days = useMemo(() => {
+    const map = new Map<string, typeof slots>();
+    slots.forEach((s) => {
+      const k = format(s.date, "yyyy-MM-dd");
+      if (!map.has(k)) map.set(k, []);
+      map.get(k)!.push(s);
+    });
+    return Array.from(map.entries()).map(([k, list]) => ({
+      key: k,
+      label: format(list[0].date, "EEEE, dd 'de' MMMM", { locale: ptBR }),
+      slots: list,
+    }));
+  }, [slots]);
+
+  return (
+    <>
+      <div className="mb-4 rounded-lg border border-border bg-card/50 p-3">
+        <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+          <Clock className="h-4 w-4" />
+          Alunos agrupados por horário
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          <div>
+            <Label className="text-xs">Data</Label>
+            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Tipo</Label>
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as EventType | "all")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(TYPE_LABEL).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-end gap-2">
+            <Button
+              variant={showPast ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowPast((v) => !v)}
+            >
+              {showPast ? "Ocultar passados" : "Mostrar passados"}
+            </Button>
+            {(filterDate || filterType !== "all") && (
+              <Button variant="ghost" size="sm" onClick={() => { setFilterDate(""); setFilterType("all"); }}>
+                <FilterX className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {days.length === 0 ? (
+        <div className="text-muted-foreground">Nenhum horário encontrado.</div>
+      ) : (
+        <div className="space-y-6">
+          {days.map((day) => (
+            <div key={day.key}>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                {day.label}
+              </h3>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {day.slots.map((slot, idx) => {
+                  const color = SLOT_COLORS[idx % SLOT_COLORS.length];
+                  const shared = slot.items.length > 1;
+                  return (
+                    <Card
+                      key={slot.key}
+                      className={`overflow-hidden border-2 p-0 ${shared ? "ring-1 ring-primary/40" : ""}`}
+                    >
+                      <div className={`flex items-center justify-between border-b px-3 py-2 ${color}`}>
+                        <div className="flex items-center gap-2 font-semibold">
+                          <Clock className="h-4 w-4" />
+                          {slot.timeLabel}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <Users className="h-3.5 w-3.5" />
+                          {slot.items.length} {slot.items.length === 1 ? "aluno" : "alunos"}
+                        </div>
+                      </div>
+                      <div className="divide-y divide-border/60">
+                        {slot.items.map((e) => {
+                          const lead = leads.find((l) => l.id === e.lead_id);
+                          const student = students.find((s) => s.id === e.student_id);
+                          const name = student?.profile?.full_name ?? lead?.full_name ?? e.title;
+                          return (
+                            <button
+                              key={e.id}
+                              onClick={() => setEditing(e)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-muted/40"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate text-sm font-medium">{name}</div>
+                                <div className="truncate text-xs text-muted-foreground">
+                                  {TYPE_LABEL[e.type]} · {e.duration_minutes} min
+                                  {student && " · Aluno"}
+                                  {!student && lead && " · Lead"}
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-[10px]">
+                                {STATUS_LABEL[e.status]}
+                              </Badge>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {editing && (
+        <EventDialog
+          event={editing}
+          leads={leads}
+          students={students}
+          onClose={() => setEditing(null)}
+          onSaved={() => { setEditing(null); onChange(); }}
+        />
+      )}
+    </>
+  );
+}
