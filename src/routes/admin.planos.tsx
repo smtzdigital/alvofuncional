@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/planos")({
@@ -317,6 +317,22 @@ function PlansAdmin() {
                 <p className="mt-1 text-sm text-muted-foreground">{p.description}</p>
               </div>
               <div className="flex gap-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  title="Sincronizar com Pagar.me"
+                  onClick={async () => {
+                    try {
+                      const res = await syncToStone(p.id);
+                      toast.success(res?.action === "created" ? "Plano criado na Pagar.me" : "Plano atualizado na Pagar.me");
+                      load();
+                    } catch (err) {
+                      toast.error("Falha ao sincronizar: " + (err as Error).message);
+                    }
+                  }}
+                >
+                  <RefreshCw size={14} />
+                </Button>
                 <Button
                   size="icon"
                   variant="ghost"
