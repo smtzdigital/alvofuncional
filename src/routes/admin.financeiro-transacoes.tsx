@@ -296,7 +296,7 @@ function TxDialog({ tx, cats, accs, ccs, students, onSaved }: {
             {direction === "income" ? (
               <div><Label>Aluno</Label>
                 <StudentCombobox
-                  students={students.map((s) => ({ id: s.id, name: s.profile?.full_name ?? "—" }))}
+                  students={students}
                   value={studentId} onChange={setStudentId}
                 />
               </div>
