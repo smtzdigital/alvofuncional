@@ -357,6 +357,7 @@ class StonePaymentGateway implements PaymentGateway {
       billing_type: "prepaid",
       payment_methods: ["credit_card"],
       installments: [input.installments || 1],
+      trial_period_days: input.trialPeriodDays ?? 0,
       pricing_scheme: { scheme_type: "unit", price: input.amountCents },
       items: [{ name: input.name, quantity: 1, pricing_scheme: { scheme_type: "unit", price: input.amountCents } }],
     };
