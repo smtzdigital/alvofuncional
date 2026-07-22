@@ -1,0 +1,2 @@
+ALTER TABLE public.financial_recurring DROP CONSTRAINT financial_recurring_frequency_check;
+ALTER TABLE public.financial_recurring ADD CONSTRAINT financial_recurring_frequency_check CHECK (frequency = ANY (ARRAY['daily','weekly','monthly','yearly','quarterly','semiannual','custom']));
