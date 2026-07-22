@@ -70,7 +70,9 @@ function PlansAdmin() {
   }, []);
 
   const syncToStone = async (planId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) return;
     const res = await fetch("/api/admin/plans-sync", {
       method: "POST",
@@ -124,7 +126,9 @@ function PlansAdmin() {
   const remove = async (id: string) => {
     if (!confirm("Excluir este plano? Também será removido da Pagar.me.")) return;
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         await fetch("/api/admin/plans-sync", {
           method: "DELETE",
@@ -132,7 +136,9 @@ function PlansAdmin() {
           body: JSON.stringify({ plan_id: id }),
         });
       }
-    } catch { /* segue apagando localmente */ }
+    } catch {
+      /* segue apagando localmente */
+    }
     const { error } = await supabase.from("plans").delete().eq("id", id);
     if (error) return toast.error(error.message);
     load();
@@ -218,7 +224,7 @@ function PlansAdmin() {
                     </select>
                   </div>
                   <div>
-                    <Label>Interval count (a cada N)</Label>
+                    <Label>Intervalo Cobrança (1 Men...,3 Tri..,6 Sem..)</Label>
                     <Input
                       type="number"
                       min={1}
@@ -227,7 +233,7 @@ function PlansAdmin() {
                     />
                   </div>
                   <div>
-                    <Label>Trial period days</Label>
+                    <Label>Período de Teste Grátis</Label>
                     <Input
                       type="number"
                       min={0}
@@ -240,7 +246,9 @@ function PlansAdmin() {
                     <select
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.plan_duration_months ?? ""}
-                      onChange={(e) => setForm({ ...form, plan_duration_months: e.target.value ? Number(e.target.value) : null })}
+                      onChange={(e) =>
+                        setForm({ ...form, plan_duration_months: e.target.value ? Number(e.target.value) : null })
+                      }
                     >
                       <option value="">Sem prazo</option>
                       <option value="4">4 meses</option>
@@ -329,7 +337,9 @@ function PlansAdmin() {
               por {p.duration_days} dias · {p.presential_per_week}x/sem presencial
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
-              Cobrança: a cada {p.billing_interval_count || 1} {intervalLabel(p.billing_interval)} · teste {p.trial_period_days || 0} dias · {p.plan_duration_months ? `${p.plan_duration_months} meses` : "sem prazo"}
+              Cobrança: a cada {p.billing_interval_count || 1} {intervalLabel(p.billing_interval)} · teste{" "}
+              {p.trial_period_days || 0} dias ·{" "}
+              {p.plan_duration_months ? `${p.plan_duration_months} meses` : "sem prazo"}
             </div>
             <div className="mt-3 flex flex-wrap gap-1 text-xs">
               {p.has_workouts && <Tag>Treinos</Tag>}
