@@ -137,7 +137,7 @@ export interface PaymentGateway {
   createCustomer(input: { name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }): Promise<StoneCustomer>;
   updateCustomer(input: { customerId: string; name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }): Promise<StoneCustomer>;
   createCard(input: { customerId: string; cardToken: string; actor?: string }): Promise<StoneCard>;
-  createSubscription(input: { customerId: string; cardId: string; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }): Promise<StoneSubscription>;
+  createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }): Promise<StoneSubscription>;
   cancelSubscription(input: { subscriptionId: string; actor?: string }): Promise<{ ok: true }>;
   updateSubscriptionCard(input: { subscriptionId: string; cardId: string; actor?: string }): Promise<{ ok: true }>;
   createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string }): Promise<StonePaymentLink>;
