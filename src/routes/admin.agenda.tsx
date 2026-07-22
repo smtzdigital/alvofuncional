@@ -946,6 +946,47 @@ function EventDialog({
             <Label>Observações</Label>
             <Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
+          {!isEditing && (
+            <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)} />
+                Repetir semanalmente (horário recorrente)
+              </label>
+              {recurring && (
+                <>
+                  <div>
+                    <Label className="text-xs">Dias da semana (padrão: mesmo dia do início)</Label>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d, i) => (
+                        <Button
+                          key={i}
+                          type="button"
+                          size="sm"
+                          variant={recWeekdays.includes(i) ? "default" : "outline"}
+                          onClick={() => toggleWeekday(i)}
+                        >
+                          {d}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <Label className="text-xs">Início</Label>
+                      <Input value={form.scheduled_at.slice(0, 10)} disabled readOnly />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Data final *</Label>
+                      <Input type="date" value={recEndDate} onChange={(e) => setRecEndDate(e.target.value)} />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Serão criados vários eventos, um para cada semana no intervalo, no mesmo horário.
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
