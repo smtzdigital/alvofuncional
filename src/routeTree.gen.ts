@@ -33,6 +33,11 @@ import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-s
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
 import { Route as AdminPagamentosConfigRouteImport } from './routes/admin.pagamentos-config'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminFinanceiroTransacoesRouteImport } from './routes/admin.financeiro-transacoes'
+import { Route as AdminFinanceiroRecorrentesRouteImport } from './routes/admin.financeiro-recorrentes'
+import { Route as AdminFinanceiroFluxoRouteImport } from './routes/admin.financeiro-fluxo'
+import { Route as AdminFinanceiroContasRouteImport } from './routes/admin.financeiro-contas'
+import { Route as AdminFinanceiroCategoriasRouteImport } from './routes/admin.financeiro-categorias'
 import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
@@ -44,6 +49,7 @@ import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas
 import { Route as AdminAlunosRouteImport } from './routes/admin.alunos'
 import { Route as AdminAgendaRouteImport } from './routes/admin.agenda'
 import { Route as ApiPublicWebhooksStoneRouteImport } from './routes/api/public.webhooks-stone'
+import { Route as ApiPublicFinancialRunRecurringRouteImport } from './routes/api/public.financial-run-recurring'
 import { Route as ApiMeRolesRouteImport } from './routes/api/me.roles'
 import { Route as ApiAdminUsersListRouteImport } from './routes/api/admin.users-list'
 import { Route as ApiAdminUsersDeleteRouteImport } from './routes/api/admin.users-delete'
@@ -179,6 +185,34 @@ const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   path: '/pagamentos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroTransacoesRoute =
+  AdminFinanceiroTransacoesRouteImport.update({
+    id: '/financeiro-transacoes',
+    path: '/financeiro-transacoes',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminFinanceiroRecorrentesRoute =
+  AdminFinanceiroRecorrentesRouteImport.update({
+    id: '/financeiro-recorrentes',
+    path: '/financeiro-recorrentes',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminFinanceiroFluxoRoute = AdminFinanceiroFluxoRouteImport.update({
+  id: '/financeiro-fluxo',
+  path: '/financeiro-fluxo',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceiroContasRoute = AdminFinanceiroContasRouteImport.update({
+  id: '/financeiro-contas',
+  path: '/financeiro-contas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceiroCategoriasRoute =
+  AdminFinanceiroCategoriasRouteImport.update({
+    id: '/financeiro-categorias',
+    path: '/financeiro-categorias',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminFinanceiroRoute = AdminFinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
@@ -234,6 +268,12 @@ const ApiPublicWebhooksStoneRoute = ApiPublicWebhooksStoneRouteImport.update({
   path: '/api/public/webhooks-stone',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFinancialRunRecurringRoute =
+  ApiPublicFinancialRunRecurringRouteImport.update({
+    id: '/api/public/financial-run-recurring',
+    path: '/api/public/financial-run-recurring',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiMeRolesRoute = ApiMeRolesRouteImport.update({
   id: '/api/me/roles',
   path: '/api/me/roles',
@@ -326,6 +366,11 @@ export interface FileRoutesByFullPath {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/financeiro-categorias': typeof AdminFinanceiroCategoriasRoute
+  '/admin/financeiro-contas': typeof AdminFinanceiroContasRoute
+  '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
+  '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
+  '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -356,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
   '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/financial-run-recurring': typeof ApiPublicFinancialRunRecurringRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
@@ -375,6 +421,11 @@ export interface FileRoutesByTo {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/financeiro-categorias': typeof AdminFinanceiroCategoriasRoute
+  '/admin/financeiro-contas': typeof AdminFinanceiroContasRoute
+  '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
+  '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
+  '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -405,6 +456,7 @@ export interface FileRoutesByTo {
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
   '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/financial-run-recurring': typeof ApiPublicFinancialRunRecurringRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
@@ -427,6 +479,11 @@ export interface FileRoutesById {
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
   '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/financeiro-categorias': typeof AdminFinanceiroCategoriasRoute
+  '/admin/financeiro-contas': typeof AdminFinanceiroContasRoute
+  '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
+  '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
+  '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -457,6 +514,7 @@ export interface FileRoutesById {
   '/api/admin/users-delete': typeof ApiAdminUsersDeleteRoute
   '/api/admin/users-list': typeof ApiAdminUsersListRoute
   '/api/me/roles': typeof ApiMeRolesRoute
+  '/api/public/financial-run-recurring': typeof ApiPublicFinancialRunRecurringRoute
   '/api/public/webhooks-stone': typeof ApiPublicWebhooksStoneRoute
   '/api/public/payments-link/$token': typeof ApiPublicPaymentsLinkTokenRoute
 }
@@ -480,6 +538,11 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/financeiro'
+    | '/admin/financeiro-categorias'
+    | '/admin/financeiro-contas'
+    | '/admin/financeiro-fluxo'
+    | '/admin/financeiro-recorrentes'
+    | '/admin/financeiro-transacoes'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -510,6 +573,7 @@ export interface FileRouteTypes {
     | '/api/admin/users-delete'
     | '/api/admin/users-list'
     | '/api/me/roles'
+    | '/api/public/financial-run-recurring'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   fileRoutesByTo: FileRoutesByTo
@@ -529,6 +593,11 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/financeiro'
+    | '/admin/financeiro-categorias'
+    | '/admin/financeiro-contas'
+    | '/admin/financeiro-fluxo'
+    | '/admin/financeiro-recorrentes'
+    | '/admin/financeiro-transacoes'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -559,6 +628,7 @@ export interface FileRouteTypes {
     | '/api/admin/users-delete'
     | '/api/admin/users-list'
     | '/api/me/roles'
+    | '/api/public/financial-run-recurring'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   id:
@@ -580,6 +650,11 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/exercicios'
     | '/admin/financeiro'
+    | '/admin/financeiro-categorias'
+    | '/admin/financeiro-contas'
+    | '/admin/financeiro-fluxo'
+    | '/admin/financeiro-recorrentes'
+    | '/admin/financeiro-transacoes'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -610,6 +685,7 @@ export interface FileRouteTypes {
     | '/api/admin/users-delete'
     | '/api/admin/users-list'
     | '/api/me/roles'
+    | '/api/public/financial-run-recurring'
     | '/api/public/webhooks-stone'
     | '/api/public/payments-link/$token'
   fileRoutesById: FileRoutesById
@@ -636,6 +712,7 @@ export interface RootRouteChildren {
   ApiAdminUsersDeleteRoute: typeof ApiAdminUsersDeleteRoute
   ApiAdminUsersListRoute: typeof ApiAdminUsersListRoute
   ApiMeRolesRoute: typeof ApiMeRolesRoute
+  ApiPublicFinancialRunRecurringRoute: typeof ApiPublicFinancialRunRecurringRoute
   ApiPublicWebhooksStoneRoute: typeof ApiPublicWebhooksStoneRoute
   ApiPublicPaymentsLinkTokenRoute: typeof ApiPublicPaymentsLinkTokenRoute
 }
@@ -810,6 +887,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPagamentosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/financeiro-transacoes': {
+      id: '/admin/financeiro-transacoes'
+      path: '/financeiro-transacoes'
+      fullPath: '/admin/financeiro-transacoes'
+      preLoaderRoute: typeof AdminFinanceiroTransacoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro-recorrentes': {
+      id: '/admin/financeiro-recorrentes'
+      path: '/financeiro-recorrentes'
+      fullPath: '/admin/financeiro-recorrentes'
+      preLoaderRoute: typeof AdminFinanceiroRecorrentesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro-fluxo': {
+      id: '/admin/financeiro-fluxo'
+      path: '/financeiro-fluxo'
+      fullPath: '/admin/financeiro-fluxo'
+      preLoaderRoute: typeof AdminFinanceiroFluxoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro-contas': {
+      id: '/admin/financeiro-contas'
+      path: '/financeiro-contas'
+      fullPath: '/admin/financeiro-contas'
+      preLoaderRoute: typeof AdminFinanceiroContasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro-categorias': {
+      id: '/admin/financeiro-categorias'
+      path: '/financeiro-categorias'
+      fullPath: '/admin/financeiro-categorias'
+      preLoaderRoute: typeof AdminFinanceiroCategoriasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/financeiro': {
       id: '/admin/financeiro'
       path: '/financeiro'
@@ -885,6 +997,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/webhooks-stone'
       fullPath: '/api/public/webhooks-stone'
       preLoaderRoute: typeof ApiPublicWebhooksStoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/financial-run-recurring': {
+      id: '/api/public/financial-run-recurring'
+      path: '/api/public/financial-run-recurring'
+      fullPath: '/api/public/financial-run-recurring'
+      preLoaderRoute: typeof ApiPublicFinancialRunRecurringRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/me/roles': {
@@ -999,6 +1118,11 @@ interface AdminRouteChildren {
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminExerciciosRoute: typeof AdminExerciciosRoute
   AdminFinanceiroRoute: typeof AdminFinanceiroRoute
+  AdminFinanceiroCategoriasRoute: typeof AdminFinanceiroCategoriasRoute
+  AdminFinanceiroContasRoute: typeof AdminFinanceiroContasRoute
+  AdminFinanceiroFluxoRoute: typeof AdminFinanceiroFluxoRoute
+  AdminFinanceiroRecorrentesRoute: typeof AdminFinanceiroRecorrentesRoute
+  AdminFinanceiroTransacoesRoute: typeof AdminFinanceiroTransacoesRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
   AdminPagamentosConfigRoute: typeof AdminPagamentosConfigRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
@@ -1021,6 +1145,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminExerciciosRoute: AdminExerciciosRoute,
   AdminFinanceiroRoute: AdminFinanceiroRoute,
+  AdminFinanceiroCategoriasRoute: AdminFinanceiroCategoriasRoute,
+  AdminFinanceiroContasRoute: AdminFinanceiroContasRoute,
+  AdminFinanceiroFluxoRoute: AdminFinanceiroFluxoRoute,
+  AdminFinanceiroRecorrentesRoute: AdminFinanceiroRecorrentesRoute,
+  AdminFinanceiroTransacoesRoute: AdminFinanceiroTransacoesRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
   AdminPagamentosConfigRoute: AdminPagamentosConfigRoute,
   AdminPlanosRoute: AdminPlanosRoute,
@@ -1078,6 +1207,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUsersDeleteRoute: ApiAdminUsersDeleteRoute,
   ApiAdminUsersListRoute: ApiAdminUsersListRoute,
   ApiMeRolesRoute: ApiMeRolesRoute,
+  ApiPublicFinancialRunRecurringRoute: ApiPublicFinancialRunRecurringRoute,
   ApiPublicWebhooksStoneRoute: ApiPublicWebhooksStoneRoute,
   ApiPublicPaymentsLinkTokenRoute: ApiPublicPaymentsLinkTokenRoute,
 }
