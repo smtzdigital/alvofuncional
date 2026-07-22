@@ -21,6 +21,11 @@ interface Plan {
   price: number;
   duration_days: number;
   presential_per_week: number;
+  billing_interval: string;
+  billing_interval_count: number;
+  installments: number;
+  trial_period_days: number;
+  plan_duration_months: number | null;
   has_workouts: boolean;
   has_ranking: boolean;
   has_diet: boolean;
@@ -37,6 +42,11 @@ const empty: Partial<Plan> = {
   price: 0,
   duration_days: 30,
   presential_per_week: 0,
+  billing_interval: "month",
+  billing_interval_count: 1,
+  installments: 1,
+  trial_period_days: 0,
+  plan_duration_months: null,
   has_workouts: true,
   has_ranking: true,
   has_diet: false,
