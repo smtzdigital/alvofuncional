@@ -107,7 +107,7 @@ function Page() {
                   <td className="p-3">{r.next_run_date}{!r.is_active && <span className="ml-2 text-xs text-muted-foreground">(pausada)</span>}</td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" title="Gerar agora" onClick={() => runOne(r)}><PlayCircle size={16} /></Button>
+                      <Button size="sm" variant="outline" title="Antecipar próxima geração" onClick={() => runOne(r, true)}><PlayCircle size={14} className="mr-1" />Gerar agora</Button>
                       <RecDialog rec={r} cats={cats} accs={accs} onSaved={load} />
                       <Button size="icon" variant="ghost" onClick={async () => {
                         if (!confirm("Excluir recorrência?")) return;
