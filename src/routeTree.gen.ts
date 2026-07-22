@@ -33,6 +33,7 @@ import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-s
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
 import { Route as AdminPagamentosConfigRouteImport } from './routes/admin.pagamentos-config'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminExerciciosRouteImport } from './routes/admin.exercicios'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDietasRouteImport } from './routes/admin.dietas'
@@ -178,6 +179,11 @@ const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   path: '/pagamentos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroRoute = AdminFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminExerciciosRoute = AdminExerciciosRouteImport.update({
   id: '/exercicios',
   path: '/exercicios',
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -367,6 +374,7 @@ export interface FileRoutesByTo {
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -418,6 +426,7 @@ export interface FileRoutesById {
   '/admin/dietas': typeof AdminDietasRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/exercicios': typeof AdminExerciciosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -470,6 +479,7 @@ export interface FileRouteTypes {
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
+    | '/admin/financeiro'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
+    | '/admin/financeiro'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -568,6 +579,7 @@ export interface FileRouteTypes {
     | '/admin/dietas'
     | '/admin/equipamentos'
     | '/admin/exercicios'
+    | '/admin/financeiro'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -798,6 +810,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPagamentosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/financeiro': {
+      id: '/admin/financeiro'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AdminFinanceiroRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/exercicios': {
       id: '/admin/exercicios'
       path: '/exercicios'
@@ -979,6 +998,7 @@ interface AdminRouteChildren {
   AdminDietasRoute: typeof AdminDietasRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminExerciciosRoute: typeof AdminExerciciosRoute
+  AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
   AdminPagamentosConfigRoute: typeof AdminPagamentosConfigRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
@@ -1000,6 +1020,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDietasRoute: AdminDietasRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminExerciciosRoute: AdminExerciciosRoute,
+  AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
   AdminPagamentosConfigRoute: AdminPagamentosConfigRoute,
   AdminPlanosRoute: AdminPlanosRoute,
