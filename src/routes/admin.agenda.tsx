@@ -285,6 +285,18 @@ function AgendaPage() {
             onChange={load}
           />
         </TabsContent>
+
+        <TabsContent value="horarios" className="mt-4">
+          <TimeSlotsView
+            events={events}
+            leads={leads}
+            students={students}
+            onEdit={(ev) => {
+              // reuse EventDialog via creatingEvent state trick: open via setOpenLead? simpler: inline handled inside
+            }}
+            onChange={load}
+          />
+        </TabsContent>
       </Tabs>
 
       {openLead && (
