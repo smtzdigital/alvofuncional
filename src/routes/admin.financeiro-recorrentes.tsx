@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, Edit, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
-import { brl } from "@/lib/financial/utils";
+import { brl, PAYMENT_METHODS } from "@/lib/financial/utils";
 
 export const Route = createFileRoute("/admin/financeiro-recorrentes")({ component: Page });
 
