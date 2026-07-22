@@ -126,7 +126,7 @@ function AgendaPage() {
     const [{ data: leadsData }, { data: eventsData }, { data: studentsData }] = await Promise.all([
       supabase.from("leads_interessados").select("*").order("created_at", { ascending: false }),
       supabase.from("agenda_events").select("*").order("scheduled_at", { ascending: true }),
-      supabase.from("students").select("id, user_id, profile:profiles!students_user_id_fkey(full_name)").eq("is_active", true),
+      supabase.from("students").select("id, profile:profiles!inner(full_name)").eq("is_active", true),
     ]);
     setLeads((leadsData ?? []) as Lead[]);
     setEvents((eventsData ?? []) as AgendaEvent[]);
