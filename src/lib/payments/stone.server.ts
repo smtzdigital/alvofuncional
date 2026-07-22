@@ -388,6 +388,7 @@ class StonePaymentGateway implements PaymentGateway {
           description: input.description ?? input.name,
           installments: [input.installments || 1],
           payment_methods: ["credit_card"],
+          trial_period_days: input.trialPeriodDays ?? 0,
           statement_descriptor: input.name.slice(0, 13),
         },
       });
