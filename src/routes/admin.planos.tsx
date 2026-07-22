@@ -320,6 +320,22 @@ function PlansAdmin() {
                 <Button
                   size="icon"
                   variant="ghost"
+                  title="Sincronizar com Pagar.me"
+                  onClick={async () => {
+                    try {
+                      const res = await syncToStone(p.id);
+                      toast.success(res?.action === "created" ? "Plano criado na Pagar.me" : "Plano atualizado na Pagar.me");
+                      load();
+                    } catch (err) {
+                      toast.error("Falha ao sincronizar: " + (err as Error).message);
+                    }
+                  }}
+                >
+                  <RefreshCw size={14} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
                   onClick={() => {
                     setForm(p);
                     setOpen(true);
