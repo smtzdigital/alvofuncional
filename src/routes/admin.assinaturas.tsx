@@ -254,7 +254,7 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
   };
 
   return (
-    <DialogContent className="max-w-lg">
+    <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
       <DialogHeader><DialogTitle>Nova assinatura (cobrança recorrente)</DialogTitle></DialogHeader>
       <form onSubmit={submit} className="space-y-3">
         <div><Label>Aluno</Label>
@@ -266,26 +266,29 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
             <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label>Formas de pagamento</Label>
-            <div className="flex flex-wrap gap-3 rounded-md border border-input p-2 text-sm">
-              {[
-                { id: "credit_card", label: "Crédito" },
-                { id: "boleto", label: "Boleto" },
-                { id: "pix", label: "Pix" },
-              ].map((m) => (
-                <label key={m.id} className="flex items-center gap-1.5">
-                  <input type="checkbox" checked={methods.includes(m.id)} onChange={() => toggleMethod(m.id)} />
-                  {m.label}
-                </label>
-              ))}
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+          <div className="mb-3 text-sm font-semibold text-primary">Configurações da assinatura</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Payment methods aceitos</Label>
+              <div className="flex flex-wrap gap-3 rounded-md border border-input bg-background p-2 text-sm">
+                {[
+                  { id: "credit_card", label: "Cartão de crédito" },
+                  { id: "boleto", label: "Boleto" },
+                  { id: "pix", label: "Pix" },
+                ].map((m) => (
+                  <label key={m.id} className="flex items-center gap-1.5">
+                    <input type="checkbox" checked={methods.includes(m.id)} onChange={() => toggleMethod(m.id)} />
+                    {m.label}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <Label>Início da cobrança</Label>
-            <Input type="date" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
-            <p className="mt-1 text-xs text-muted-foreground">Deixe em branco para cobrar hoje.</p>
+            <div>
+              <Label>Start at / início da cobrança</Label>
+              <Input type="date" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
+              <p className="mt-1 text-xs text-muted-foreground">Deixe em branco para cobrar hoje.</p>
+            </div>
           </div>
         </div>
         {needsCard && <CardFields card={card} setCard={setCard} />}

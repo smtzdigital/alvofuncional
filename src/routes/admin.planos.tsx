@@ -157,7 +157,7 @@ function PlansAdmin() {
               <Plus size={16} className="mr-1" /> Novo plano
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{form.id ? "Editar" : "Novo"} plano</DialogTitle>
             </DialogHeader>
@@ -202,49 +202,52 @@ function PlansAdmin() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Intervalo de cobrança</Label>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={form.billing_interval ?? "month"}
-                    onChange={(e) => setForm({ ...form, billing_interval: e.target.value })}
-                  >
-                    <option value="week">Semanal</option>
-                    <option value="month">Mensal</option>
-                    <option value="year">Anual</option>
-                  </select>
-                </div>
-                <div>
-                  <Label>A cada N</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={form.billing_interval_count ?? 1}
-                    onChange={(e) => setForm({ ...form, billing_interval_count: Number(e.target.value) })}
-                  />
-                </div>
-                <div>
-                  <Label>Dias de teste grátis</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={form.trial_period_days ?? 0}
-                    onChange={(e) => setForm({ ...form, trial_period_days: Number(e.target.value) })}
-                  />
-                </div>
-                <div>
-                  <Label>Duração total</Label>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={form.plan_duration_months ?? ""}
-                    onChange={(e) => setForm({ ...form, plan_duration_months: e.target.value ? Number(e.target.value) : null })}
-                  >
-                    <option value="">Sem prazo</option>
-                    <option value="4">4 meses</option>
-                    <option value="8">8 meses</option>
-                    <option value="12">12 meses</option>
-                  </select>
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+                <div className="mb-3 text-sm font-semibold text-primary">Cobrança recorrente e duração do plano</div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Intervalo de cobrança</Label>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.billing_interval ?? "month"}
+                      onChange={(e) => setForm({ ...form, billing_interval: e.target.value })}
+                    >
+                      <option value="week">Semanal</option>
+                      <option value="month">Mensal</option>
+                      <option value="year">Anual</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Interval count (a cada N)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={form.billing_interval_count ?? 1}
+                      onChange={(e) => setForm({ ...form, billing_interval_count: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Trial period days</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={form.trial_period_days ?? 0}
+                      onChange={(e) => setForm({ ...form, trial_period_days: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Duração total do plano</Label>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.plan_duration_months ?? ""}
+                      onChange={(e) => setForm({ ...form, plan_duration_months: e.target.value ? Number(e.target.value) : null })}
+                    >
+                      <option value="">Sem prazo</option>
+                      <option value="4">4 meses</option>
+                      <option value="8">8 meses</option>
+                      <option value="12">12 meses</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3">
@@ -325,6 +328,9 @@ function PlansAdmin() {
             <div className="text-xs text-muted-foreground">
               por {p.duration_days} dias · {p.presential_per_week}x/sem presencial
             </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Cobrança: a cada {p.billing_interval_count || 1} {intervalLabel(p.billing_interval)} · teste {p.trial_period_days || 0} dias · {p.plan_duration_months ? `${p.plan_duration_months} meses` : "sem prazo"}
+            </div>
             <div className="mt-3 flex flex-wrap gap-1 text-xs">
               {p.has_workouts && <Tag>Treinos</Tag>}
               {p.has_ranking && <Tag>Ranking</Tag>}
@@ -350,6 +356,12 @@ function Tag({ children, warn }: { children: React.ReactNode; warn?: boolean }) 
     </span>
   );
 }
+
+function intervalLabel(interval: string) {
+  const labels: Record<string, string> = { week: "semana(s)", month: "mês(es)", year: "ano(s)" };
+  return labels[interval] ?? interval;
+}
+
 function FormSwitch({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="flex items-center justify-between gap-2">
