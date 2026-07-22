@@ -213,19 +213,34 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
   const [studentId, setStudentId] = useState("");
   const [planId, setPlanId] = useState("");
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [methods, setMethods] = useState<string[]>(["credit_card"]);
+  const [startAt, setStartAt] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const toggleMethod = (m: string) => {
+    setMethods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
+  };
+  const needsCard = methods.includes("credit_card");
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!studentId || !planId) return toast.error("Selecione aluno e plano");
+    if (methods.length === 0) return toast.error("Selecione ao menos uma forma de pagamento");
     setBusy(true);
     try {
-      const cardToken = await tokenizeCard(card);
+      let cardToken: string | null = null;
+      if (needsCard) cardToken = await tokenizeCard(card);
       const { data: { session } } = await supabase.auth.getSession();
       const r = await fetch("/api/admin/payments-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ student_id: studentId, plan_id: planId, card_token: cardToken }),
+        body: JSON.stringify({
+          student_id: studentId,
+          plan_id: planId,
+          card_token: cardToken,
+          payment_methods: methods,
+          start_at: startAt ? new Date(startAt).toISOString() : null,
+        }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
@@ -251,7 +266,34 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
             <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <CardFields card={card} setCard={setCard} />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Formas de pagamento</Label>
+            <div className="flex flex-wrap gap-3 rounded-md border border-input p-2 text-sm">
+              {[
+                { id: "credit_card", label: "Crédito" },
+                { id: "boleto", label: "Boleto" },
+                { id: "pix", label: "Pix" },
+              ].map((m) => (
+                <label key={m.id} className="flex items-center gap-1.5">
+                  <input type="checkbox" checked={methods.includes(m.id)} onChange={() => toggleMethod(m.id)} />
+                  {m.label}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Início da cobrança</Label>
+            <Input type="date" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
+            <p className="mt-1 text-xs text-muted-foreground">Deixe em branco para cobrar hoje.</p>
+          </div>
+        </div>
+        {needsCard && <CardFields card={card} setCard={setCard} />}
+        {!needsCard && (
+          <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+            Sem cartão: a Pagar.me emitirá boleto/pix a cada ciclo para o cliente pagar.
+          </div>
+        )}
         <DialogFooter><Button type="submit" disabled={busy} className="bg-gradient-primary text-primary-foreground">{busy ? "Processando..." : "Criar assinatura"}</Button></DialogFooter>
       </form>
     </DialogContent>
