@@ -213,7 +213,15 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
               </Select>
             </div>
           </div>
-          <div><Label>Fornecedor</Label><Input value={supplier} onChange={(e) => setSupplier(e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Fornecedor</Label><Input value={supplier} onChange={(e) => setSupplier(e.target.value)} /></div>
+            <div><Label>Forma de pagamento</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>{PAYMENT_METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
           <div><Label>Observações</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} /></div>
           <DialogFooter><Button type="submit">Salvar</Button></DialogFooter>
         </form>
