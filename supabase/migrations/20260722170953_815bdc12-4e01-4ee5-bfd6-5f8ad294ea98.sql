@@ -1,0 +1,10 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_categories TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_accounts TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_cost_centers TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_transactions TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_recurring TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_attachments TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_transfers TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_budgets TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.financial_notifications TO authenticated;
+GRANT ALL ON public.financial_categories, public.financial_accounts, public.financial_cost_centers, public.financial_transactions, public.financial_recurring, public.financial_attachments, public.financial_transfers, public.financial_budgets, public.financial_notifications TO service_role;
