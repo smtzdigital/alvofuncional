@@ -822,20 +822,58 @@ function EventDialog({
     notes: event?.notes ?? "",
   });
   const [saving, setSaving] = useState(false);
+  const isEditing = !!event;
+  const [recurring, setRecurring] = useState(false);
+  const [recWeekdays, setRecWeekdays] = useState<number[]>([]);
+  const [recEndDate, setRecEndDate] = useState("");
+
+  const toggleWeekday = (d: number) => {
+    setRecWeekdays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort());
+  };
 
   const save = async () => {
     if (!form.title.trim()) { toast.error("Título obrigatório"); return; }
     setSaving(true);
-    const payload = {
+    const basePayload = {
       title: form.title.trim(),
       type: form.type,
-      scheduled_at: new Date(form.scheduled_at).toISOString(),
       duration_minutes: Number(form.duration_minutes) || 60,
       status: form.status,
       lead_id: form.lead_id || null,
       student_id: form.student_id || null,
       notes: form.notes.trim() || null,
     };
+
+    if (!isEditing && recurring) {
+      if (!recEndDate) { setSaving(false); toast.error("Informe a data final da recorrência"); return; }
+      const start = new Date(form.scheduled_at);
+      const end = new Date(recEndDate + "T23:59:59");
+      if (end < start) { setSaving(false); toast.error("Data final antes do início"); return; }
+      const weekdays = recWeekdays.length > 0 ? recWeekdays : [start.getDay()];
+      const rows: Array<typeof basePayload & { scheduled_at: string }> = [];
+      const cursor = new Date(start);
+      cursor.setHours(0, 0, 0, 0);
+      const hh = start.getHours();
+      const mm = start.getMinutes();
+      while (cursor <= end) {
+        if (weekdays.includes(cursor.getDay())) {
+          const dt = new Date(cursor);
+          dt.setHours(hh, mm, 0, 0);
+          if (dt >= start) {
+            rows.push({ ...basePayload, scheduled_at: dt.toISOString() });
+          }
+        }
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      if (rows.length === 0) { setSaving(false); toast.error("Nenhuma data gerada"); return; }
+      const { error } = await supabase.from("agenda_events").insert(rows);
+      setSaving(false);
+      if (error) toast.error(error.message);
+      else { toast.success(`${rows.length} eventos criados`); onSaved(); }
+      return;
+    }
+
+    const payload = { ...basePayload, scheduled_at: new Date(form.scheduled_at).toISOString() };
     const { error } = event
       ? await supabase.from("agenda_events").update(payload).eq("id", event.id)
       : await supabase.from("agenda_events").insert(payload);
@@ -908,6 +946,47 @@ function EventDialog({
             <Label>Observações</Label>
             <Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
+          {!isEditing && (
+            <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)} />
+                Repetir semanalmente (horário recorrente)
+              </label>
+              {recurring && (
+                <>
+                  <div>
+                    <Label className="text-xs">Dias da semana (padrão: mesmo dia do início)</Label>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d, i) => (
+                        <Button
+                          key={i}
+                          type="button"
+                          size="sm"
+                          variant={recWeekdays.includes(i) ? "default" : "outline"}
+                          onClick={() => toggleWeekday(i)}
+                        >
+                          {d}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <Label className="text-xs">Início</Label>
+                      <Input value={form.scheduled_at.slice(0, 10)} disabled readOnly />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Data final *</Label>
+                      <Input type="date" value={recEndDate} onChange={(e) => setRecEndDate(e.target.value)} />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Serão criados vários eventos, um para cada semana no intervalo, no mesmo horário.
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
