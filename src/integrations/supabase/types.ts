@@ -1430,7 +1430,7 @@ export type Database = {
       activity_level: "sedentario" | "iniciante" | "intermediario" | "avancado"
       agenda_event_status: "agendado" | "concluido" | "cancelado" | "no_show"
       agenda_event_type: "aula" | "experimental" | "contato" | "outro"
-      app_role: "admin" | "professor" | "aluno"
+      app_role: "admin" | "professor" | "aluno" | "financeiro" | "recepcao"
       fitness_goal:
         | "emagrecimento"
         | "ganho_massa"
@@ -1586,7 +1586,7 @@ export const Constants = {
       activity_level: ["sedentario", "iniciante", "intermediario", "avancado"],
       agenda_event_status: ["agendado", "concluido", "cancelado", "no_show"],
       agenda_event_type: ["aula", "experimental", "contato", "outro"],
-      app_role: ["admin", "professor", "aluno"],
+      app_role: ["admin", "professor", "aluno", "financeiro", "recepcao"],
       fitness_goal: [
         "emagrecimento",
         "ganho_massa",
