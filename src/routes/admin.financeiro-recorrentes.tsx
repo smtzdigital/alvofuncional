@@ -57,6 +57,7 @@ function Page() {
         account_id: tmpl.account_id ?? null,
         supplier: tmpl.supplier ?? null,
         notes: tmpl.notes ?? null,
+        payment_method: tmpl.payment_method ?? null,
         origin: "recurring",
         recurring_id: r.id,
       });
