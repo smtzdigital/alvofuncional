@@ -76,7 +76,10 @@ interface AgendaEvent {
   status: EventStatus;
   notes: string | null;
   series_id: string | null;
+  created_at: string | null;
 }
+
+type EventEditScope = "one" | "future" | "all";
 
 const STAGES: { id: LeadStage; label: string; color: string }[] = [
   { id: "novo", label: "Novo lead", color: "bg-slate-500/15 text-slate-300 border-slate-500/30" },
@@ -333,6 +336,7 @@ function AgendaPage() {
           event={null}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setCreatingEvent(false)}
           onSaved={() => {
             setCreatingEvent(false);
@@ -515,6 +519,7 @@ function UpcomingAgenda({
           event={editing}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); onChange(); }}
         />
@@ -683,6 +688,7 @@ function LeadDialog({
                   event={null}
                   leads={[]}
                   students={students}
+                  existingEvents={events}
                   presetLeadId={lead.id}
                   onClose={() => setAddingEvent(false)}
                   onSaved={() => { setAddingEvent(false); onSaved(); }}
@@ -807,11 +813,12 @@ function ConvertLeadDialog({
 
 
 function EventDialog({
-  event, leads, students, presetLeadId, onClose, onSaved,
+  event, leads, students, existingEvents = [], presetLeadId, onClose, onSaved,
 }: {
   event: AgendaEvent | null;
   leads: Lead[];
   students: StudentOption[];
+  existingEvents?: AgendaEvent[];
   presetLeadId?: string;
   onClose: () => void;
   onSaved: () => void;
@@ -832,11 +839,17 @@ function EventDialog({
   });
   const [saving, setSaving] = useState(false);
   const isEditing = !!event;
-  const hasSeries = !!event?.series_id;
+  const relatedSeriesEvents = useMemo(() => {
+    if (!event) return [];
+    if (event.series_id) return existingEvents.filter((e) => e.series_id === event.series_id);
+    if (event.created_at) return existingEvents.filter((e) => e.created_at === event.created_at);
+    return [event];
+  }, [event, existingEvents]);
+  const hasSeries = !!event?.series_id || relatedSeriesEvents.length > 1;
   const [recurring, setRecurring] = useState(false);
   const [recWeekdays, setRecWeekdays] = useState<number[]>([]);
   const [recEndDate, setRecEndDate] = useState("");
-  const [editScope, setEditScope] = useState<"one" | "future" | "all">("one");
+  const [editScope, setEditScope] = useState<EventEditScope>("one");
 
   const toggleWeekday = (d: number) => {
     setRecWeekdays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort());
@@ -896,13 +909,22 @@ function EventDialog({
       const newHH = newScheduledAt.getHours();
       const newMM = newScheduledAt.getMinutes();
 
-      let query = supabase.from("agenda_events").select("id, scheduled_at").eq("series_id", event.series_id!);
+      const legacySeriesId = event.series_id ? null : crypto.randomUUID();
+      let query = supabase.from("agenda_events").select("id, scheduled_at");
+      if (event.series_id) {
+        query = query.eq("series_id", event.series_id);
+      } else if (event.created_at) {
+        query = query.eq("created_at", event.created_at);
+      } else {
+        query = query.eq("id", event.id);
+      }
       if (editScope === "future") query = query.gte("scheduled_at", event.scheduled_at);
       const { data: rows, error: fetchErr } = await query;
       if (fetchErr) { setSaving(false); toast.error(fetchErr.message); return; }
 
       const updates = (rows ?? []).map(async (r) => {
-        const patch: typeof basePayload & { scheduled_at?: string } = { ...basePayload };
+        const patch: typeof basePayload & { scheduled_at?: string; series_id?: string } = { ...basePayload };
+        if (legacySeriesId) patch.series_id = legacySeriesId;
         if (timeChanged) {
           const d = new Date(r.scheduled_at);
           d.setHours(newHH, newMM, 0, 0);
@@ -1235,6 +1257,7 @@ function TimeSlotsView({
           event={editing}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); onChange(); }}
         />
