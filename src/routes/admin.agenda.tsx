@@ -819,9 +819,11 @@ function EventDialog({
   const [form, setForm] = useState({
     title: event?.title ?? "",
     type: (event?.type ?? "aula") as EventType,
-    scheduled_at: event?.scheduled_at
-      ? event.scheduled_at.slice(0, 16)
-      : new Date(Date.now() + 3600 * 1000).toISOString().slice(0, 16),
+    scheduled_at: (() => {
+      const d = event?.scheduled_at ? new Date(event.scheduled_at) : new Date(Date.now() + 3600 * 1000);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    })(),
     duration_minutes: event?.duration_minutes ?? 60,
     status: (event?.status ?? "agendado") as EventStatus,
     lead_id: event?.lead_id ?? presetLeadId ?? "",
