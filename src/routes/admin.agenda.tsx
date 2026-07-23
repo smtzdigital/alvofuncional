@@ -90,6 +90,12 @@ const TYPE_LABEL: Record<EventType, string> = {
   aula: "Aula",
   experimental: "Aula experimental",
   contato: "Contato",
+  grupo_funcional: "Grupo Funcional",
+  individualizado: "T. Individualizado",
+  personal: "Personal",
+  funcional_kids: "Funcional Kids",
+  hiit: "Treino HIIT",
+  gap: "Treino GAP",
   outro: "Outro",
 };
 
