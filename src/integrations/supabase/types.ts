@@ -23,6 +23,7 @@ export type Database = {
           lead_id: string | null
           notes: string | null
           scheduled_at: string
+          series_id: string | null
           status: Database["public"]["Enums"]["agenda_event_status"]
           student_id: string | null
           title: string
@@ -37,6 +38,7 @@ export type Database = {
           lead_id?: string | null
           notes?: string | null
           scheduled_at: string
+          series_id?: string | null
           status?: Database["public"]["Enums"]["agenda_event_status"]
           student_id?: string | null
           title: string
@@ -51,6 +53,7 @@ export type Database = {
           lead_id?: string | null
           notes?: string | null
           scheduled_at?: string
+          series_id?: string | null
           status?: Database["public"]["Enums"]["agenda_event_status"]
           student_id?: string | null
           title?: string
