@@ -900,7 +900,7 @@ function EventDialog({
       if (fetchErr) { setSaving(false); toast.error(fetchErr.message); return; }
 
       const updates = (rows ?? []).map(async (r) => {
-        const patch: Record<string, unknown> = { ...basePayload };
+        const patch: typeof basePayload & { scheduled_at?: string } = { ...basePayload };
         if (timeChanged) {
           const d = new Date(r.scheduled_at);
           d.setHours(newHH, newMM, 0, 0);
