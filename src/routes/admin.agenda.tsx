@@ -336,6 +336,7 @@ function AgendaPage() {
           event={null}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setCreatingEvent(false)}
           onSaved={() => {
             setCreatingEvent(false);
@@ -518,6 +519,7 @@ function UpcomingAgenda({
           event={editing}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); onChange(); }}
         />
@@ -686,6 +688,7 @@ function LeadDialog({
                   event={null}
                   leads={[]}
                   students={students}
+                  existingEvents={events}
                   presetLeadId={lead.id}
                   onClose={() => setAddingEvent(false)}
                   onSaved={() => { setAddingEvent(false); onSaved(); }}
@@ -1254,6 +1257,7 @@ function TimeSlotsView({
           event={editing}
           leads={leads}
           students={students}
+          existingEvents={events}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); onChange(); }}
         />
