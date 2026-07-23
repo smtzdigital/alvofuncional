@@ -1858,7 +1858,17 @@ export type Database = {
     Enums: {
       activity_level: "sedentario" | "iniciante" | "intermediario" | "avancado"
       agenda_event_status: "agendado" | "concluido" | "cancelado" | "no_show"
-      agenda_event_type: "aula" | "experimental" | "contato" | "outro"
+      agenda_event_type:
+        | "aula"
+        | "experimental"
+        | "contato"
+        | "outro"
+        | "grupo_funcional"
+        | "individualizado"
+        | "personal"
+        | "funcional_kids"
+        | "hiit"
+        | "gap"
       app_role: "admin" | "professor" | "aluno" | "financeiro" | "recepcao"
       fitness_goal:
         | "emagrecimento"
@@ -2014,7 +2024,18 @@ export const Constants = {
     Enums: {
       activity_level: ["sedentario", "iniciante", "intermediario", "avancado"],
       agenda_event_status: ["agendado", "concluido", "cancelado", "no_show"],
-      agenda_event_type: ["aula", "experimental", "contato", "outro"],
+      agenda_event_type: [
+        "aula",
+        "experimental",
+        "contato",
+        "outro",
+        "grupo_funcional",
+        "individualizado",
+        "personal",
+        "funcional_kids",
+        "hiit",
+        "gap",
+      ],
       app_role: ["admin", "professor", "aluno", "financeiro", "recepcao"],
       fitness_goal: [
         "emagrecimento",
