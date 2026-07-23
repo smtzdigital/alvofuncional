@@ -75,6 +75,7 @@ interface AgendaEvent {
   duration_minutes: number;
   status: EventStatus;
   notes: string | null;
+  series_id: string | null;
 }
 
 const STAGES: { id: LeadStage; label: string; color: string }[] = [
