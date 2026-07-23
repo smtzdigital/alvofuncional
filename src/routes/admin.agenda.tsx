@@ -75,6 +75,7 @@ interface AgendaEvent {
   duration_minutes: number;
   status: EventStatus;
   notes: string | null;
+  series_id: string | null;
 }
 
 const STAGES: { id: LeadStage; label: string; color: string }[] = [
@@ -829,9 +830,11 @@ function EventDialog({
   });
   const [saving, setSaving] = useState(false);
   const isEditing = !!event;
+  const hasSeries = !!event?.series_id;
   const [recurring, setRecurring] = useState(false);
   const [recWeekdays, setRecWeekdays] = useState<number[]>([]);
   const [recEndDate, setRecEndDate] = useState("");
+  const [editScope, setEditScope] = useState<"one" | "future" | "all">("one");
 
   const toggleWeekday = (d: number) => {
     setRecWeekdays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort());
@@ -856,7 +859,8 @@ function EventDialog({
       const end = new Date(recEndDate + "T23:59:59");
       if (end < start) { setSaving(false); toast.error("Data final antes do início"); return; }
       const weekdays = recWeekdays.length > 0 ? recWeekdays : [start.getDay()];
-      const rows: Array<typeof basePayload & { scheduled_at: string }> = [];
+      const seriesId = crypto.randomUUID();
+      const rows: Array<typeof basePayload & { scheduled_at: string; series_id: string }> = [];
       const cursor = new Date(start);
       cursor.setHours(0, 0, 0, 0);
       const hh = start.getHours();
@@ -866,7 +870,7 @@ function EventDialog({
           const dt = new Date(cursor);
           dt.setHours(hh, mm, 0, 0);
           if (dt >= start) {
-            rows.push({ ...basePayload, scheduled_at: dt.toISOString() });
+            rows.push({ ...basePayload, scheduled_at: dt.toISOString(), series_id: seriesId });
           }
         }
         cursor.setDate(cursor.getDate() + 1);
@@ -879,7 +883,40 @@ function EventDialog({
       return;
     }
 
-    const payload = { ...basePayload, scheduled_at: new Date(form.scheduled_at).toISOString() };
+    const newScheduledAt = new Date(form.scheduled_at);
+
+    // Edição com propagação em série
+    if (isEditing && event && hasSeries && editScope !== "one") {
+      const originalDate = new Date(event.scheduled_at);
+      const timeChanged =
+        originalDate.getHours() !== newScheduledAt.getHours() ||
+        originalDate.getMinutes() !== newScheduledAt.getMinutes();
+      const newHH = newScheduledAt.getHours();
+      const newMM = newScheduledAt.getMinutes();
+
+      let query = supabase.from("agenda_events").select("id, scheduled_at").eq("series_id", event.series_id!);
+      if (editScope === "future") query = query.gte("scheduled_at", event.scheduled_at);
+      const { data: rows, error: fetchErr } = await query;
+      if (fetchErr) { setSaving(false); toast.error(fetchErr.message); return; }
+
+      const updates = (rows ?? []).map(async (r) => {
+        const patch: typeof basePayload & { scheduled_at?: string } = { ...basePayload };
+        if (timeChanged) {
+          const d = new Date(r.scheduled_at);
+          d.setHours(newHH, newMM, 0, 0);
+          patch.scheduled_at = d.toISOString();
+        }
+        return supabase.from("agenda_events").update(patch).eq("id", r.id);
+      });
+      const results = await Promise.all(updates);
+      const firstErr = results.find((r) => r.error)?.error;
+      setSaving(false);
+      if (firstErr) toast.error(firstErr.message);
+      else { toast.success(`${results.length} eventos atualizados`); onSaved(); }
+      return;
+    }
+
+    const payload = { ...basePayload, scheduled_at: newScheduledAt.toISOString() };
     const { error } = event
       ? await supabase.from("agenda_events").update(payload).eq("id", event.id)
       : await supabase.from("agenda_events").insert(payload);
@@ -952,6 +989,22 @@ function EventDialog({
             <Label>Observações</Label>
             <Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
+          {isEditing && hasSeries && (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2">
+              <Label className="text-sm font-medium">Aplicar alterações em</Label>
+              <Select value={editScope} onValueChange={(v) => setEditScope(v as "one" | "future" | "all")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="one">Somente este evento</SelectItem>
+                  <SelectItem value="future">Este e os próximos da série</SelectItem>
+                  <SelectItem value="all">Todos os eventos da série</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Alterações de data mantêm o dia original de cada ocorrência; apenas o horário é propagado.
+              </p>
+            </div>
+          )}
           {!isEditing && (
             <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-3">
               <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
