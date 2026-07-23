@@ -48,7 +48,7 @@ export const Route = createFileRoute("/admin/agenda")({
 });
 
 type LeadStage = "novo" | "contato" | "experimental" | "negociacao" | "venda" | "perdido";
-type EventType = "aula" | "experimental" | "contato" | "outro";
+type EventType = "aula" | "experimental" | "contato" | "outro" | "grupo_funcional" | "individualizado" | "personal" | "funcional_kids" | "hiit" | "gap";
 type EventStatus = "agendado" | "concluido" | "cancelado" | "no_show";
 
 interface Lead {
