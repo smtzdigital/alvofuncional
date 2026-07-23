@@ -989,6 +989,22 @@ function EventDialog({
             <Label>Observações</Label>
             <Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
+          {isEditing && hasSeries && (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2">
+              <Label className="text-sm font-medium">Aplicar alterações em</Label>
+              <Select value={editScope} onValueChange={(v) => setEditScope(v as "one" | "future" | "all")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="one">Somente este evento</SelectItem>
+                  <SelectItem value="future">Este e os próximos da série</SelectItem>
+                  <SelectItem value="all">Todos os eventos da série</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Alterações de data mantêm o dia original de cada ocorrência; apenas o horário é propagado.
+              </p>
+            </div>
+          )}
           {!isEditing && (
             <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-3">
               <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
