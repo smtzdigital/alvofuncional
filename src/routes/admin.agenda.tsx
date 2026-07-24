@@ -1212,7 +1212,7 @@ function TimeSlotsView({
           <Clock className="h-4 w-4" />
           Alunos agrupados por horário
         </div>
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-5">
           <div>
             <Label className="text-xs">Nome do aluno</Label>
             <Input
@@ -1222,8 +1222,12 @@ function TimeSlotsView({
             />
           </div>
           <div>
-            <Label className="text-xs">Data</Label>
-            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+            <Label className="text-xs">Data inicial</Label>
+            <Input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Data final</Label>
+            <Input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} />
           </div>
           <div>
             <Label className="text-xs">Tipo</Label>
@@ -1245,8 +1249,8 @@ function TimeSlotsView({
             >
               {showPast ? "Ocultar passados" : "Mostrar passados"}
             </Button>
-            {(filterDate || filterType !== "all" || filterName) && (
-              <Button variant="ghost" size="sm" onClick={() => { setFilterDate(""); setFilterType("all"); setFilterName(""); }}>
+            {(filterStartDate || filterEndDate || filterType !== "all" || filterName) && (
+              <Button variant="ghost" size="sm" onClick={() => { setFilterStartDate(""); setFilterEndDate(""); setFilterType("all"); setFilterName(""); }}>
                 <FilterX className="h-3.5 w-3.5" />
               </Button>
             )}
