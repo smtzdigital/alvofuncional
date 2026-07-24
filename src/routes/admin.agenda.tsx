@@ -1097,7 +1097,8 @@ function TimeSlotsView({
   students: StudentOption[];
   onChange: () => void;
 }) {
-  const [filterDate, setFilterDate] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
   const [filterName, setFilterName] = useState("");
   const [showPast, setShowPast] = useState(false);
