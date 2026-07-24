@@ -1099,17 +1099,28 @@ function TimeSlotsView({
 }) {
   const [filterDate, setFilterDate] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
+  const [filterName, setFilterName] = useState("");
   const [showPast, setShowPast] = useState(false);
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+
+  const nameFor = (e: AgendaEvent) => {
+    const lead = leads.find((l) => l.id === e.lead_id);
+    const student = students.find((s) => s.id === e.student_id);
+    return student?.profile?.full_name ?? lead?.full_name ?? e.title ?? "";
+  };
 
   const slots = useMemo(() => {
     const now = Date.now();
+    const q = filterName.trim().toLowerCase();
     const filtered = events.filter((e) => {
       if (e.status === "cancelado") return false;
       const t = new Date(e.scheduled_at).getTime();
       if (!showPast && t < now - 3600 * 1000) return false;
       if (filterType !== "all" && e.type !== filterType) return false;
       if (filterDate && !isSameDay(new Date(e.scheduled_at), parseISO(filterDate))) return false;
+      if (q && !nameFor(e).toLowerCase().includes(q)) return false;
       return true;
     });
 
@@ -1131,7 +1142,47 @@ function TimeSlotsView({
     });
 
     return Array.from(map.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
-  }, [events, filterDate, filterType, showPast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, leads, students, filterDate, filterType, filterName, showPast]);
+
+  const visibleIds = useMemo(() => {
+    const ids: string[] = [];
+    slots.forEach((s) => s.items.forEach((e) => ids.push(e.id)));
+    return ids;
+  }, [slots]);
+
+  const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
+  const someSelected = selected.size > 0;
+
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(visibleIds));
+  };
+
+  const deleteSelected = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Excluir ${selected.size} evento(s) selecionado(s)?`)) return;
+    setDeleting(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase.from("agenda_events").delete().in("id", ids);
+    setDeleting(false);
+    if (error) {
+      toast.error("Falha ao excluir: " + error.message);
+      return;
+    }
+    toast.success(`${ids.length} evento(s) excluído(s)`);
+    setSelected(new Set());
+    onChange();
+  };
 
   // group slots by day for headers
   const days = useMemo(() => {
@@ -1155,7 +1206,15 @@ function TimeSlotsView({
           <Clock className="h-4 w-4" />
           Alunos agrupados por horário
         </div>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-4">
+          <div>
+            <Label className="text-xs">Nome do aluno</Label>
+            <Input
+              placeholder="Buscar por nome..."
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+            />
+          </div>
           <div>
             <Label className="text-xs">Data</Label>
             <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
@@ -1180,14 +1239,44 @@ function TimeSlotsView({
             >
               {showPast ? "Ocultar passados" : "Mostrar passados"}
             </Button>
-            {(filterDate || filterType !== "all") && (
-              <Button variant="ghost" size="sm" onClick={() => { setFilterDate(""); setFilterType("all"); }}>
+            {(filterDate || filterType !== "all" || filterName) && (
+              <Button variant="ghost" size="sm" onClick={() => { setFilterDate(""); setFilterType("all"); setFilterName(""); }}>
                 <FilterX className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
         </div>
+
+        {visibleIds.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-border/60 pt-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="h-4 w-4 cursor-pointer accent-primary"
+                checked={allSelected}
+                ref={(el) => { if (el) el.indeterminate = !allSelected && someSelected; }}
+                onChange={toggleAll}
+              />
+              Selecionar todos ({visibleIds.length})
+            </label>
+            {someSelected && (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  {selected.size} selecionado(s)
+                </span>
+                <Button size="sm" variant="destructive" disabled={deleting} onClick={deleteSelected}>
+                  <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  Excluir selecionados
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+                  Limpar seleção
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </div>
+
 
       {days.length === 0 ? (
         <div className="text-muted-foreground">Nenhum horário encontrado.</div>
