@@ -81,34 +81,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let currentUserId: string | null = null;
+
     const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) {
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
-          setLoading(true);
-          setTimeout(() => {
-            loadProfile(sess.user.id).finally(() => setLoading(false));
-          }, 0);
-        } else {
-          setTimeout(() => loadProfile(sess.user.id), 0);
-        }
-      } else {
+
+      if (!sess?.user) {
+        currentUserId = null;
         setRoles([]);
         setStudent(null);
         setAssessmentCompleted(false);
+        return;
+      }
+
+      // Only (re)load profile on real sign-in or user change.
+      // TOKEN_REFRESHED fires on tab focus and must NOT trigger a reload/loading flash.
+      const uid = sess.user.id;
+      const isNewUser = uid !== currentUserId;
+      if (event === "SIGNED_IN" || event === "USER_UPDATED" || isNewUser) {
+        currentUserId = uid;
+        setLoading(true);
+        setTimeout(() => {
+          loadProfile(uid).finally(() => setLoading(false));
+        }, 0);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) loadProfile(sess.user.id).finally(() => setLoading(false));
-      else setLoading(false);
+      if (sess?.user) {
+        currentUserId = sess.user.id;
+        loadProfile(sess.user.id).finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
     });
 
     return () => sub.subscription.unsubscribe();
   }, []);
+
 
   const refresh = async () => {
     if (user) await loadProfile(user.id);
