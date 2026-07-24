@@ -1308,29 +1308,42 @@ function TimeSlotsView({
                       </div>
                       <div className="divide-y divide-border/60">
                         {slot.items.map((e) => {
+                          const name = nameFor(e);
                           const lead = leads.find((l) => l.id === e.lead_id);
                           const student = students.find((s) => s.id === e.student_id);
-                          const name = student?.profile?.full_name ?? lead?.full_name ?? e.title;
+                          const isSel = selected.has(e.id);
                           return (
-                            <button
+                            <div
                               key={e.id}
-                              onClick={() => setEditing(e)}
-                              className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-muted/40"
+                              className={`flex items-center gap-2 px-3 py-2 transition ${isSel ? "bg-primary/10" : "hover:bg-muted/40"}`}
                             >
-                              <div className="min-w-0 flex-1">
-                                <div className="truncate text-sm font-medium">{name}</div>
-                                <div className="truncate text-xs text-muted-foreground">
-                                  {TYPE_LABEL[e.type]} · {e.duration_minutes} min
-                                  {student && " · Aluno"}
-                                  {!student && lead && " · Lead"}
+                              <input
+                                type="checkbox"
+                                className="h-4 w-4 cursor-pointer accent-primary"
+                                checked={isSel}
+                                onChange={() => toggleOne(e.id)}
+                                onClick={(ev) => ev.stopPropagation()}
+                              />
+                              <button
+                                onClick={() => setEditing(e)}
+                                className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="truncate text-sm font-medium">{name}</div>
+                                  <div className="truncate text-xs text-muted-foreground">
+                                    {TYPE_LABEL[e.type]} · {e.duration_minutes} min
+                                    {student && " · Aluno"}
+                                    {!student && lead && " · Lead"}
+                                  </div>
                                 </div>
-                              </div>
-                              <Badge variant="outline" className="text-[10px]">
-                                {STATUS_LABEL[e.status]}
-                              </Badge>
-                            </button>
+                                <Badge variant="outline" className="text-[10px]">
+                                  {STATUS_LABEL[e.status]}
+                                </Badge>
+                              </button>
+                            </div>
                           );
                         })}
+
                       </div>
                     </Card>
                   );
