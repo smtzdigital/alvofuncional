@@ -1115,12 +1115,17 @@ function TimeSlotsView({
   const slots = useMemo(() => {
     const now = Date.now();
     const q = filterName.trim().toLowerCase();
+    const start = filterStartDate ? parseISO(filterStartDate) : null;
+    const end = filterEndDate ? parseISO(filterEndDate) : null;
+    if (end) end.setHours(23, 59, 59, 999);
     const filtered = events.filter((e) => {
       if (e.status === "cancelado") return false;
       const t = new Date(e.scheduled_at).getTime();
+      const d = new Date(e.scheduled_at);
       if (!showPast && t < now - 3600 * 1000) return false;
       if (filterType !== "all" && e.type !== filterType) return false;
-      if (filterDate && !isSameDay(new Date(e.scheduled_at), parseISO(filterDate))) return false;
+      if (start && d < start) return false;
+      if (end && d > end) return false;
       if (q && !nameFor(e).toLowerCase().includes(q)) return false;
       return true;
     });
@@ -1144,7 +1149,7 @@ function TimeSlotsView({
 
     return Array.from(map.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [events, leads, students, filterDate, filterType, filterName, showPast]);
+  }, [events, leads, students, filterStartDate, filterEndDate, filterType, filterName, showPast]);
 
   const visibleIds = useMemo(() => {
     const ids: string[] = [];
