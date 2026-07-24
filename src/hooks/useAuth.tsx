@@ -47,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [student, setStudent] = useState<StudentInfo | null>(null);
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const loadedUserIdRef = useRef<string | null>(null);
+  const profileLoadedRef = useRef(false);
 
   const loadRoles = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -90,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!sess?.user) {
         loadedUserIdRef.current = null;
+        profileLoadedRef.current = false;
         setRoles([]);
         setStudent(null);
         setAssessmentCompleted(false);
@@ -103,9 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const shouldReloadProfile = uid !== loadedUserIdRef.current || event === "USER_UPDATED";
       if (shouldReloadProfile) {
         loadedUserIdRef.current = uid;
-        if (!student && roles.length === 0) setLoading(true);
+        if (!profileLoadedRef.current) setLoading(true);
         setTimeout(() => {
           loadProfile(uid).finally(() => {
+            profileLoadedRef.current = true;
             if (mounted) setLoading(false);
           });
         }, 0);
@@ -119,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (sess?.user) {
         loadedUserIdRef.current = sess.user.id;
         loadProfile(sess.user.id).finally(() => {
+          profileLoadedRef.current = true;
           if (mounted) setLoading(false);
         });
       } else {
@@ -130,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mounted = false;
       sub.subscription.unsubscribe();
     };
-  }, [roles.length, student]);
+  }, []);
 
 
   const refresh = async () => {
