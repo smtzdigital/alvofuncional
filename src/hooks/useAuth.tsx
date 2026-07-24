@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,6 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [student, setStudent] = useState<StudentInfo | null>(null);
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
+  const loadedUserIdRef = useRef<string | null>(null);
+  const profileLoadedRef = useRef(false);
 
   const loadRoles = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -81,45 +83,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    let currentUserId: string | null = null;
+    let mounted = true;
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
 
       if (!sess?.user) {
-        currentUserId = null;
+        loadedUserIdRef.current = null;
+        profileLoadedRef.current = false;
         setRoles([]);
         setStudent(null);
         setAssessmentCompleted(false);
+        setLoading(false);
         return;
       }
 
-      // Only (re)load profile on real sign-in or user change.
-      // TOKEN_REFRESHED fires on tab focus and must NOT trigger a reload/loading flash.
+      // Supabase can emit SIGNED_IN / TOKEN_REFRESHED when the browser tab regains focus.
+      // Do not show the global loading screen or reload profile data unless the user changed.
       const uid = sess.user.id;
-      const isNewUser = uid !== currentUserId;
-      if (event === "SIGNED_IN" || event === "USER_UPDATED" || isNewUser) {
-        currentUserId = uid;
-        setLoading(true);
+      const shouldReloadProfile = uid !== loadedUserIdRef.current || event === "USER_UPDATED";
+      if (shouldReloadProfile) {
+        loadedUserIdRef.current = uid;
+        if (!profileLoadedRef.current) setLoading(true);
         setTimeout(() => {
-          loadProfile(uid).finally(() => setLoading(false));
+          loadProfile(uid).finally(() => {
+            profileLoadedRef.current = true;
+            if (mounted) setLoading(false);
+          });
         }, 0);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      if (!mounted) return;
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        currentUserId = sess.user.id;
-        loadProfile(sess.user.id).finally(() => setLoading(false));
+        loadedUserIdRef.current = sess.user.id;
+        loadProfile(sess.user.id).finally(() => {
+          profileLoadedRef.current = true;
+          if (mounted) setLoading(false);
+        });
       } else {
         setLoading(false);
       }
     });
 
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
 
