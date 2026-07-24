@@ -1097,7 +1097,8 @@ function TimeSlotsView({
   students: StudentOption[];
   onChange: () => void;
 }) {
-  const [filterDate, setFilterDate] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
   const [filterName, setFilterName] = useState("");
   const [showPast, setShowPast] = useState(false);
@@ -1114,12 +1115,17 @@ function TimeSlotsView({
   const slots = useMemo(() => {
     const now = Date.now();
     const q = filterName.trim().toLowerCase();
+    const start = filterStartDate ? parseISO(filterStartDate) : null;
+    const end = filterEndDate ? parseISO(filterEndDate) : null;
+    if (end) end.setHours(23, 59, 59, 999);
     const filtered = events.filter((e) => {
       if (e.status === "cancelado") return false;
       const t = new Date(e.scheduled_at).getTime();
+      const d = new Date(e.scheduled_at);
       if (!showPast && t < now - 3600 * 1000) return false;
       if (filterType !== "all" && e.type !== filterType) return false;
-      if (filterDate && !isSameDay(new Date(e.scheduled_at), parseISO(filterDate))) return false;
+      if (start && d < start) return false;
+      if (end && d > end) return false;
       if (q && !nameFor(e).toLowerCase().includes(q)) return false;
       return true;
     });
@@ -1143,7 +1149,7 @@ function TimeSlotsView({
 
     return Array.from(map.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [events, leads, students, filterDate, filterType, filterName, showPast]);
+  }, [events, leads, students, filterStartDate, filterEndDate, filterType, filterName, showPast]);
 
   const visibleIds = useMemo(() => {
     const ids: string[] = [];
@@ -1206,7 +1212,7 @@ function TimeSlotsView({
           <Clock className="h-4 w-4" />
           Alunos agrupados por horário
         </div>
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-5">
           <div>
             <Label className="text-xs">Nome do aluno</Label>
             <Input
@@ -1216,8 +1222,12 @@ function TimeSlotsView({
             />
           </div>
           <div>
-            <Label className="text-xs">Data</Label>
-            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+            <Label className="text-xs">Data inicial</Label>
+            <Input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs">Data final</Label>
+            <Input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} />
           </div>
           <div>
             <Label className="text-xs">Tipo</Label>
@@ -1239,8 +1249,8 @@ function TimeSlotsView({
             >
               {showPast ? "Ocultar passados" : "Mostrar passados"}
             </Button>
-            {(filterDate || filterType !== "all" || filterName) && (
-              <Button variant="ghost" size="sm" onClick={() => { setFilterDate(""); setFilterType("all"); setFilterName(""); }}>
+            {(filterStartDate || filterEndDate || filterType !== "all" || filterName) && (
+              <Button variant="ghost" size="sm" onClick={() => { setFilterStartDate(""); setFilterEndDate(""); setFilterType("all"); setFilterName(""); }}>
                 <FilterX className="h-3.5 w-3.5" />
               </Button>
             )}
