@@ -82,6 +82,20 @@ function AlunosAdmin() {
       setSyncingId(null);
     }
   };
+
+  const removeStudent = async (r: Row) => {
+    if (!confirm(`Excluir aluno "${r.profile?.full_name ?? ""}"? Esta ação não pode ser desfeita.`)) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/students-delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ student_id: r.id }),
+    });
+    const data = await res.json();
+    if (!res.ok) return toast.error(data.error ?? "Falha ao excluir");
+    toast.success("Aluno excluído");
+    load();
+  };
   const [contract, setContract] = useState<{
     template: string;
     aluno: ContractStudent;
