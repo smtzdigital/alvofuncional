@@ -339,6 +339,9 @@ function AlunosAdmin() {
                     <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar">
                       <Pencil size={14} />
                     </Button>
+                    <Button size="icon" variant="ghost" onClick={() => removeStudent(r)} title="Excluir aluno">
+                      <Trash2 size={14} className="text-destructive" />
+                    </Button>
                   </div>
                 </td>
               </tr>
