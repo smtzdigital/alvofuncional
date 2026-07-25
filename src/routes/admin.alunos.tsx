@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pencil, Search, FileText, Plus, ScrollText, RefreshCw } from "lucide-react";
+import { Pencil, Search, FileText, Plus, ScrollText, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 import { ContractView } from "@/components/ContractView";
@@ -81,6 +81,20 @@ function AlunosAdmin() {
     } finally {
       setSyncingId(null);
     }
+  };
+
+  const removeStudent = async (r: Row) => {
+    if (!confirm(`Excluir aluno "${r.profile?.full_name ?? ""}"? Esta ação não pode ser desfeita.`)) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/students-delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ student_id: r.id }),
+    });
+    const data = await res.json();
+    if (!res.ok) return toast.error(data.error ?? "Falha ao excluir");
+    toast.success("Aluno excluído");
+    load();
   };
   const [contract, setContract] = useState<{
     template: string;
@@ -324,6 +338,9 @@ function AlunosAdmin() {
                     </Button>
                     <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar">
                       <Pencil size={14} />
+                    </Button>
+                    <Button size="icon" variant="ghost" onClick={() => removeStudent(r)} title="Excluir aluno">
+                      <Trash2 size={14} className="text-destructive" />
                     </Button>
                   </div>
                 </td>
