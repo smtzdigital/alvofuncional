@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2, Edit, PlayCircle } from "lucide-react";
+import { Plus, Trash2, Edit, PlayCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { brl, PAYMENT_METHODS } from "@/lib/financial/utils";
 
@@ -23,10 +23,19 @@ interface Rec {
 interface Cat { id: string; name: string; kind: string; }
 interface Acc { id: string; name: string; }
 
+const PAGE_SIZE = 10;
+
 function Page() {
   const [rows, setRows] = useState<Rec[]>([]);
   const [cats, setCats] = useState<Cat[]>([]);
   const [accs, setAccs] = useState<Acc[]>([]);
+
+  // Filters
+  const [fName, setFName] = useState("");
+  const [fMethod, setFMethod] = useState<string>("all");
+  const [fStart, setFStart] = useState("");
+  const [fEnd, setFEnd] = useState("");
+  const [page, setPage] = useState(1);
 
   const load = async () => {
     const [{ data: r }, { data: c }, { data: a }] = await Promise.all([
@@ -40,8 +49,26 @@ function Page() {
   };
   useEffect(() => { load(); }, []);
 
+  const filtered = useMemo(() => {
+    const name = fName.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (name && !(r.template?.description ?? "").toLowerCase().includes(name)) return false;
+      if (fMethod !== "all" && (r.template?.payment_method ?? "") !== fMethod) return false;
+      if (fStart && r.next_run_date < fStart) return false;
+      if (fEnd && r.next_run_date > fEnd) return false;
+      return true;
+    });
+  }, [rows, fName, fMethod, fStart, fEnd]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => { setPage(1); }, [fName, fMethod, fStart, fEnd]);
+
+  const clearFilters = () => { setFName(""); setFMethod("all"); setFStart(""); setFEnd(""); };
+
   const runOne = async (r: Rec, forceNext = false) => {
-    // Generate all occurrences up to today; if forceNext, also generate the next upcoming one.
     const today = new Date().toISOString().slice(0, 10);
     let next = r.next_run_date;
     let created = 0;
@@ -91,18 +118,51 @@ function Page() {
       </div>
 
       <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <div className="md:col-span-2">
+              <Label>Buscar por nome</Label>
+              <Input value={fName} onChange={(e) => setFName(e.target.value)} placeholder="Descrição..." />
+            </div>
+            <div>
+              <Label>Forma de pagamento</Label>
+              <Select value={fMethod} onValueChange={setFMethod}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  {PAYMENT_METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Próxima (de)</Label>
+              <Input type="date" value={fStart} onChange={(e) => setFStart(e.target.value)} />
+            </div>
+            <div>
+              <Label>Próxima (até)</Label>
+              <Input type="date" value={fEnd} onChange={(e) => setFEnd(e.target.value)} />
+            </div>
+          </div>
+          <div className="mt-3 flex justify-end">
+            <Button variant="ghost" size="sm" onClick={clearFilters}>Limpar filtros</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-              <tr><th className="p-3 text-left">Descrição</th><th className="p-3 text-left">Tipo</th><th className="p-3 text-left">Frequência</th><th className="p-3 text-right">Valor</th><th className="p-3 text-left">Próxima</th><th className="p-3"></th></tr>
+              <tr><th className="p-3 text-left">Descrição</th><th className="p-3 text-left">Tipo</th><th className="p-3 text-left">Frequência</th><th className="p-3 text-left">Pagamento</th><th className="p-3 text-right">Valor</th><th className="p-3 text-left">Próxima</th><th className="p-3"></th></tr>
             </thead>
             <tbody>
-              {rows.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Nenhuma recorrência.</td></tr>}
-              {rows.map((r) => (
+              {pageRows.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Nenhuma recorrência.</td></tr>}
+              {pageRows.map((r) => (
                 <tr key={r.id} className="border-t">
                   <td className="p-3 font-medium">{r.template?.description ?? "—"}</td>
                   <td className="p-3">{r.direction === "income" ? "Receita" : "Despesa"}</td>
                   <td className="p-3">{freqLabel(r.frequency, r.interval_count)}</td>
+                  <td className="p-3">{PAYMENT_METHODS.find((m) => m.value === r.template?.payment_method)?.label ?? "—"}</td>
                   <td className="p-3 text-right">{brl(Number(r.template?.gross_amount ?? 0))}</td>
                   <td className="p-3">{r.next_run_date}{!r.is_active && <span className="ml-2 text-xs text-muted-foreground">(pausada)</span>}</td>
                   <td className="p-3 text-right">
@@ -120,6 +180,16 @@ function Page() {
               ))}
             </tbody>
           </table>
+          <div className="flex items-center justify-between p-3 border-t text-sm">
+            <span className="text-muted-foreground">
+              {filtered.length === 0 ? "0" : `${(currentPage - 1) * PAGE_SIZE + 1}-${Math.min(currentPage * PAGE_SIZE, filtered.length)}`} de {filtered.length}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button size="icon" variant="outline" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}><ChevronLeft size={16} /></Button>
+              <span>Página {currentPage} de {totalPages}</span>
+              <Button size="icon" variant="outline" disabled={currentPage >= totalPages} onClick={() => setPage(currentPage + 1)}><ChevronRight size={16} /></Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -142,12 +212,13 @@ function addFrequency(iso: string, freq: string, n: number): string {
 
 function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs: Acc[]; onSaved: () => void }) {
   const [open, setOpen] = useState(false);
+  const today = () => new Date().toISOString().slice(0, 10);
   const [direction, setDirection] = useState(rec?.direction ?? "expense");
   const [frequency, setFrequency] = useState(rec?.frequency ?? "monthly");
   const [interval, setInterval] = useState(rec?.interval_count ?? 1);
-  const [start, setStart] = useState(rec?.start_date ?? new Date().toISOString().slice(0, 10));
+  const [start, setStart] = useState(rec?.start_date ?? today());
   const [end, setEnd] = useState(rec?.end_date ?? "");
-  const [next, setNext] = useState(rec?.next_run_date ?? new Date().toISOString().slice(0, 10));
+  const [next, setNext] = useState(rec?.next_run_date ?? today());
   const [active, setActive] = useState(rec?.is_active ?? true);
   const [description, setDescription] = useState(rec?.template?.description ?? "");
   const [gross, setGross] = useState(Number(rec?.template?.gross_amount ?? 0));
@@ -156,6 +227,13 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
   const [supplier, setSupplier] = useState(rec?.template?.supplier ?? "");
   const [notes, setNotes] = useState(rec?.template?.notes ?? "");
   const [paymentMethod, setPaymentMethod] = useState(rec?.template?.payment_method ?? "");
+
+  const resetForm = () => {
+    setDirection("expense"); setFrequency("monthly"); setInterval(1);
+    setStart(today()); setEnd(""); setNext(today()); setActive(true);
+    setDescription(""); setGross(0); setCatId(""); setAccId("");
+    setSupplier(""); setNotes(""); setPaymentMethod("");
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -169,11 +247,14 @@ function RecDialog({ rec, cats, accs, onSaved }: { rec?: Rec; cats: Cat[]; accs:
       : supabase.from("financial_recurring").insert(payload);
     const { error } = await q;
     if (error) return toast.error(error.message);
-    toast.success("Salvo"); setOpen(false); onSaved();
+    toast.success("Salvo");
+    if (!rec) resetForm();
+    setOpen(false);
+    onSaved();
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v && !rec) resetForm(); }}>
       <DialogTrigger asChild>
         {rec ? <Button variant="ghost" size="icon"><Edit size={16} /></Button> : <Button size="sm"><Plus size={16} /> Nova recorrência</Button>}
       </DialogTrigger>
