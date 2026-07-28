@@ -6,12 +6,22 @@ export function Logo({ size = "lg" }: { size?: "sm" | "md" | "lg" }) {
   const sizes = { sm: "text-lg", md: "text-xl", lg: "text-3xl" };
   const iconSize = { sm: 18, md: 22, lg: 32 };
   const boxSize = { sm: "h-8 w-8", md: "h-9 w-9", lg: "h-12 w-12" };
+  const logoHeight = { sm: "h-6", md: "h-8", lg: "h-10" };
 
-  // Split app name to colorize last word/half
   const name = settings.app_name || "Alvo Funcional";
-  const split = Math.ceil(name.length / 2);
-  const part1 = name.slice(0, split);
-  const part2 = name.slice(split);
+
+  // Full logo image replaces the icon + wordmark when available
+  if (settings.logo_url) {
+    return (
+      <div className="flex items-center">
+        <img
+          src={settings.logo_url}
+          alt={name}
+          className={`${logoHeight[size]} w-auto max-w-[180px] object-contain`}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2 font-bold">
@@ -26,3 +36,4 @@ export function Logo({ size = "lg" }: { size?: "sm" | "md" | "lg" }) {
     </div>
   );
 }
+
