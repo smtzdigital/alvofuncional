@@ -75,6 +75,7 @@ async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestI
     Authorization: auth,
     "Content-Type": "application/json",
     Accept: "application/json",
+    "User-Agent": "alvo-funcional/1.0",
   };
   if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
 
@@ -314,49 +315,31 @@ class StonePaymentGateway implements PaymentGateway {
   async createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string; stonePlanId?: string | null; interval?: string; intervalCount?: number; paymentMethods?: string[]; trialPeriodDays?: number }) {
     const cfg = await getGatewayConfig();
     const expiresInMinutes = Math.max(1, Math.round(input.expiresInSec / 60));
-    const methods = (input.paymentMethods && input.paymentMethods.length > 0) ? input.paymentMethods : ["credit_card"];
-    const installmentsN = input.installments ?? 1;
-
-    const paymentSettings: Record<string, unknown> = {
-      accepted_payment_methods: methods,
-    };
-    if (methods.includes("credit_card")) {
-      paymentSettings.credit_card_settings = {
-        operation_type: "auth_and_capture",
-        installments: [{ number: installmentsN, total: input.amountCents }],
-      };
+    if (!input.stonePlanId) {
+      throw new StoneError("Plano da assinatura não sincronizado na Pagar.me", 400, "missing_plan_id");
     }
-
-    const trial = validTrialPeriodDays(input.trialPeriodDays);
-    const subscriptionSettings: Record<string, unknown> = input.stonePlanId
-      ? { plan_id: input.stonePlanId }
-      : {
-          interval: input.interval ?? "month",
-          interval_count: input.intervalCount ?? 1,
-          billing_type: "prepaid",
-          payment_methods: methods,
-          installments: installmentsN,
-          items: [{
-            name: input.name.slice(0, 64),
-            description: (input.description ?? input.name).slice(0, 256),
-            quantity: 1,
-            pricing_scheme: { scheme_type: "unit", price: input.amountCents },
-          }],
-          ...(trial ? { trial_period_days: trial } : {}),
-        };
 
     const body = {
       is_building: false,
       name: input.name.slice(0, 64),
       type: "subscription",
       expires_in: expiresInMinutes,
-      payment_settings: paymentSettings,
-      subscription_settings: subscriptionSettings,
+      payment_settings: {
+        accepted_payment_methods: ["credit_card"],
+      },
+      cart_settings: {
+        recurrences: [
+          {
+            plan_id: input.stonePlanId,
+            start_in: 1,
+          },
+        ],
+      },
       metadata: input.metadata ?? {},
     };
     try {
-      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body });
-      await logAudit("createPaymentLink", { name: input.name, amount: input.amountCents, plan_id: input.stonePlanId ?? null, methods }, { id: res.id, url: res.url }, undefined, input.actor);
+      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body, useSandboxHost: cfg.environment === "sandbox" });
+      await logAudit("createPaymentLink", { name: input.name, amount: input.amountCents, plan_id: input.stonePlanId, methods: ["credit_card"] }, { id: res.id, url: res.url }, undefined, input.actor);
       return res;
     } catch (e) {
       const err = e as StoneError;
