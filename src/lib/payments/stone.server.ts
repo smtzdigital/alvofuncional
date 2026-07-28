@@ -147,6 +147,11 @@ export interface PlanSyncInput {
   actor?: string;
 }
 
+function validTrialPeriodDays(value: number | undefined): number | undefined {
+  if (!Number.isFinite(value) || !value || value < 1) return undefined;
+  return Math.floor(value);
+}
+
 // -------------------- Gateway interface --------------------
 
 export interface PaymentGateway {
@@ -364,6 +369,7 @@ class StonePaymentGateway implements PaymentGateway {
   }
 
   private planBody(input: PlanSyncInput) {
+    const trialPeriodDays = validTrialPeriodDays(input.trialPeriodDays);
     const body: Record<string, unknown> = {
       name: input.name,
       description: input.description ?? input.name,
@@ -373,7 +379,6 @@ class StonePaymentGateway implements PaymentGateway {
       billing_type: "prepaid",
       payment_methods: ["credit_card"],
       installments: [input.installments || 1],
-      trial_period_days: input.trialPeriodDays ?? 0,
       currency: "BRL",
       items: [
         {
@@ -384,7 +389,7 @@ class StonePaymentGateway implements PaymentGateway {
         },
       ],
     };
-    if ((input.trialPeriodDays ?? 0) > 0) body.trial_period_days = input.trialPeriodDays;
+    if (trialPeriodDays) body.trial_period_days = trialPeriodDays;
     return body;
   }
 
@@ -413,7 +418,7 @@ class StonePaymentGateway implements PaymentGateway {
           description: input.description ?? input.name,
           installments: [input.installments || 1],
           payment_methods: ["credit_card"],
-          ...((input.trialPeriodDays ?? 0) > 0 ? { trial_period_days: input.trialPeriodDays } : {}),
+          ...(validTrialPeriodDays(input.trialPeriodDays) ? { trial_period_days: validTrialPeriodDays(input.trialPeriodDays) } : {}),
           statement_descriptor: input.name.slice(0, 13),
         },
       });
