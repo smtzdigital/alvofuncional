@@ -364,7 +364,7 @@ class StonePaymentGateway implements PaymentGateway {
   }
 
   private planBody(input: PlanSyncInput) {
-    return {
+    const body: Record<string, unknown> = {
       name: input.name,
       description: input.description ?? input.name,
       shippable: false,
@@ -384,6 +384,8 @@ class StonePaymentGateway implements PaymentGateway {
         },
       ],
     };
+    if ((input.trialPeriodDays ?? 0) > 0) body.trial_period_days = input.trialPeriodDays;
+    return body;
   }
 
   async createPlan(input: PlanSyncInput) {
@@ -411,7 +413,7 @@ class StonePaymentGateway implements PaymentGateway {
           description: input.description ?? input.name,
           installments: [input.installments || 1],
           payment_methods: ["credit_card"],
-          trial_period_days: input.trialPeriodDays ?? 0,
+          ...((input.trialPeriodDays ?? 0) > 0 ? { trial_period_days: input.trialPeriodDays } : {}),
           statement_descriptor: input.name.slice(0, 13),
         },
       });
