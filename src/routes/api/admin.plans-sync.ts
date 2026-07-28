@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdminUserId } from "@/lib/payments/admin-verify.server";
-import { friendlyStoneError, getPaymentGateway } from "@/lib/payments/stone.server";
+import { friendlyStoneError, getPaymentGateway, StoneError } from "@/lib/payments/stone.server";
 
 type PlanRow = {
   id: string;
@@ -17,7 +17,11 @@ type PlanRow = {
 };
 
 async function syncPlan(planId: string, actor: string) {
-  const { data, error } = await supabaseAdmin.from("plans").select("*").eq("id", planId).maybeSingle();
+  const { data, error } = await supabaseAdmin
+    .from("plans")
+    .select("*")
+    .eq("id", planId)
+    .maybeSingle();
   if (error || !data) throw new Error("Plano não encontrado");
   const p = data as unknown as PlanRow;
   const gw = getPaymentGateway();
@@ -32,8 +36,13 @@ async function syncPlan(planId: string, actor: string) {
     actor,
   };
   if (p.stone_plan_id) {
-    await gw.updatePlan({ ...input, stonePlanId: p.stone_plan_id });
-    return { stone_plan_id: p.stone_plan_id, action: "updated" as const };
+    try {
+      await gw.updatePlan({ ...input, stonePlanId: p.stone_plan_id });
+      return { stone_plan_id: p.stone_plan_id, action: "updated" as const };
+    } catch (e) {
+      if (!(e instanceof StoneError) || e.status !== 404) throw e;
+      await supabaseAdmin.from("plans").update({ stone_plan_id: null }).eq("id", p.id);
+    }
   }
   const created = await gw.createPlan(input);
   await supabaseAdmin.from("plans").update({ stone_plan_id: created.id }).eq("id", p.id);
@@ -60,7 +69,11 @@ export const Route = createFileRoute("/api/admin/plans-sync")({
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
           const { plan_id } = (await request.json()) as { plan_id: string };
-          const { data } = await supabaseAdmin.from("plans").select("stone_plan_id").eq("id", plan_id).maybeSingle();
+          const { data } = await supabaseAdmin
+            .from("plans")
+            .select("stone_plan_id")
+            .eq("id", plan_id)
+            .maybeSingle();
           const stonePlanId = (data as { stone_plan_id: string | null } | null)?.stone_plan_id;
           if (stonePlanId) {
             await getPaymentGateway().deletePlan({ stonePlanId, actor: uid });
