@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdminUserId } from "@/lib/payments/admin-verify.server";
-import { friendlyStoneError, getPaymentGateway } from "@/lib/payments/stone.server";
+import { friendlyStoneError, getPaymentGateway, StoneError } from "@/lib/payments/stone.server";
 
 type PlanRow = {
   id: string;
@@ -32,8 +32,13 @@ async function syncPlan(planId: string, actor: string) {
     actor,
   };
   if (p.stone_plan_id) {
-    await gw.updatePlan({ ...input, stonePlanId: p.stone_plan_id });
-    return { stone_plan_id: p.stone_plan_id, action: "updated" as const };
+    try {
+      await gw.updatePlan({ ...input, stonePlanId: p.stone_plan_id });
+      return { stone_plan_id: p.stone_plan_id, action: "updated" as const };
+    } catch (e) {
+      if (!(e instanceof StoneError) || e.status !== 404) throw e;
+      await supabaseAdmin.from("plans").update({ stone_plan_id: null }).eq("id", p.id);
+    }
   }
   const created = await gw.createPlan(input);
   await supabaseAdmin.from("plans").update({ stone_plan_id: created.id }).eq("id", p.id);
