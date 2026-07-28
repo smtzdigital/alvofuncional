@@ -52,6 +52,22 @@ export class StoneError extends Error {
   }
 }
 
+function extractStoneMessage(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== "object") return fallback;
+  const raw = payload as {
+    message?: string;
+    errors?: Array<{ message?: string; parameter_name?: string }> | Record<string, string[] | string>;
+  };
+  const details = Array.isArray(raw.errors)
+    ? raw.errors
+        .map((item) => [item.parameter_name, item.message].filter(Boolean).join(": "))
+        .filter(Boolean)
+    : raw.errors && typeof raw.errors === "object"
+      ? Object.entries(raw.errors).map(([field, value]) => `${field}: ${Array.isArray(value) ? value.join(", ") : value}`)
+      : [];
+  return [raw.message, ...details].filter(Boolean).join(" — ") || fallback;
+}
+
 async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestInit & { useSandboxHost?: boolean }): Promise<T> {
   if (!cfg.secret_key) throw new StoneError("Chave secreta da Stone não configurada", 400, "no_secret_key");
   const auth = "Basic " + btoa(`${cfg.secret_key}:`);
@@ -75,7 +91,7 @@ async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestI
 
   if (!res.ok) {
     const raw = payload as { message?: string; errors?: unknown; code?: string } | null;
-    const msg = raw?.message ?? `Falha na Stone (${res.status})`;
+    const msg = extractStoneMessage(payload, `Falha na Stone (${res.status})`);
     throw new StoneError(msg, res.status, raw?.code, raw);
   }
   return payload as T;
@@ -242,7 +258,6 @@ class StonePaymentGateway implements PaymentGateway {
           interval: input.interval,
           interval_count: input.intervalCount,
           billing_type: "prepaid",
-          pricing_scheme: { scheme_type: "unit", price: input.amountCents },
           items: [{ description: input.planName, quantity: 1, pricing_scheme: { scheme_type: "unit", price: input.amountCents } }],
         };
     try {
@@ -349,18 +364,28 @@ class StonePaymentGateway implements PaymentGateway {
   }
 
   private planBody(input: PlanSyncInput) {
-    return {
+    const body: Record<string, unknown> = {
       name: input.name,
       description: input.description ?? input.name,
+      shippable: false,
       interval: input.interval,
       interval_count: input.intervalCount,
       billing_type: "prepaid",
       payment_methods: ["credit_card"],
       installments: [input.installments || 1],
       trial_period_days: input.trialPeriodDays ?? 0,
-      pricing_scheme: { scheme_type: "unit", price: input.amountCents },
-      items: [{ name: input.name, quantity: 1, pricing_scheme: { scheme_type: "unit", price: input.amountCents } }],
+      currency: "BRL",
+      items: [
+        {
+          name: input.name,
+          description: input.description ?? input.name,
+          quantity: 1,
+          pricing_scheme: { scheme_type: "unit", price: input.amountCents },
+        },
+      ],
     };
+    if ((input.trialPeriodDays ?? 0) > 0) body.trial_period_days = input.trialPeriodDays;
+    return body;
   }
 
   async createPlan(input: PlanSyncInput) {
@@ -388,7 +413,7 @@ class StonePaymentGateway implements PaymentGateway {
           description: input.description ?? input.name,
           installments: [input.installments || 1],
           payment_methods: ["credit_card"],
-          trial_period_days: input.trialPeriodDays ?? 0,
+          ...((input.trialPeriodDays ?? 0) > 0 ? { trial_period_days: input.trialPeriodDays } : {}),
           statement_descriptor: input.name.slice(0, 13),
         },
       });
