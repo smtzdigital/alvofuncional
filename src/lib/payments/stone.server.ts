@@ -62,7 +62,7 @@ async function stoneRequest<T = unknown>(cfg: GatewayConfig, init: StoneRequestI
   };
   if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
 
-  const baseUrl = init.useSandboxHost && cfg.environment === "sandbox" ? STONE_SANDBOX_API_URL : STONE_API_URL;
+  const baseUrl = cfg.environment === "sandbox" ? STONE_SANDBOX_API_URL : STONE_API_URL;
   const res = await fetch(`${baseUrl}${init.path}`, {
     method: init.method,
     headers,
