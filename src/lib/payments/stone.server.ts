@@ -161,7 +161,7 @@ export interface PaymentGateway {
   createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }): Promise<StoneSubscription>;
   cancelSubscription(input: { subscriptionId: string; actor?: string }): Promise<{ ok: true }>;
   updateSubscriptionCard(input: { subscriptionId: string; cardId: string; actor?: string }): Promise<{ ok: true }>;
-  createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string }): Promise<StonePaymentLink>;
+  createPaymentLink(input: { name: string; amountCents: number; expiresInSec: number; description?: string; installments?: number; metadata?: Record<string, string>; actor?: string; stonePlanId?: string | null; interval?: string; intervalCount?: number; paymentMethods?: string[]; trialPeriodDays?: number }): Promise<StonePaymentLink>;
   createOneOffCharge(input: { customerId: string; cardId: string; amountCents: number; installments?: number; description?: string; actor?: string; metadata?: Record<string, string> }): Promise<StoneCharge>;
   createPlan(input: PlanSyncInput): Promise<StonePlan>;
   updatePlan(input: PlanSyncInput & { stonePlanId: string }): Promise<StonePlan>;
