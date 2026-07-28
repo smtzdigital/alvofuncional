@@ -42,6 +42,7 @@ function PagarPage() {
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -79,10 +80,11 @@ function PagarPage() {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!state.publicKey) {
-      setState((current) => ({ ...current, error: "Chave pública da Stone não configurada" }));
+      setPaymentError("Chave pública da Stone não configurada");
       return;
     }
     setBusy(true);
+    setPaymentError(null);
     try {
       const cardToken = await tokenizeCard(state.publicKey, card);
       const response = await fetch(`/api/public/payments-link/${encodeURIComponent(token)}`, {
@@ -94,7 +96,7 @@ function PagarPage() {
       if (!response.ok) throw new Error(data.error ?? "Não foi possível concluir a assinatura");
       setDone(true);
     } catch (error) {
-      setState((current) => ({ ...current, error: (error as Error).message }));
+      setPaymentError((error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -171,6 +173,7 @@ function PagarPage() {
               <Button size="lg" type="submit" disabled={busy} className="w-full bg-gradient-primary text-primary-foreground">
                 {busy ? <><Loader2 size={18} className="mr-2 animate-spin" /> Processando...</> : "Finalizar assinatura"}
               </Button>
+              {paymentError && <div className="text-sm text-destructive text-center">{paymentError}</div>}
               {isFailed && <div className="text-sm text-destructive text-center">A última tentativa falhou. Tente novamente.</div>}
               <p className="text-xs text-muted-foreground text-center">Os dados do cartão são enviados diretamente à Stone/Pagar.me para tokenização segura.</p>
             </form>
