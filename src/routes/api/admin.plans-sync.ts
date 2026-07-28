@@ -17,7 +17,11 @@ type PlanRow = {
 };
 
 async function syncPlan(planId: string, actor: string) {
-  const { data, error } = await supabaseAdmin.from("plans").select("*").eq("id", planId).maybeSingle();
+  const { data, error } = await supabaseAdmin
+    .from("plans")
+    .select("*")
+    .eq("id", planId)
+    .maybeSingle();
   if (error || !data) throw new Error("Plano não encontrado");
   const p = data as unknown as PlanRow;
   const gw = getPaymentGateway();
@@ -65,7 +69,11 @@ export const Route = createFileRoute("/api/admin/plans-sync")({
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
           const { plan_id } = (await request.json()) as { plan_id: string };
-          const { data } = await supabaseAdmin.from("plans").select("stone_plan_id").eq("id", plan_id).maybeSingle();
+          const { data } = await supabaseAdmin
+            .from("plans")
+            .select("stone_plan_id")
+            .eq("id", plan_id)
+            .maybeSingle();
           const stonePlanId = (data as { stone_plan_id: string | null } | null)?.stone_plan_id;
           if (stonePlanId) {
             await getPaymentGateway().deletePlan({ stonePlanId, actor: uid });
