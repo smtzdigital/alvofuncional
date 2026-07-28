@@ -355,7 +355,7 @@ class StonePaymentGateway implements PaymentGateway {
       metadata: input.metadata ?? {},
     };
     try {
-      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body, useSandboxHost: true });
+      const res = await stoneRequest<StonePaymentLink>(cfg, { method: "POST", path: "/paymentlinks", body });
       await logAudit("createPaymentLink", { name: input.name, amount: input.amountCents, plan_id: input.stonePlanId ?? null, methods }, { id: res.id, url: res.url }, undefined, input.actor);
       return res;
     } catch (e) {
