@@ -981,7 +981,12 @@ function EventDialog({
             </div>
             <div>
               <Label>Data/hora</Label>
-              <Input type="datetime-local" value={form.scheduled_at} onChange={(e) => setForm({ ...form, scheduled_at: e.target.value })} />
+              <Input
+                type="datetime-local"
+                className="[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-90"
+                value={form.scheduled_at}
+                onChange={(e) => setForm({ ...form, scheduled_at: e.target.value })}
+              />
             </div>
             <div>
               <Label>Duração (min)</Label>
