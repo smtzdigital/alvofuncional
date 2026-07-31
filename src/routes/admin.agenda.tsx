@@ -7,21 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StudentCombobox, type StudentOption } from "@/components/StudentCombobox";
 import { toast } from "sonner";
@@ -48,7 +35,17 @@ export const Route = createFileRoute("/admin/agenda")({
 });
 
 type LeadStage = "novo" | "contato" | "experimental" | "negociacao" | "venda" | "perdido";
-type EventType = "aula" | "experimental" | "contato" | "outro" | "grupo_funcional" | "individualizado" | "personal" | "funcional_kids" | "hiit" | "gap";
+type EventType =
+  | "aula"
+  | "experimental"
+  | "contato"
+  | "outro"
+  | "grupo_funcional"
+  | "individualizado"
+  | "personal"
+  | "funcional_kids"
+  | "hiit"
+  | "gap";
 type EventStatus = "agendado" | "concluido" | "cancelado" | "no_show";
 
 interface Lead {
@@ -124,10 +121,11 @@ function AgendaPage() {
   const search = kanbanSearch.trim().toLowerCase();
   const filteredLeads = useMemo(() => {
     if (!search) return leads;
-    return leads.filter((l) =>
-      l.full_name.toLowerCase().includes(search) ||
-      l.phone.toLowerCase().includes(search) ||
-      (l.email ?? "").toLowerCase().includes(search)
+    return leads.filter(
+      (l) =>
+        l.full_name.toLowerCase().includes(search) ||
+        l.phone.toLowerCase().includes(search) ||
+        (l.email ?? "").toLowerCase().includes(search),
     );
   }, [leads, search]);
 
@@ -150,7 +148,12 @@ function AgendaPage() {
 
   const grouped = useMemo(() => {
     const g: Record<LeadStage, Lead[]> = {
-      novo: [], contato: [], experimental: [], negociacao: [], venda: [], perdido: [],
+      novo: [],
+      contato: [],
+      experimental: [],
+      negociacao: [],
+      venda: [],
+      perdido: [],
     };
     filteredLeads.forEach((l) => g[l.stage].push(l));
     return g;
@@ -179,9 +182,7 @@ function AgendaPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Agenda & Funil</h1>
-          <p className="text-sm text-muted-foreground">
-            Gerencie leads, aulas experimentais, contatos e vendas.
-          </p>
+          <p className="text-sm text-muted-foreground">Gerencie leads, aulas experimentais, contatos e vendas.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setCreatingEvent(true)}>
@@ -288,21 +289,11 @@ function AgendaPage() {
         </TabsContent>
 
         <TabsContent value="agenda" className="mt-4">
-          <UpcomingAgenda
-            events={upcoming}
-            leads={leads}
-            students={students}
-            onChange={load}
-          />
+          <UpcomingAgenda events={upcoming} leads={leads} students={students} onChange={load} />
         </TabsContent>
 
         <TabsContent value="horarios" className="mt-4">
-          <TimeSlotsView
-            events={events}
-            leads={leads}
-            students={students}
-            onChange={load}
-          />
+          <TimeSlotsView events={events} leads={leads} students={students} onChange={load} />
         </TabsContent>
       </Tabs>
 
@@ -349,7 +340,10 @@ function AgendaPage() {
 }
 
 function UpcomingAgenda({
-  events, leads, students, onChange,
+  events,
+  leads,
+  students,
+  onChange,
 }: {
   events: AgendaEvent[];
   leads: Lead[];
@@ -390,12 +384,7 @@ function UpcomingAgenda({
       if (name) {
         const lead = leads.find((l) => l.id === e.lead_id);
         const student = students.find((s) => s.id === e.student_id);
-        const searchable = [
-          e.title,
-          lead?.full_name,
-          student?.profile?.full_name,
-          e.notes,
-        ]
+        const searchable = [e.title, lead?.full_name, student?.profile?.full_name, e.notes]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
@@ -449,11 +438,7 @@ function UpcomingAgenda({
           </div>
           <div>
             <Label className="text-xs">Nome / título</Label>
-            <Input
-              placeholder="Buscar..."
-              value={filterName}
-              onChange={(e) => setFilterName(e.target.value)}
-            />
+            <Input placeholder="Buscar..." value={filterName} onChange={(e) => setFilterName(e.target.value)} />
           </div>
           <div>
             <Label className="text-xs">Tipo</Label>
@@ -464,7 +449,9 @@ function UpcomingAgenda({
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 {Object.entries(TYPE_LABEL).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                  <SelectItem key={k} value={k}>
+                    {v}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -504,7 +491,9 @@ function UpcomingAgenda({
                   <Button size="icon" variant="ghost" onClick={() => setStatus(e.id, "cancelado")} title="Cancelar">
                     <XCircle className="h-4 w-4 text-rose-500" />
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setEditing(e)}>Editar</Button>
+                  <Button size="sm" variant="outline" onClick={() => setEditing(e)}>
+                    Editar
+                  </Button>
                   <Button size="icon" variant="ghost" onClick={() => remove(e.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -521,7 +510,10 @@ function UpcomingAgenda({
           students={students}
           existingEvents={events}
           onClose={() => setEditing(null)}
-          onSaved={() => { setEditing(null); onChange(); }}
+          onSaved={() => {
+            setEditing(null);
+            onChange();
+          }}
         />
       )}
     </>
@@ -529,7 +521,11 @@ function UpcomingAgenda({
 }
 
 function LeadDialog({
-  lead, events, students, onClose, onSaved,
+  lead,
+  events,
+  students,
+  onClose,
+  onSaved,
 }: {
   lead: Lead | null;
   events: AgendaEvent[];
@@ -550,7 +546,6 @@ function LeadDialog({
   const [saving, setSaving] = useState(false);
   const [addingEvent, setAddingEvent] = useState(false);
   const [converting, setConverting] = useState(false);
-
 
   const save = async () => {
     if (!form.full_name.trim() || !form.phone.trim()) {
@@ -584,7 +579,11 @@ function LeadDialog({
     if (!lead || !confirm("Excluir este lead?")) return;
     const { error } = await supabase.from("leads_interessados").delete().eq("id", lead.id);
     if (error) toast.error(error.message);
-    else { toast.success("Lead excluído"); onSaved(); onClose(); }
+    else {
+      toast.success("Lead excluído");
+      onSaved();
+      onClose();
+    }
   };
 
   return (
@@ -616,8 +615,13 @@ function LeadDialog({
               </div>
               <div>
                 <Label>Nível de atividade</Label>
-                <Select value={form.activity_level || "none"} onValueChange={(v) => setForm({ ...form, activity_level: v === "none" ? "" : v })}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <Select
+                  value={form.activity_level || "none"}
+                  onValueChange={(v) => setForm({ ...form, activity_level: v === "none" ? "" : v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">—</SelectItem>
                     <SelectItem value="sedentario">Sedentário</SelectItem>
@@ -630,9 +634,15 @@ function LeadDialog({
               <div>
                 <Label>Estágio</Label>
                 <Select value={form.stage} onValueChange={(v) => setForm({ ...form, stage: v as LeadStage })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+                    {STAGES.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -676,7 +686,8 @@ function LeadDialog({
                         <Badge variant="outline">{STATUS_LABEL[e.status]}</Badge>
                       </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {TYPE_LABEL[e.type]} · {format(new Date(e.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })} · {e.duration_minutes} min
+                        {TYPE_LABEL[e.type]} · {format(new Date(e.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}{" "}
+                        · {e.duration_minutes} min
                       </div>
                       {e.notes && <div className="mt-1 text-xs text-muted-foreground">{e.notes}</div>}
                     </div>
@@ -691,7 +702,10 @@ function LeadDialog({
                   existingEvents={events}
                   presetLeadId={lead.id}
                   onClose={() => setAddingEvent(false)}
-                  onSaved={() => { setAddingEvent(false); onSaved(); }}
+                  onSaved={() => {
+                    setAddingEvent(false);
+                    onSaved();
+                  }}
                 />
               )}
             </TabsContent>
@@ -709,28 +723,30 @@ function LeadDialog({
               <UserPlus className="mr-2 h-4 w-4" /> Converter em aluno
             </Button>
           )}
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Salvando..." : "Salvar"}</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={save} disabled={saving}>
+            {saving ? "Salvando..." : "Salvar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
       {converting && lead && (
         <ConvertLeadDialog
           lead={lead}
           onClose={() => setConverting(false)}
-          onDone={() => { setConverting(false); onSaved(); onClose(); }}
+          onDone={() => {
+            setConverting(false);
+            onSaved();
+            onClose();
+          }}
         />
       )}
     </Dialog>
   );
 }
 
-function ConvertLeadDialog({
-  lead, onClose, onDone,
-}: {
-  lead: Lead;
-  onClose: () => void;
-  onDone: () => void;
-}) {
+function ConvertLeadDialog({ lead, onClose, onDone }: { lead: Lead; onClose: () => void; onDone: () => void }) {
   const [form, setForm] = useState({
     full_name: lead.full_name,
     email: lead.email ?? "",
@@ -745,7 +761,9 @@ function ConvertLeadDialog({
       return;
     }
     setSaving(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const res = await fetch("/api/admin/students-create", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
@@ -763,10 +781,10 @@ function ConvertLeadDialog({
       return;
     }
     // vincula student_id ao lead
-    const { data: studentRow } = await supabase
-      .from("students").select("id").eq("user_id", data.user_id).maybeSingle();
+    const { data: studentRow } = await supabase.from("students").select("id").eq("user_id", data.user_id).maybeSingle();
     if (studentRow) {
-      await supabase.from("leads_interessados")
+      await supabase
+        .from("leads_interessados")
         .update({ student_id: studentRow.id, notes: (lead.notes ? lead.notes + "\n" : "") + "Convertido em aluno." })
         .eq("id", lead.id);
     }
@@ -792,28 +810,41 @@ function ConvertLeadDialog({
           </div>
           <div>
             <Label>Senha inicial *</Label>
-            <Input type="text" minLength={6} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="mín. 6 caracteres" />
+            <Input
+              type="text"
+              minLength={6}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="mín. 6 caracteres"
+            />
           </div>
           <div>
             <Label>Telefone</Label>
             <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           </div>
-          <p className="text-xs text-muted-foreground">
-            Após criar, vincule o plano em Alunos → Editar.
-          </p>
+          <p className="text-xs text-muted-foreground">Após criar, vincule o plano em Alunos → Editar.</p>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={submit} disabled={saving}>{saving ? "Convertendo..." : "Converter"}</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={submit} disabled={saving}>
+            {saving ? "Convertendo..." : "Converter"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-
 function EventDialog({
-  event, leads, students, existingEvents = [], presetLeadId, onClose, onSaved,
+  event,
+  leads,
+  students,
+  existingEvents = [],
+  presetLeadId,
+  onClose,
+  onSaved,
 }: {
   event: AgendaEvent | null;
   leads: Lead[];
@@ -852,11 +883,14 @@ function EventDialog({
   const [editScope, setEditScope] = useState<EventEditScope>("one");
 
   const toggleWeekday = (d: number) => {
-    setRecWeekdays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort());
+    setRecWeekdays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
   };
 
   const save = async () => {
-    if (!form.title.trim()) { toast.error("Título obrigatório"); return; }
+    if (!form.title.trim()) {
+      toast.error("Título obrigatório");
+      return;
+    }
     setSaving(true);
     const basePayload = {
       title: form.title.trim(),
@@ -869,10 +903,18 @@ function EventDialog({
     };
 
     if (!isEditing && recurring) {
-      if (!recEndDate) { setSaving(false); toast.error("Informe a data final da recorrência"); return; }
+      if (!recEndDate) {
+        setSaving(false);
+        toast.error("Informe a data final da recorrência");
+        return;
+      }
       const start = new Date(form.scheduled_at);
       const end = new Date(recEndDate + "T23:59:59");
-      if (end < start) { setSaving(false); toast.error("Data final antes do início"); return; }
+      if (end < start) {
+        setSaving(false);
+        toast.error("Data final antes do início");
+        return;
+      }
       const weekdays = recWeekdays.length > 0 ? recWeekdays : [start.getDay()];
       const seriesId = crypto.randomUUID();
       const rows: Array<typeof basePayload & { scheduled_at: string; series_id: string }> = [];
@@ -890,11 +932,18 @@ function EventDialog({
         }
         cursor.setDate(cursor.getDate() + 1);
       }
-      if (rows.length === 0) { setSaving(false); toast.error("Nenhuma data gerada"); return; }
+      if (rows.length === 0) {
+        setSaving(false);
+        toast.error("Nenhuma data gerada");
+        return;
+      }
       const { error } = await supabase.from("agenda_events").insert(rows);
       setSaving(false);
       if (error) toast.error(error.message);
-      else { toast.success(`${rows.length} eventos criados`); onSaved(); }
+      else {
+        toast.success(`${rows.length} eventos criados`);
+        onSaved();
+      }
       return;
     }
 
@@ -920,7 +969,11 @@ function EventDialog({
       }
       if (editScope === "future") query = query.gte("scheduled_at", event.scheduled_at);
       const { data: rows, error: fetchErr } = await query;
-      if (fetchErr) { setSaving(false); toast.error(fetchErr.message); return; }
+      if (fetchErr) {
+        setSaving(false);
+        toast.error(fetchErr.message);
+        return;
+      }
 
       const updates = (rows ?? []).map(async (r) => {
         const patch: typeof basePayload & { scheduled_at?: string; series_id?: string } = { ...basePayload };
@@ -936,7 +989,10 @@ function EventDialog({
       const firstErr = results.find((r) => r.error)?.error;
       setSaving(false);
       if (firstErr) toast.error(firstErr.message);
-      else { toast.success(`${results.length} eventos atualizados`); onSaved(); }
+      else {
+        toast.success(`${results.length} eventos atualizados`);
+        onSaved();
+      }
       return;
     }
 
@@ -946,7 +1002,10 @@ function EventDialog({
       : await supabase.from("agenda_events").insert(payload);
     setSaving(false);
     if (error) toast.error(error.message);
-    else { toast.success("Evento salvo"); onSaved(); }
+    else {
+      toast.success("Evento salvo");
+      onSaved();
+    }
   };
 
   return (
@@ -958,24 +1017,40 @@ function EventDialog({
         <div className="space-y-3">
           <div>
             <Label>Título *</Label>
-            <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ex.: Aula experimental" />
+            <Input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="Ex.: Aula experimental"
+            />
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <div>
               <Label>Tipo</Label>
               <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as EventType })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(TYPE_LABEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                  {Object.entries(TYPE_LABEL).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>
+                      {v}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <Label>Status</Label>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as EventStatus })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(STATUS_LABEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                  {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>
+                      {v}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -990,17 +1065,32 @@ function EventDialog({
             </div>
             <div>
               <Label>Duração (min)</Label>
-              <Input type="number" min={5} step={5} value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: Number(e.target.value) })} />
+              <Input
+                type="number"
+                min={5}
+                step={5}
+                value={form.duration_minutes}
+                onChange={(e) => setForm({ ...form, duration_minutes: Number(e.target.value) })}
+              />
             </div>
           </div>
           {leads.length > 0 && (
             <div>
               <Label>Lead (opcional)</Label>
-              <Select value={form.lead_id || "none"} onValueChange={(v) => setForm({ ...form, lead_id: v === "none" ? "" : v })}>
-                <SelectTrigger><SelectValue placeholder="Nenhum" /></SelectTrigger>
+              <Select
+                value={form.lead_id || "none"}
+                onValueChange={(v) => setForm({ ...form, lead_id: v === "none" ? "" : v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Nenhum" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">—</SelectItem>
-                  {leads.map((l) => <SelectItem key={l.id} value={l.id}>{l.full_name}</SelectItem>)}
+                  {leads.map((l) => (
+                    <SelectItem key={l.id} value={l.id}>
+                      {l.full_name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -1022,7 +1112,9 @@ function EventDialog({
             <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2">
               <Label className="text-sm font-medium">Aplicar alterações em</Label>
               <Select value={editScope} onValueChange={(v) => setEditScope(v as "one" | "future" | "all")}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="one">Somente este evento</SelectItem>
                   <SelectItem value="future">Este e os próximos da série</SelectItem>
@@ -1065,7 +1157,12 @@ function EventDialog({
                     </div>
                     <div>
                       <Label className="text-xs">Data final *</Label>
-                      <Input type="date" value={recEndDate} onChange={(e) => setRecEndDate(e.target.value)} />
+                      <Input
+                        type="date"
+                        className="[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-90"
+                        value={recEndDate}
+                        onChange={(e) => setRecEndDate(e.target.value)}
+                      />
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -1077,8 +1174,12 @@ function EventDialog({
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Salvando..." : "Salvar"}</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={save} disabled={saving}>
+            {saving ? "Salvando..." : "Salvar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1095,7 +1196,10 @@ const SLOT_COLORS = [
 ];
 
 function TimeSlotsView({
-  events, leads, students, onChange,
+  events,
+  leads,
+  students,
+  onChange,
 }: {
   events: AgendaEvent[];
   leads: Lead[];
@@ -1136,7 +1240,10 @@ function TimeSlotsView({
     });
 
     // group by day+HH:mm
-    const map = new Map<string, { key: string; date: Date; timeLabel: string; dayLabel: string; items: AgendaEvent[] }>();
+    const map = new Map<
+      string,
+      { key: string; date: Date; timeLabel: string; dayLabel: string; items: AgendaEvent[] }
+    >();
     filtered.forEach((e) => {
       const d = new Date(e.scheduled_at);
       const key = format(d, "yyyy-MM-dd_HH:mm");
@@ -1237,25 +1344,34 @@ function TimeSlotsView({
           <div>
             <Label className="text-xs">Tipo</Label>
             <Select value={filterType} onValueChange={(v) => setFilterType(v as EventType | "all")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 {Object.entries(TYPE_LABEL).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                  <SelectItem key={k} value={k}>
+                    {v}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-end gap-2">
-            <Button
-              variant={showPast ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowPast((v) => !v)}
-            >
+            <Button variant={showPast ? "default" : "outline"} size="sm" onClick={() => setShowPast((v) => !v)}>
               {showPast ? "Ocultar passados" : "Mostrar passados"}
             </Button>
             {(filterStartDate || filterEndDate || filterType !== "all" || filterName) && (
-              <Button variant="ghost" size="sm" onClick={() => { setFilterStartDate(""); setFilterEndDate(""); setFilterType("all"); setFilterName(""); }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setFilterStartDate("");
+                  setFilterEndDate("");
+                  setFilterType("all");
+                  setFilterName("");
+                }}
+              >
                 <FilterX className="h-3.5 w-3.5" />
               </Button>
             )}
@@ -1269,16 +1385,16 @@ function TimeSlotsView({
                 type="checkbox"
                 className="h-4 w-4 cursor-pointer accent-primary"
                 checked={allSelected}
-                ref={(el) => { if (el) el.indeterminate = !allSelected && someSelected; }}
+                ref={(el) => {
+                  if (el) el.indeterminate = !allSelected && someSelected;
+                }}
                 onChange={toggleAll}
               />
               Selecionar todos ({visibleIds.length})
             </label>
             {someSelected && (
               <>
-                <span className="text-xs text-muted-foreground">
-                  {selected.size} selecionado(s)
-                </span>
+                <span className="text-xs text-muted-foreground">{selected.size} selecionado(s)</span>
                 <Button size="sm" variant="destructive" disabled={deleting} onClick={deleteSelected}>
                   <Trash2 className="mr-1 h-3.5 w-3.5" />
                   Excluir selecionados
@@ -1292,16 +1408,13 @@ function TimeSlotsView({
         )}
       </div>
 
-
       {days.length === 0 ? (
         <div className="text-muted-foreground">Nenhum horário encontrado.</div>
       ) : (
         <div className="space-y-6">
           {days.map((day) => (
             <div key={day.key}>
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                {day.label}
-              </h3>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{day.label}</h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {day.slots.map((slot, idx) => {
                   const color = SLOT_COLORS[idx % SLOT_COLORS.length];
@@ -1358,7 +1471,6 @@ function TimeSlotsView({
                             </div>
                           );
                         })}
-
                       </div>
                     </Card>
                   );
@@ -1376,7 +1488,10 @@ function TimeSlotsView({
           students={students}
           existingEvents={events}
           onClose={() => setEditing(null)}
-          onSaved={() => { setEditing(null); onChange(); }}
+          onSaved={() => {
+            setEditing(null);
+            onChange();
+          }}
         />
       )}
     </>
