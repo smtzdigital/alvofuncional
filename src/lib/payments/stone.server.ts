@@ -243,7 +243,7 @@ class StonePaymentGateway implements PaymentGateway {
     }
   }
 
-  async createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null }) {
+  async createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null; cycles?: number | null }) {
     const cfg = await getGatewayConfig();
     const usePlan = !!input.stonePlanId;
     const methods = (input.paymentMethods && input.paymentMethods.length > 0) ? input.paymentMethods : ["credit_card"];
@@ -257,6 +257,8 @@ class StonePaymentGateway implements PaymentGateway {
     };
     if (primary === "credit_card" && input.cardId) common.card_id = input.cardId;
     if (input.startAt) common.start_at = input.startAt;
+    if (input.cycles && input.cycles > 0) common.cycles = input.cycles;
+
     const body: Record<string, unknown> = usePlan
       ? { ...common, plan_id: input.stonePlanId }
       : {
