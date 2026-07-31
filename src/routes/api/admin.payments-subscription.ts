@@ -31,22 +31,66 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
         const uid = await getAdminUserId(request);
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
-          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_methods?: string[]; start_at?: string | null };
+          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_method?: string; start_at?: string | null };
           if (!body.student_id || !body.plan_id) return Response.json({ error: "Dados incompletos" }, { status: 400 });
-          const methods = (body.payment_methods && body.payment_methods.length > 0) ? body.payment_methods : ["credit_card"];
-          const needsCard = methods.includes("credit_card");
-          if (needsCard && !body.card_token) return Response.json({ error: "Cartão obrigatório para cobrança em crédito" }, { status: 400 });
+          const method = body.payment_method || "credit_card";
+          const isManual = method !== "credit_card";
+          if (!isManual && !body.card_token) return Response.json({ error: "Cartão obrigatório para cobrança em crédito" }, { status: 400 });
 
           const { data: plan } = await supabaseAdmin.from("plans").select("*").eq("id", body.plan_id).maybeSingle();
           if (!plan) return Response.json({ error: "Plano não encontrado" }, { status: 404 });
-          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number; trial_period_days: number | null; stone_plan_id: string | null };
+          const p = plan as unknown as { id: string; name: string; price: number; billing_interval: string; billing_interval_count: number; installments: number; trial_period_days: number | null; plan_duration_months: number | null; stone_plan_id: string | null };
 
+          // Duração do plano -> número de ciclos e data de término
+          const start = body.start_at ? new Date(body.start_at) : new Date();
+          const monthsPerCycle = p.billing_interval === "month" ? (p.billing_interval_count || 1)
+            : p.billing_interval === "year" ? 12 * (p.billing_interval_count || 1) : 0;
+          const durationMonths = p.plan_duration_months ?? null;
+          const cycles = durationMonths && monthsPerCycle > 0 ? Math.max(1, Math.round(durationMonths / monthsPerCycle)) : null;
+          const endDate = durationMonths
+            ? new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + durationMonths, start.getUTCDate())).toISOString().slice(0, 10)
+            : null;
+
+          // ---------- Fluxo manual (dinheiro, pix, boleto, transferência) ----------
+          if (isManual) {
+            const { data: dbSub, error: subErr } = await supabaseAdmin.from("subscriptions").insert({
+              student_id: body.student_id,
+              plan_id: p.id,
+              stone_subscription_id: null,
+              status: "active",
+              amount: p.price,
+              payment_method: method,
+              is_manual: true,
+              end_date: endDate,
+              cycles,
+              next_billing_date: start.toISOString().slice(0, 10),
+            }).select("id").single();
+            if (subErr) return Response.json({ error: subErr.message }, { status: 400 });
+
+            // Gera as parcelas (cobranças manuais) até o fim do plano
+            const total = cycles ?? 1;
+            const step = monthsPerCycle || 1;
+            const dbMethod = method === "dinheiro" ? "dinheiro" : method === "pix" ? "pix" : method === "transferencia" ? "transferencia" : "outro";
+            const rows = Array.from({ length: total }).map((_, i) => ({
+              student_id: body.student_id,
+              plan_id: p.id,
+              amount: p.price,
+              due_date: new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + i * step, start.getUTCDate())).toISOString().slice(0, 10),
+              method: dbMethod as "pix",
+              status: "pendente" as const,
+              notes: `Assinatura manual (${method})`,
+            }));
+            await supabaseAdmin.from("payments").insert(rows);
+            return Response.json({ success: true, subscription_id: dbSub?.id, manual: true, installments_created: rows.length });
+          }
+
+          // ---------- Fluxo cartão (integrado Pagar.me) ----------
           const customerId = await ensureCustomer(body.student_id, uid);
           const gw = getPaymentGateway();
 
           let cardId: string | null = null;
           let savedCardId: string | null = null;
-          if (needsCard && body.card_token) {
+          if (body.card_token) {
             const card = await gw.createCard({ customerId, cardToken: body.card_token, actor: uid });
             cardId = card.id;
             const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
@@ -88,9 +132,10 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
             interval: p.billing_interval,
             intervalCount: p.billing_interval_count,
             installments: p.installments,
-            paymentMethods: methods,
+            paymentMethods: ["credit_card"],
             startAt: body.start_at ?? null,
             stonePlanId,
+            cycles,
             actor: uid,
             metadata: { student_id: body.student_id, plan_id: p.id },
           });
@@ -101,11 +146,16 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
             stone_subscription_id: sub.id,
             status: sub.status ?? "active",
             amount: p.price,
+            payment_method: "credit_card",
+            is_manual: false,
+            end_date: endDate,
+            cycles,
             next_billing_date: sub.next_billing_at ?? null,
             current_card_id: savedCardId,
           }).select("id").single();
 
           return Response.json({ success: true, subscription_id: dbSub?.id, stone_subscription_id: sub.id });
+
         } catch (e) {
           return Response.json({ error: friendlyStoneError(e) }, { status: 400 });
         }
