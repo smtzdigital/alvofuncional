@@ -31,6 +31,14 @@ interface PayLink {
   student: { profile: { full_name: string } | null } | null; plan: { name: string } | null;
 }
 
+const METHOD_LABEL: Record<string, string> = {
+  credit_card: "Cartão (Pagar.me)",
+  dinheiro: "Dinheiro (manual)",
+  pix: "PIX (manual)",
+  transferencia: "Transferência (manual)",
+  boleto: "Boleto (manual)",
+};
+
 function SubscriptionsPage() {
   const { settings } = useAppSettings();
   const [students, setStudents] = useState<Student[]>([]);
