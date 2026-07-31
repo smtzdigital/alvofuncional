@@ -97,7 +97,8 @@ function SubscriptionsPage() {
             <table className="w-full text-sm">
               <thead className="bg-secondary text-muted-foreground"><tr>
                 <th className="p-3 text-left">Aluno</th><th className="p-3 text-left">Plano</th>
-                <th className="p-3 text-right">Valor</th><th className="p-3 text-left">Próxima</th>
+                <th className="p-3 text-right">Valor</th><th className="p-3 text-left">Forma</th>
+                <th className="p-3 text-left">Próxima</th><th className="p-3 text-left">Término</th>
                 <th className="p-3 text-left">Cartão</th><th className="p-3 text-left">Status</th>
                 <th className="p-3"></th>
               </tr></thead>
@@ -107,12 +108,14 @@ function SubscriptionsPage() {
                     <td className="p-3">{s.student?.profile?.full_name ?? "—"}</td>
                     <td className="p-3 text-muted-foreground">{s.plan?.name ?? "—"}</td>
                     <td className="p-3 text-right font-semibold">R$ {Number(s.amount).toFixed(2)}</td>
+                    <td className="p-3 text-xs">{METHOD_LABEL[s.payment_method ?? "credit_card"] ?? s.payment_method}</td>
                     <td className="p-3">{s.next_billing_date ? new Date(s.next_billing_date).toLocaleDateString("pt-BR") : "—"}</td>
+                    <td className="p-3">{s.end_date ? new Date(s.end_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</td>
                     <td className="p-3 text-xs">{s.card ? `${s.card.brand ?? "—"} •••• ${s.card.last4 ?? ""}` : "—"}</td>
                     <td className="p-3"><StatusBadge status={s.status} /></td>
                     <td className="p-3 text-right space-x-2">
                       {s.status !== "canceled" && <>
-                        <Button size="sm" variant="outline" onClick={() => setOpenCard(s)}><RefreshCw size={14} className="mr-1" />Trocar cartão</Button>
+                        {!s.is_manual && <Button size="sm" variant="outline" onClick={() => setOpenCard(s)}><RefreshCw size={14} className="mr-1" />Trocar cartão</Button>}
                         <Button size="sm" variant="destructive" onClick={async () => {
                           if (!confirm("Cancelar esta assinatura?")) return;
                           const { data: { session } } = await supabase.auth.getSession();
@@ -130,7 +133,8 @@ function SubscriptionsPage() {
                     </td>
                   </tr>
                 ))}
-                {subs.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Sem assinaturas ainda.</td></tr>}
+                {subs.length === 0 && <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">Sem assinaturas ainda.</td></tr>}
+
               </tbody>
             </table>
           </div>
