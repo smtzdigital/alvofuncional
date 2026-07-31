@@ -28,6 +28,9 @@ function PaymentsAdmin() {
   const [students, setStudents] = useState<Student[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
+  const [fName, setFName] = useState("");
+  const [fFrom, setFFrom] = useState("");
+  const [fTo, setFTo] = useState("");
   const [form, setForm] = useState<{ student_id: string; plan_id: string; amount: string; due_date: string; method: string }>({
     student_id: "", plan_id: "", amount: "", due_date: new Date().toISOString().slice(0, 10), method: "pix",
   });
@@ -43,6 +46,15 @@ function PaymentsAdmin() {
     supabase.from("students").select("id,plan_id,profile:profiles!inner(full_name)").then(({ data }) => setStudents((data ?? []) as unknown as Student[]));
     supabase.from("plans").select("id,name,price").then(({ data }) => setPlans((data ?? []) as Plan[]));
   }, []);
+
+  const filtered = rows.filter((p) => {
+    const name = (p.student?.profile?.full_name ?? "").toLowerCase();
+    if (fName && !name.includes(fName.toLowerCase())) return false;
+    if (fFrom && p.due_date < fFrom) return false;
+    if (fTo && p.due_date > fTo) return false;
+    return true;
+  });
+
 
   const create = async (e: FormEvent) => {
     e.preventDefault();
@@ -103,6 +115,18 @@ function PaymentsAdmin() {
         </Dialog>
       </div>
 
+      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="lg:col-span-2">
+          <Label className="text-xs">Buscar aluno</Label>
+          <Input placeholder="Nome do aluno" value={fName} onChange={(e) => setFName(e.target.value)} />
+        </div>
+        <div><Label className="text-xs">Vencimento de</Label><Input type="date" value={fFrom} onChange={(e) => setFFrom(e.target.value)} /></div>
+        <div className="flex items-end gap-2">
+          <div className="flex-1"><Label className="text-xs">até</Label><Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} /></div>
+          <Button variant="outline" onClick={() => { setFName(""); setFFrom(""); setFTo(""); }}>Limpar</Button>
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-muted-foreground"><tr>
@@ -111,7 +135,7 @@ function PaymentsAdmin() {
             <th className="p-3 text-left">Status</th><th className="p-3"></th>
           </tr></thead>
           <tbody>
-            {rows.map((p) => (
+            {filtered.map((p) => (
               <tr key={p.id} className="border-t border-border">
                 <td className="p-3">{p.student?.profile?.full_name ?? "—"}</td>
                 <td className="p-3 text-muted-foreground">{p.plan?.name ?? "—"}</td>
@@ -123,7 +147,8 @@ function PaymentsAdmin() {
                 </td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Sem pagamentos.</td></tr>}
+            {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Sem pagamentos.</td></tr>}
+
           </tbody>
         </table>
       </div>
