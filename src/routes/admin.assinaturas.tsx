@@ -213,19 +213,15 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
   const [studentId, setStudentId] = useState("");
   const [planId, setPlanId] = useState("");
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
-  const [methods, setMethods] = useState<string[]>(["credit_card"]);
+  const [method, setMethod] = useState<string>("credit_card");
   const [startAt, setStartAt] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const toggleMethod = (m: string) => {
-    setMethods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
-  };
-  const needsCard = methods.includes("credit_card");
+  const needsCard = method === "credit_card";
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!studentId || !planId) return toast.error("Selecione aluno e plano");
-    if (methods.length === 0) return toast.error("Selecione ao menos uma forma de pagamento");
     setBusy(true);
     try {
       let cardToken: string | null = null;
@@ -238,13 +234,13 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           student_id: studentId,
           plan_id: planId,
           card_token: cardToken,
-          payment_methods: methods,
+          payment_method: method,
           start_at: startAt ? new Date(startAt).toISOString() : null,
         }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
-      toast.success("Assinatura criada");
+      toast.success(d.manual ? `Assinatura manual criada (${d.installments_created} cobranças geradas)` : "Assinatura criada");
       onDone();
     } catch (err) {
       toast.error((err as Error).message);
@@ -270,31 +266,33 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           <div className="mb-3 text-sm font-semibold text-primary">Configurações da assinatura</div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Payment methods aceitos</Label>
-              <div className="flex flex-wrap gap-3 rounded-md border border-input bg-background p-2 text-sm">
-                {[
-                  { id: "credit_card", label: "Cartão de crédito" },
-                  { id: "boleto", label: "Boleto" },
-                  { id: "pix", label: "Pix" },
-                ].map((m) => (
-                  <label key={m.id} className="flex items-center gap-1.5">
-                    <input type="checkbox" checked={methods.includes(m.id)} onChange={() => toggleMethod(m.id)} />
-                    {m.label}
-                  </label>
-                ))}
-              </div>
+              <Label>Forma de pagamento</Label>
+              <Select value={method} onValueChange={setMethod}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="credit_card">Cartão de crédito (integrado Pagar.me)</SelectItem>
+                  <SelectItem value="dinheiro">Dinheiro (manual)</SelectItem>
+                  <SelectItem value="pix">PIX (manual)</SelectItem>
+                  <SelectItem value="transferencia">Transferência (manual)</SelectItem>
+                  <SelectItem value="boleto">Boleto (manual)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <Label>Start at / início da cobrança</Label>
+              <Label>Início da cobrança</Label>
               <Input type="date" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
-              <p className="mt-1 text-xs text-muted-foreground">Deixe em branco para cobrar hoje.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Deixe em branco para começar hoje.</p>
             </div>
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            A recorrência no cartão é encerrada automaticamente na data de término do plano (duração em meses).
+          </p>
         </div>
         {needsCard && <CardFields card={card} setCard={setCard} />}
         {!needsCard && (
           <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-            Sem cartão: a Pagar.me emitirá boleto/pix a cada ciclo para o cliente pagar.
+            Pagamento manual: as parcelas serão geradas em <b>Pagamentos</b> até o fim do plano. Ao marcar cada parcela
+            como paga, ela entra automaticamente como receita do mês no Financeiro.
           </div>
         )}
         <DialogFooter><Button type="submit" disabled={busy} className="bg-gradient-primary text-primary-foreground">{busy ? "Processando..." : "Criar assinatura"}</Button></DialogFooter>
@@ -302,6 +300,7 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
     </DialogContent>
   );
 }
+
 
 // ------- Create payment link dialog -------
 function CreateLinkDialog({ students, plans, onDone }: { students: Student[]; plans: Plan[]; onDone: () => void }) {
