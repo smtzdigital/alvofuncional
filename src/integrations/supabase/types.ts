@@ -1480,9 +1480,13 @@ export type Database = {
           canceled_at: string | null
           created_at: string
           current_card_id: string | null
+          cycles: number | null
+          end_date: string | null
           id: string
+          is_manual: boolean
           metadata: Json
           next_billing_date: string | null
+          payment_method: string
           plan_id: string | null
           status: string
           stone_subscription_id: string | null
@@ -1495,9 +1499,13 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_card_id?: string | null
+          cycles?: number | null
+          end_date?: string | null
           id?: string
+          is_manual?: boolean
           metadata?: Json
           next_billing_date?: string | null
+          payment_method?: string
           plan_id?: string | null
           status?: string
           stone_subscription_id?: string | null
@@ -1510,9 +1518,13 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_card_id?: string | null
+          cycles?: number | null
+          end_date?: string | null
           id?: string
+          is_manual?: boolean
           metadata?: Json
           next_billing_date?: string | null
+          payment_method?: string
           plan_id?: string | null
           status?: string
           stone_subscription_id?: string | null
@@ -1856,6 +1868,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      map_payment_method_to_financial: { Args: { m: string }; Returns: string }
       student_plan_active: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
