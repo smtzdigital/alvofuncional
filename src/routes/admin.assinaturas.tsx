@@ -22,6 +22,7 @@ interface Plan { id: string; name: string; price: number; installments: number }
 interface Subscription {
   id: string; student_id: string; plan_id: string | null; status: string; amount: number;
   next_billing_date: string | null; canceled_at: string | null;
+  payment_method?: string | null; is_manual?: boolean | null; end_date?: string | null;
   student: { profile: { full_name: string } | null } | null; plan: { name: string } | null;
   card: { brand: string | null; last4: string | null } | null;
 }
