@@ -47,7 +47,7 @@ function SubscriptionsPage() {
     const [{ data: st }, { data: pl }, { data: s }, { data: l }, cfgRes] = await Promise.all([
       supabase.from("students").select("id, document:profiles(document), profile:profiles!inner(full_name, email)"),
       supabase.from("plans").select("id, name, price, installments").eq("is_active", true).order("sort_order"),
-      supabase.from("subscriptions").select("id, student_id, plan_id, status, amount, next_billing_date, canceled_at, student:students!inner(profile:profiles!inner(full_name)), plan:plans(name), card:payment_cards(brand,last4)").order("created_at", { ascending: false }),
+      supabase.from("subscriptions").select("id, student_id, plan_id, status, amount, next_billing_date, canceled_at, payment_method, is_manual, end_date, student:students!inner(profile:profiles!inner(full_name)), plan:plans(name), card:payment_cards(brand,last4)").order("created_at", { ascending: false }),
       supabase.from("payment_links").select("id, student_id, short_token, url, amount, status, expires_at, student:students!inner(profile:profiles!inner(full_name)), plan:plans(name)").order("created_at", { ascending: false }),
       (async () => {
         const { data: { session } } = await supabase.auth.getSession();
