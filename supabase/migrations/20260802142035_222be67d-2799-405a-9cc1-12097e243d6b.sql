@@ -1,0 +1,1 @@
+ALTER TABLE public.leads_interessados ADD COLUMN IF NOT EXISTS archived boolean NOT NULL DEFAULT false;

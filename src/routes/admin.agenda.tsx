@@ -26,6 +26,12 @@ import {
   FilterX,
   Users,
   Clock,
+  LayoutGrid,
+  Table as TableIcon,
+  Archive,
+  ArchiveRestore,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -58,6 +64,7 @@ interface Lead {
   notes: string | null;
   next_contact_at: string | null;
   student_id: string | null;
+  archived?: boolean | null;
   created_at: string;
   updated_at: string;
 }
@@ -117,17 +124,30 @@ function AgendaPage() {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [dragging, setDragging] = useState<string | null>(null);
   const [kanbanSearch, setKanbanSearch] = useState("");
+  const [leadView, setLeadView] = useState<"kanban" | "table">("kanban");
+  const [archivedFilter, setArchivedFilter] = useState<"active" | "archived" | "all">("active");
+  const [tablePage, setTablePage] = useState(1);
+  const tablePageSize = 15;
 
   const search = kanbanSearch.trim().toLowerCase();
   const filteredLeads = useMemo(() => {
-    if (!search) return leads;
-    return leads.filter(
-      (l) =>
+    return leads.filter((l) => {
+      const isArchived = !!l.archived;
+      if (archivedFilter === "active" && isArchived) return false;
+      if (archivedFilter === "archived" && !isArchived) return false;
+      if (!search) return true;
+      return (
         l.full_name.toLowerCase().includes(search) ||
         l.phone.toLowerCase().includes(search) ||
-        (l.email ?? "").toLowerCase().includes(search),
-    );
-  }, [leads, search]);
+        (l.email ?? "").toLowerCase().includes(search)
+      );
+    });
+  }, [leads, search, archivedFilter]);
+
+  useEffect(() => {
+    setTablePage(1);
+  }, [search, archivedFilter, leadView]);
+
 
   const loadAllEvents = async () => {
     const pageSize = 1000;
@@ -192,6 +212,18 @@ function AgendaPage() {
     }
   };
 
+  const toggleArchive = async (lead: Lead) => {
+    const next = !lead.archived;
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, archived: next } : l)));
+    const { error } = await supabase.from("leads_interessados").update({ archived: next } as never).eq("id", lead.id);
+    if (error) {
+      toast.error("Falha ao arquivar: " + error.message);
+      load();
+    } else {
+      toast.success(next ? "Lead arquivado" : "Lead desarquivado");
+    }
+  };
+
   const eventsFor = (leadId: string) => events.filter((e) => e.lead_id === leadId);
 
   return (
@@ -219,7 +251,7 @@ function AgendaPage() {
         </TabsList>
 
         <TabsContent value="kanban" className="mt-4 space-y-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Input
               placeholder="Buscar leads por nome, telefone ou email..."
               value={kanbanSearch}
@@ -231,9 +263,147 @@ function AgendaPage() {
                 Limpar
               </Button>
             )}
+            <div className="ml-auto flex items-center gap-2">
+              <Select value={archivedFilter} onValueChange={(v) => setArchivedFilter(v as typeof archivedFilter)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="archived">Arquivados</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex overflow-hidden rounded-md border border-border">
+                <Button
+                  type="button"
+                  variant={leadView === "kanban" ? "default" : "ghost"}
+                  size="icon"
+                  className="rounded-none"
+                  title="Visualizar como kanban"
+                  onClick={() => setLeadView("kanban")}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant={leadView === "table" ? "default" : "ghost"}
+                  size="icon"
+                  className="rounded-none"
+                  title="Visualizar como tabela"
+                  onClick={() => setLeadView("table")}
+                >
+                  <TableIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
           {loading ? (
             <div className="text-muted-foreground">Carregando...</div>
+          ) : leadView === "table" ? (
+            <div className="space-y-3">
+              <div className="overflow-x-auto rounded-lg border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                    <tr>
+                      <th className="px-3 py-2">Nome</th>
+                      <th className="px-3 py-2">Telefone</th>
+                      <th className="px-3 py-2">Email</th>
+                      <th className="px-3 py-2">Etapa</th>
+                      <th className="px-3 py-2">Próx. contato</th>
+                      <th className="px-3 py-2">Criado em</th>
+                      <th className="px-3 py-2 text-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredLeads
+                      .slice((tablePage - 1) * tablePageSize, tablePage * tablePageSize)
+                      .map((lead) => {
+                        const stage = STAGES.find((s) => s.id === lead.stage);
+                        return (
+                          <tr
+                            key={lead.id}
+                            className="cursor-pointer border-t border-border/60 hover:bg-muted/30"
+                            onClick={() => setOpenLead(lead)}
+                          >
+                            <td className="px-3 py-2 font-medium">
+                              {lead.full_name}
+                              {lead.archived && (
+                                <Badge variant="outline" className="ml-2 text-[10px]">
+                                  Arquivado
+                                </Badge>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 text-muted-foreground">{lead.phone}</td>
+                            <td className="px-3 py-2 text-muted-foreground">{lead.email ?? "—"}</td>
+                            <td className="px-3 py-2">
+                              <Badge variant="outline" className={stage?.color}>
+                                {stage?.label ?? lead.stage}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2 text-muted-foreground">
+                              {lead.next_contact_at
+                                ? format(new Date(lead.next_contact_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+                                : "—"}
+                            </td>
+                            <td className="px-3 py-2 text-muted-foreground">
+                              {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title={lead.archived ? "Desarquivar" : "Arquivar"}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleArchive(lead);
+                                }}
+                              >
+                                {lead.archived ? (
+                                  <ArchiveRestore className="h-4 w-4" />
+                                ) : (
+                                  <Archive className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    {filteredLeads.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">
+                          Nenhum lead encontrado.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{filteredLeads.length} lead(s)</span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={tablePage <= 1}
+                    onClick={() => setTablePage((p) => Math.max(1, p - 1))}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span>
+                    {tablePage} / {Math.max(1, Math.ceil(filteredLeads.length / tablePageSize))}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={tablePage >= Math.ceil(filteredLeads.length / tablePageSize)}
+                    onClick={() => setTablePage((p) => p + 1)}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
               {STAGES.map((stage) => (
@@ -267,9 +437,9 @@ function AgendaPage() {
                         }}
                         onDragEnd={() => setDragging(null)}
                         onClick={() => setOpenLead(lead)}
-                        className={`cursor-pointer p-3 transition hover:border-primary/50 ${
+                        className={`group cursor-pointer p-3 transition hover:border-primary/50 ${
                           dragging === lead.id ? "opacity-40" : ""
-                        }`}
+                        } ${lead.archived ? "opacity-70" : ""}`}
                       >
                         <div className="flex items-start gap-2">
                           <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -289,7 +459,28 @@ function AgendaPage() {
                                 {eventsFor(lead.id).length} evento(s)
                               </div>
                             )}
+                            {lead.archived && (
+                              <Badge variant="outline" className="mt-1 text-[10px]">
+                                Arquivado
+                              </Badge>
+                            )}
                           </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 shrink-0 opacity-0 transition group-hover:opacity-100"
+                            title={lead.archived ? "Desarquivar" : "Arquivar"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleArchive(lead);
+                            }}
+                          >
+                            {lead.archived ? (
+                              <ArchiveRestore className="h-3.5 w-3.5" />
+                            ) : (
+                              <Archive className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
                         </div>
                       </Card>
                     ))}
