@@ -284,6 +284,13 @@ function AlunosAdmin() {
       r.profile?.full_name.toLowerCase().includes(search.toLowerCase()) ||
       r.profile?.email.toLowerCase().includes(search.toLowerCase()),
   );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -302,7 +309,7 @@ function AlunosAdmin() {
           className="pl-9"
           placeholder="Buscar nome ou email..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
         />
       </div>
 
