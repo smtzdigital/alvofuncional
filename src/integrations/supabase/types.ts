@@ -784,6 +784,7 @@ export type Database = {
       leads_interessados: {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"] | null
+          archived: boolean
           created_at: string
           email: string | null
           full_name: string
@@ -797,6 +798,7 @@ export type Database = {
         }
         Insert: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          archived?: boolean
           created_at?: string
           email?: string | null
           full_name: string
@@ -810,6 +812,7 @@ export type Database = {
         }
         Update: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          archived?: boolean
           created_at?: string
           email?: string | null
           full_name?: string
