@@ -6,7 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pencil, Search, FileText, Plus, ScrollText, RefreshCw, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Pencil, Search, FileText, Plus, ScrollText, RefreshCw, Trash2, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 import { ContractView } from "@/components/ContractView";
@@ -59,6 +66,8 @@ function AlunosAdmin() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [editing, setEditing] = useState<Row | null>(null);
   const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
   const [creating, setCreating] = useState(false);
