@@ -322,11 +322,11 @@ function AlunosAdmin() {
               <th className="p-3 text-left">Plano</th>
               <th className="p-3 text-left">Expira</th>
               <th className="p-3 text-right">Pts</th>
-              <th className="p-3"></th>
+              <th className="p-3 text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((r) => (
+            {paginated.map((r) => (
               <tr key={r.id} className="border-t border-border">
                 <td className="p-3 font-semibold">{r.profile?.full_name}</td>
                 <td className="p-3 text-muted-foreground">{r.profile?.email}</td>
@@ -335,34 +335,44 @@ function AlunosAdmin() {
                   {r.plan_expires_at ? new Date(r.plan_expires_at).toLocaleDateString("pt-BR") : "—"}
                 </td>
                 <td className="p-3 text-right font-bold text-primary">{r.total_points}</td>
-                <td className="p-3 text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => openContrato(r)} title="Ver contrato">
-                      <ScrollText size={14} />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => openAvaliacao(r)} title="Ver avaliação">
-                      <FileText size={14} />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => resyncPagarme(r)}
-                      disabled={syncingId === r.id}
-                      title="Ressincronizar cliente na Pagar.me"
-                    >
-                      <RefreshCw size={14} className={syncingId === r.id ? "animate-spin" : ""} />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => setEditing(r)} title="Editar">
-                      <Pencil size={14} />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => removeStudent(r)} title="Excluir aluno">
-                      <Trash2 size={14} className="text-destructive" />
-                    </Button>
-                  </div>
+                <td className="p-3 text-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost" title="Ações">
+                        <MoreHorizontal size={16} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem onClick={() => openContrato(r)} className="cursor-pointer">
+                        <ScrollText size={14} className="mr-2" /> Ver contrato
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openAvaliacao(r)} className="cursor-pointer">
+                        <FileText size={14} className="mr-2" /> Ver avaliação
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => resyncPagarme(r)}
+                        disabled={syncingId === r.id}
+                        className="cursor-pointer"
+                      >
+                        <RefreshCw size={14} className={`mr-2 ${syncingId === r.id ? "animate-spin" : ""}`} />
+                        {syncingId === r.id ? "Sincronizando..." : "Sincronizar Pagar.me"}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setEditing(r)} className="cursor-pointer">
+                        <Pencil size={14} className="mr-2" /> Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => removeStudent(r)}
+                        className="cursor-pointer text-destructive focus:text-destructive"
+                      >
+                        <Trash2 size={14} className="mr-2" /> Excluir
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
+            {paginated.length === 0 && (
               <tr>
                 <td colSpan={6} className="p-8 text-center text-muted-foreground">
                   Nenhum aluno.
@@ -372,6 +382,49 @@ function AlunosAdmin() {
           </tbody>
         </table>
       </div>
+
+      {filtered.length > 0 && (
+        <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row">
+          <div className="text-sm text-muted-foreground">
+            Mostrando {paginated.length} de {filtered.length} aluno(s)
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+              >
+                <ChevronLeft size={16} />
+              </Button>
+              <span className="min-w-[4rem] text-center text-sm">
+                {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+              >
+                <ChevronRight size={16} />
+              </Button>
+            </div>
+            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setCurrentPage(1); }}>
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 25, 50, 100].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size} / pág
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
 
       {/* Cadastrar */}
       <Dialog open={creating} onOpenChange={(o) => !o && setCreating(false)}>
