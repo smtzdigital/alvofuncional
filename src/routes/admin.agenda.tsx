@@ -58,6 +58,7 @@ interface Lead {
   notes: string | null;
   next_contact_at: string | null;
   student_id: string | null;
+  archived?: boolean | null;
   created_at: string;
   updated_at: string;
 }
