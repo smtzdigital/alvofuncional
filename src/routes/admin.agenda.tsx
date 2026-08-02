@@ -26,6 +26,12 @@ import {
   FilterX,
   Users,
   Clock,
+  LayoutGrid,
+  Table as TableIcon,
+  Archive,
+  ArchiveRestore,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
