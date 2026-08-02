@@ -212,6 +212,18 @@ function AgendaPage() {
     }
   };
 
+  const toggleArchive = async (lead: Lead) => {
+    const next = !lead.archived;
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, archived: next } : l)));
+    const { error } = await supabase.from("leads_interessados").update({ archived: next } as never).eq("id", lead.id);
+    if (error) {
+      toast.error("Falha ao arquivar: " + error.message);
+      load();
+    } else {
+      toast.success(next ? "Lead arquivado" : "Lead desarquivado");
+    }
+  };
+
   const eventsFor = (leadId: string) => events.filter((e) => e.lead_id === leadId);
 
   return (
