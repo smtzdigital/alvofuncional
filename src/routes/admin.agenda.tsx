@@ -124,17 +124,30 @@ function AgendaPage() {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [dragging, setDragging] = useState<string | null>(null);
   const [kanbanSearch, setKanbanSearch] = useState("");
+  const [leadView, setLeadView] = useState<"kanban" | "table">("kanban");
+  const [archivedFilter, setArchivedFilter] = useState<"active" | "archived" | "all">("active");
+  const [tablePage, setTablePage] = useState(1);
+  const tablePageSize = 15;
 
   const search = kanbanSearch.trim().toLowerCase();
   const filteredLeads = useMemo(() => {
-    if (!search) return leads;
-    return leads.filter(
-      (l) =>
+    return leads.filter((l) => {
+      const isArchived = !!l.archived;
+      if (archivedFilter === "active" && isArchived) return false;
+      if (archivedFilter === "archived" && !isArchived) return false;
+      if (!search) return true;
+      return (
         l.full_name.toLowerCase().includes(search) ||
         l.phone.toLowerCase().includes(search) ||
-        (l.email ?? "").toLowerCase().includes(search),
-    );
-  }, [leads, search]);
+        (l.email ?? "").toLowerCase().includes(search)
+      );
+    });
+  }, [leads, search, archivedFilter]);
+
+  useEffect(() => {
+    setTablePage(1);
+  }, [search, archivedFilter, leadView]);
+
 
   const loadAllEvents = async () => {
     const pageSize = 1000;
