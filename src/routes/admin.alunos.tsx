@@ -73,6 +73,29 @@ function AlunosAdmin() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const syncAllStudents = async () => {
+    setSyncingAll(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/sync-all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ target: "students" }),
+      });
+      const json = await res.json();
+      if (!res.ok) return toast.error(json.error ?? "Falha ao sincronizar");
+      const s = json.summary.students;
+      const fails = (json.students as { ok: boolean; label: string; message: string }[]).filter((r) => !r.ok);
+      if (fails.length) toast.warning(`${s.ok}/${s.total} alunos sincronizados. Falhas: ${fails.slice(0, 5).map((f) => `${f.label} (${f.message})`).join("; ")}`);
+      else toast.success(`${s.ok}/${s.total} alunos sincronizados com a Pagar.me`);
+      load();
+    } finally {
+      setSyncingAll(false);
+    }
+  };
+
 
   const resyncPagarme = async (r: Row) => {
     setSyncingId(r.id);
