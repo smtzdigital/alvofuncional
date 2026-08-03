@@ -151,6 +151,10 @@ function PlansAdmin() {
           <h1 className="text-3xl font-bold">Planos</h1>
           <p className="text-muted-foreground">Edite valores e funcionalidades.</p>
         </div>
+        <Button variant="outline" onClick={syncAllPlans} disabled={syncingAll} className="ml-auto mr-2">
+          <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
+          {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
+        </Button>
         <Dialog
           open={open}
           onOpenChange={(o) => {
