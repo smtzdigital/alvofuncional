@@ -175,7 +175,14 @@ function AlunosAdmin() {
             presential_per_week: r.plan.presential_per_week,
           }
         : {},
-      datas: { start: r.plan_started_at, end: r.plan_expires_at },
+      datas: (() => {
+        const start = r.plan_started_at ?? new Date().toISOString();
+        const days = r.plan?.duration_days ?? null;
+        const end =
+          r.plan_expires_at ??
+          (days ? new Date(new Date(start).getTime() + days * 86400000).toISOString() : null);
+        return { start, end };
+      })(),
     });
   };
 
