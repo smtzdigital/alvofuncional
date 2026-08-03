@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Save, RotateCcw, FileText } from "lucide-react";
-import { CONTRACT_PLACEHOLDERS, fillContract } from "@/lib/contract";
+import { CONTRACT_PLACEHOLDERS, fillContract, toContractHtml, CONTRACT_EDITOR_CSS } from "@/lib/contract";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 export const Route = createFileRoute("/admin/contrato")({
   component: ContratoAdmin,
@@ -21,7 +21,7 @@ function ContratoAdmin() {
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("app_settings").select("contract_template").eq("id", true).maybeSingle();
-    const t = (data?.contract_template as string | null) ?? "";
+    const t = toContractHtml((data?.contract_template as string | null) ?? "");
     setTemplate(t);
     setOriginal(t);
     setLoading(false);
@@ -29,6 +29,7 @@ function ContratoAdmin() {
   useEffect(() => {
     load();
   }, []);
+
 
   const save = async () => {
     setSaving(true);
