@@ -299,9 +299,15 @@ function AlunosAdmin() {
           <h1 className="text-3xl font-bold">Alunos</h1>
           <p className="text-muted-foreground">Cadastre manualmente ou gerencie planos, contratos e status.</p>
         </div>
-        <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
-          <Plus size={16} className="mr-1" /> Cadastrar Aluno
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={syncAllStudents} disabled={syncingAll}>
+            <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
+            {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
+          </Button>
+          <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
+            <Plus size={16} className="mr-1" /> Cadastrar Aluno
+          </Button>
+        </div>
       </div>
       <div className="relative max-w-sm">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
