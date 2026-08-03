@@ -332,8 +332,8 @@ function PlansAdmin() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="bg-gradient-primary text-primary-foreground">
-                  Salvar
+                <Button type="submit" disabled={isSaving} className="bg-gradient-primary text-primary-foreground">
+                  {isSaving ? "Salvando..." : "Salvar"}
                 </Button>
               </DialogFooter>
             </form>
