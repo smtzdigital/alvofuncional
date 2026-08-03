@@ -60,6 +60,7 @@ function PlansAdmin() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Partial<Plan>>(empty);
+  const [isSaving, setIsSaving] = useState(false);
 
   const load = async () => {
     const { data } = await supabase.from("plans").select("*").order("sort_order");
@@ -109,41 +110,46 @@ function PlansAdmin() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    const payload = {
-      name: form.name!,
-      description: form.description ?? null,
-      price: Number(form.price),
-      duration_days: Number(form.duration_days),
-      presential_per_week: Number(form.presential_per_week),
-      billing_interval: form.billing_interval ?? "month",
-      billing_interval_count: Number(form.billing_interval_count ?? 1),
-      installments: Number(form.installments ?? 1),
-      trial_period_days: Number(form.trial_period_days ?? 0),
-      plan_duration_months: form.plan_duration_months ? Number(form.plan_duration_months) : null,
-      has_workouts: !!form.has_workouts,
-      has_ranking: !!form.has_ranking,
-      has_diet: !!form.has_diet,
-      has_goals: !!form.has_goals,
-      is_active: !!form.is_active,
-      is_custom: !!form.is_custom,
-      sort_order: Number(form.sort_order ?? 0),
-    };
-    const { data: saved, error } = form.id
-      ? await supabase.from("plans").update(payload).eq("id", form.id).select("id").single()
-      : await supabase.from("plans").insert(payload).select("id").single();
-    if (error) return toast.error(error.message);
-
-    // Sincroniza com a Pagar.me (não bloqueia se falhar; avisa)
+    setIsSaving(true);
     try {
-      await syncToStone((saved as { id: string }).id);
-      toast.success("Plano salvo e sincronizado com a Pagar.me");
-    } catch (err) {
-      toast.warning("Plano salvo, mas falhou sincronizar na Pagar.me: " + (err as Error).message);
-    }
+      const payload = {
+        name: form.name!,
+        description: form.description ?? null,
+        price: Number(form.price),
+        duration_days: Number(form.duration_days),
+        presential_per_week: Number(form.presential_per_week),
+        billing_interval: form.billing_interval ?? "month",
+        billing_interval_count: Number(form.billing_interval_count ?? 1),
+        installments: Number(form.installments ?? 1),
+        trial_period_days: Number(form.trial_period_days ?? 0),
+        plan_duration_months: form.plan_duration_months ? Number(form.plan_duration_months) : null,
+        has_workouts: !!form.has_workouts,
+        has_ranking: !!form.has_ranking,
+        has_diet: !!form.has_diet,
+        has_goals: !!form.has_goals,
+        is_active: !!form.is_active,
+        is_custom: !!form.is_custom,
+        sort_order: Number(form.sort_order ?? 0),
+      };
+      const { data: saved, error } = form.id
+        ? await supabase.from("plans").update(payload).eq("id", form.id).select("id").single()
+        : await supabase.from("plans").insert(payload).select("id").single();
+      if (error) return toast.error(error.message);
 
-    setOpen(false);
-    setForm(empty);
-    load();
+      // Sincroniza com a Pagar.me (não bloqueia se falhar; avisa)
+      try {
+        await syncToStone((saved as { id: string }).id);
+        toast.success("Plano salvo e sincronizado com a Pagar.me");
+      } catch (err) {
+        toast.warning("Plano salvo, mas falhou sincronizar na Pagar.me: " + (err as Error).message);
+      }
+
+      setOpen(false);
+      setForm(empty);
+      load();
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const remove = async (id: string) => {
