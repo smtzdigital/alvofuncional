@@ -350,12 +350,10 @@ function AlunosAdmin() {
           <p className="text-muted-foreground">Cadastre manualmente ou gerencie planos, contratos e status.</p>
         </div>
         <div className="flex gap-2">
-          /*
-          <Button variant="outline" onClick={syncAllStudents} disabled={syncingAll}>
+          {/*<Button variant="outline" onClick={syncAllStudents} disabled={syncingAll}>
             <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
             {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
-          </Button>
-          */
+          </Button>*/}
           <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
             <Plus size={16} className="mr-1" /> Cadastrar Aluno
           </Button>
