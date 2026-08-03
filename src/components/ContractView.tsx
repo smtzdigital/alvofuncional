@@ -1,7 +1,14 @@
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Printer } from "lucide-react";
-import { fillContract, type ContractStudent, type ContractPlan, type ContractDates } from "@/lib/contract";
+import {
+  fillContract,
+  toContractHtml,
+  CONTRACT_EDITOR_CSS,
+  type ContractStudent,
+  type ContractPlan,
+  type ContractDates,
+} from "@/lib/contract";
 
 interface Props {
   template: string;
@@ -13,15 +20,15 @@ interface Props {
 
 export function ContractView({ template, aluno, plano, datas, title }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const filled = fillContract(template, { aluno, plano, datas });
+  const filled = fillContract(toContractHtml(template), { aluno, plano, datas });
 
   const printIt = () => {
     if (!ref.current) return;
     const w = window.open("", "_blank", "width=900,height=700");
     if (!w) return;
     w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Contrato</title>
-      <style>body{font-family:Georgia,'Times New Roman',serif;font-size:12pt;line-height:1.55;padding:24px;color:#000;white-space:pre-wrap}h1{font-size:16pt;text-align:center}</style>
-      </head><body>${ref.current.innerHTML}</body></html>`);
+      <style>${CONTRACT_EDITOR_CSS} body{padding:24px}</style>
+      </head><body><div class="contract-doc">${ref.current.innerHTML}</div></body></html>`);
     w.document.close();
     w.focus();
     setTimeout(() => { w.print(); }, 300);
@@ -37,25 +44,24 @@ export function ContractView({ template, aluno, plano, datas, title }: Props) {
       image: { type: "jpeg", quality: 0.95 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"], before: ".page-break" },
     }).from(ref.current).save();
   };
 
   return (
     <div className="space-y-3">
+      <style>{CONTRACT_EDITOR_CSS}</style>
       <div className="flex flex-wrap gap-2 justify-end">
         <Button size="sm" variant="outline" onClick={printIt}><Printer size={14} className="mr-1" /> Imprimir</Button>
         <Button size="sm" onClick={downloadPdf} className="bg-gradient-primary text-primary-foreground"><Download size={14} className="mr-1" /> Baixar PDF</Button>
       </div>
       <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-white p-6">
-        <div
-          ref={ref}
-          className="text-black"
-          style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "11pt", lineHeight: 1.55, whiteSpace: "pre-wrap" }}
-        >
-          {title && <h1 style={{ fontSize: "14pt", textAlign: "center", fontWeight: "bold", marginBottom: 16 }}>{title}</h1>}
-          {filled}
+        <div ref={ref} className="contract-doc">
+          {title && <h1>{title}</h1>}
+          <div dangerouslySetInnerHTML={{ __html: filled }} />
         </div>
       </div>
     </div>
   );
 }
+
