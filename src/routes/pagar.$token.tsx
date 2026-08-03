@@ -105,9 +105,14 @@ function PagarPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-lg px-4 py-4 flex items-center gap-3">
-          {(brand?.logo_icon_url || brand?.logo_url) && <img src={brand.logo_icon_url ?? brand.logo_url ?? ""} alt="" className="h-10 w-10 rounded-lg object-cover" />}
-          <div className="font-bold text-lg">{brand?.app_name ?? "Pagamento"}</div>
+        <div className="mx-auto max-w-lg px-4 py-5 flex flex-col items-center justify-center gap-2 text-center">
+          {brand?.logo_url ? (
+            <img src={brand.logo_url} alt={brand?.app_name ?? "Logo"} className="h-14 w-auto max-w-[240px] object-contain" />
+          ) : brand?.logo_icon_url ? (
+            <img src={brand.logo_icon_url} alt={brand?.app_name ?? "Logo"} className="h-12 w-12 rounded-lg object-cover" />
+          ) : (
+            <div className="font-bold text-lg">{brand?.app_name ?? "Pagamento"}</div>
+          )}
         </div>
       </header>
 
