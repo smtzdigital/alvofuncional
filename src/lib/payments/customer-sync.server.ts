@@ -34,16 +34,23 @@ export async function syncStudentCustomer(studentId: string, actor: string): Pro
 
     const gw = getPaymentGateway();
     if (s.stone_customer_id) {
-      await gw.updateCustomer({
-        customerId: s.stone_customer_id,
-        name: s.profile.full_name,
-        email: s.profile.email,
-        document: s.profile.document,
-        phone: s.profile.phone ?? undefined,
-        actor,
-      });
-      return { synced: true, customer_id: s.stone_customer_id };
+      try {
+        await gw.updateCustomer({
+          customerId: s.stone_customer_id,
+          name: s.profile.full_name,
+          email: s.profile.email,
+          document: s.profile.document,
+          phone: s.profile.phone ?? undefined,
+          actor,
+        });
+        return { synced: true, customer_id: s.stone_customer_id };
+      } catch (e) {
+        // Cliente não existe nesse ambiente (ex.: id criado no sandbox): recria.
+        if (!(e instanceof StoneError) || (e.status !== 404 && e.status !== 400)) throw e;
+        await supabaseAdmin.from("students").update({ stone_customer_id: null }).eq("id", studentId);
+      }
     }
+
     const cust = await gw.createCustomer({
       name: s.profile.full_name,
       email: s.profile.email,
