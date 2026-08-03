@@ -13,7 +13,18 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Pencil, Search, FileText, Plus, ScrollText, RefreshCw, Trash2, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pencil,
+  Search,
+  FileText,
+  Plus,
+  ScrollText,
+  RefreshCw,
+  Trash2,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 import { ContractView } from "@/components/ContractView";
@@ -78,7 +89,9 @@ function AlunosAdmin() {
   const syncAllStudents = async () => {
     setSyncingAll(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const res = await fetch("/api/admin/sync-all", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
@@ -88,7 +101,13 @@ function AlunosAdmin() {
       if (!res.ok) return toast.error(json.error ?? "Falha ao sincronizar");
       const s = json.summary.students;
       const fails = (json.students as { ok: boolean; label: string; message: string }[]).filter((r) => !r.ok);
-      if (fails.length) toast.warning(`${s.ok}/${s.total} alunos sincronizados. Falhas: ${fails.slice(0, 5).map((f) => `${f.label} (${f.message})`).join("; ")}`);
+      if (fails.length)
+        toast.warning(
+          `${s.ok}/${s.total} alunos sincronizados. Falhas: ${fails
+            .slice(0, 5)
+            .map((f) => `${f.label} (${f.message})`)
+            .join("; ")}`,
+        );
       else toast.success(`${s.ok}/${s.total} alunos sincronizados com a Pagar.me`);
       load();
     } finally {
@@ -96,11 +115,12 @@ function AlunosAdmin() {
     }
   };
 
-
   const resyncPagarme = async (r: Row) => {
     setSyncingId(r.id);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const res = await fetch("/api/admin/students-sync-customer", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
@@ -117,7 +137,9 @@ function AlunosAdmin() {
 
   const removeStudent = async (r: Row) => {
     if (!confirm(`Excluir aluno "${r.profile?.full_name ?? ""}"? Esta ação não pode ser desfeita.`)) return;
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const res = await fetch("/api/admin/students-delete", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
@@ -179,8 +201,7 @@ function AlunosAdmin() {
         const start = r.plan_started_at ?? new Date().toISOString();
         const days = r.plan?.duration_days ?? null;
         const end =
-          r.plan_expires_at ??
-          (days ? new Date(new Date(start).getTime() + days * 86400000).toISOString() : null);
+          r.plan_expires_at ?? (days ? new Date(new Date(start).getTime() + days * 86400000).toISOString() : null);
         return { start, end };
       })(),
     });
@@ -307,7 +328,6 @@ function AlunosAdmin() {
     load();
   };
 
-
   const filtered = rows.filter(
     (r) =>
       !search ||
@@ -330,10 +350,12 @@ function AlunosAdmin() {
           <p className="text-muted-foreground">Cadastre manualmente ou gerencie planos, contratos e status.</p>
         </div>
         <div className="flex gap-2">
+          /*
           <Button variant="outline" onClick={syncAllStudents} disabled={syncingAll}>
             <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
             {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
           </Button>
+          */
           <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
             <Plus size={16} className="mr-1" /> Cadastrar Aluno
           </Button>
@@ -446,7 +468,13 @@ function AlunosAdmin() {
                 <ChevronRight size={16} />
               </Button>
             </div>
-            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setCurrentPage(1); }}>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => {
+                setPageSize(Number(v));
+                setCurrentPage(1);
+              }}
+            >
               <SelectTrigger className="w-24">
                 <SelectValue />
               </SelectTrigger>
@@ -505,7 +533,6 @@ function AlunosAdmin() {
               <div className="col-span-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
                 O plano e o professor podem ser vinculados depois em <strong>Editar</strong>.
               </div>
-
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
