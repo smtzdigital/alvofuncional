@@ -73,6 +73,29 @@ function AlunosAdmin() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const syncAllStudents = async () => {
+    setSyncingAll(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/sync-all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ target: "students" }),
+      });
+      const json = await res.json();
+      if (!res.ok) return toast.error(json.error ?? "Falha ao sincronizar");
+      const s = json.summary.students;
+      const fails = (json.students as { ok: boolean; label: string; message: string }[]).filter((r) => !r.ok);
+      if (fails.length) toast.warning(`${s.ok}/${s.total} alunos sincronizados. Falhas: ${fails.slice(0, 5).map((f) => `${f.label} (${f.message})`).join("; ")}`);
+      else toast.success(`${s.ok}/${s.total} alunos sincronizados com a Pagar.me`);
+      load();
+    } finally {
+      setSyncingAll(false);
+    }
+  };
+
 
   const resyncPagarme = async (r: Row) => {
     setSyncingId(r.id);
@@ -299,9 +322,15 @@ function AlunosAdmin() {
           <h1 className="text-3xl font-bold">Alunos</h1>
           <p className="text-muted-foreground">Cadastre manualmente ou gerencie planos, contratos e status.</p>
         </div>
-        <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
-          <Plus size={16} className="mr-1" /> Cadastrar Aluno
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={syncAllStudents} disabled={syncingAll}>
+            <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
+            {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
+          </Button>
+          <Button onClick={() => setCreating(true)} className="bg-gradient-primary text-white">
+            <Plus size={16} className="mr-1" /> Cadastrar Aluno
+          </Button>
+        </div>
       </div>
       <div className="relative max-w-sm">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />

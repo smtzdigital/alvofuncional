@@ -69,6 +69,29 @@ function PlansAdmin() {
     load();
   }, []);
 
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const syncAllPlans = async () => {
+    setSyncingAll(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/sync-all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ target: "plans" }),
+      });
+      const json = await res.json();
+      if (!res.ok) return toast.error(json.error ?? "Falha ao sincronizar");
+      const s = json.summary.plans;
+      const fails = (json.plans as { ok: boolean; label: string; message: string }[]).filter((r) => !r.ok);
+      if (fails.length) toast.warning(`${s.ok}/${s.total} planos sincronizados. Falhas: ${fails.map((f) => `${f.label} (${f.message})`).join("; ")}`);
+      else toast.success(`${s.ok}/${s.total} planos sincronizados com a Pagar.me`);
+      load();
+    } finally {
+      setSyncingAll(false);
+    }
+  };
+
   const syncToStone = async (planId: string) => {
     const {
       data: { session },
@@ -151,6 +174,10 @@ function PlansAdmin() {
           <h1 className="text-3xl font-bold">Planos</h1>
           <p className="text-muted-foreground">Edite valores e funcionalidades.</p>
         </div>
+        <Button variant="outline" onClick={syncAllPlans} disabled={syncingAll} className="ml-auto mr-2">
+          <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
+          {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
+        </Button>
         <Dialog
           open={open}
           onOpenChange={(o) => {
