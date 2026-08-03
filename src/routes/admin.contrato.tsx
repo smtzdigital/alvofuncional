@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Save, RotateCcw, FileText } from "lucide-react";
-import { CONTRACT_PLACEHOLDERS, fillContract } from "@/lib/contract";
+import { CONTRACT_PLACEHOLDERS, fillContract, toContractHtml, CONTRACT_EDITOR_CSS } from "@/lib/contract";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 export const Route = createFileRoute("/admin/contrato")({
   component: ContratoAdmin,
@@ -21,7 +21,7 @@ function ContratoAdmin() {
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("app_settings").select("contract_template").eq("id", true).maybeSingle();
-    const t = (data?.contract_template as string | null) ?? "";
+    const t = toContractHtml((data?.contract_template as string | null) ?? "");
     setTemplate(t);
     setOriginal(t);
     setLoading(false);
@@ -29,6 +29,7 @@ function ContratoAdmin() {
   useEffect(() => {
     load();
   }, []);
+
 
   const save = async () => {
     setSaving(true);
@@ -109,14 +110,7 @@ function ContratoAdmin() {
               <RotateCcw size={14} className="mr-1" /> Desfazer
             </Button>
           </div>
-          <Textarea
-            value={template}
-            onChange={(e) => setTemplate(e.target.value)}
-            rows={30}
-            disabled={loading}
-            className="font-mono text-xs"
-            placeholder="Cole ou edite aqui o modelo do contrato..."
-          />
+          <RichTextEditor value={template} onChange={setTemplate} disabled={loading} />
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setPreview((v) => !v)}>
               {preview ? "Ocultar" : "Ver"} pré-visualização
@@ -133,22 +127,14 @@ function ContratoAdmin() {
 
         {preview && (
           <div className="space-y-2">
+            <style>{CONTRACT_EDITOR_CSS}</style>
             <label className="text-sm font-semibold">Pré-visualização (com dados de exemplo)</label>
-            <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-white p-4">
-              <div
-                className="text-black"
-                style={{
-                  fontFamily: "Georgia, 'Times New Roman', serif",
-                  fontSize: "10pt",
-                  lineHeight: 1.55,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {previewFilled}
-              </div>
+            <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-white p-6">
+              <div className="contract-doc" dangerouslySetInnerHTML={{ __html: previewFilled }} />
             </div>
           </div>
         )}
+
       </div>
     </div>
   );

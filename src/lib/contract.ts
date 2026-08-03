@@ -1,5 +1,32 @@
 // Utilitários de contrato: preenche placeholders no template.
 
+// CSS compartilhado entre editor, pré-visualização, impressão e PDF.
+export const CONTRACT_EDITOR_CSS = `
+.contract-doc{font-family:Georgia,'Times New Roman',serif;font-size:11pt;line-height:1.55;color:#000}
+.contract-doc h1{font-size:15pt;font-weight:bold;text-align:center;margin:0 0 12px}
+.contract-doc h2{font-size:12.5pt;font-weight:bold;margin:14px 0 6px}
+.contract-doc p{margin:0 0 8px}
+.contract-doc ul,.contract-doc ol{margin:0 0 8px;padding-left:24px}
+.contract-doc hr{border:0;border-top:1px solid #000;margin:12px 0}
+.contract-doc .page-break{break-after:page;page-break-after:always;border-top:1px dashed #999;margin:16px 0;height:0}
+@media print{.contract-doc .page-break{border-top:none}}
+`;
+
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** Converte um template antigo em texto puro para HTML editável. */
+export function toContractHtml(template: string): string {
+  const t = (template ?? "").trim();
+  if (!t) return "<p><br /></p>";
+  if (/<(p|div|h1|h2|ul|ol|br|table|section)\b/i.test(t)) return t;
+  return t
+    .split(/\n{2,}/)
+    .map((block) => `<p>${escapeHtml(block).replace(/\n/g, "<br />")}</p>`)
+    .join("");
+}
+
+
 export interface ContractStudent {
   full_name?: string | null;
   document?: string | null;
