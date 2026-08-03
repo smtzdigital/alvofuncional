@@ -2,7 +2,7 @@
 // Best-effort: retorna { synced, reason?, customer_id? } em vez de lançar.
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { friendlyStoneError, getGatewayConfig, getPaymentGateway } from "./stone.server";
+import { friendlyStoneError, getGatewayConfig, getPaymentGateway, StoneError } from "./stone.server";
 
 export interface CustomerSyncResult {
   synced: boolean;
