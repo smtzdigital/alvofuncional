@@ -45,7 +45,8 @@ export function ContractView({ template, aluno, plano, datas, title }: Props) {
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       pagebreak: { mode: ["css", "legacy"], before: ".page-break" },
-    }).from(ref.current).save();
+    } as Parameters<ReturnType<typeof html2pdf>["set"]>[0]).from(ref.current).save();
+
   };
 
   return (
