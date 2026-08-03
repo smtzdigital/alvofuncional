@@ -7,21 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Plus, Pencil, Trash2, RefreshCw, Search, LayoutGrid, Table2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -115,7 +102,9 @@ function PlansAdmin() {
   const syncAllPlans = async () => {
     setSyncingAll(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const res = await fetch("/api/admin/sync-all", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
@@ -125,7 +114,10 @@ function PlansAdmin() {
       if (!res.ok) return toast.error(json.error ?? "Falha ao sincronizar");
       const s = json.summary.plans;
       const fails = (json.plans as { ok: boolean; label: string; message: string }[]).filter((r) => !r.ok);
-      if (fails.length) toast.warning(`${s.ok}/${s.total} planos sincronizados. Falhas: ${fails.map((f) => `${f.label} (${f.message})`).join("; ")}`);
+      if (fails.length)
+        toast.warning(
+          `${s.ok}/${s.total} planos sincronizados. Falhas: ${fails.map((f) => `${f.label} (${f.message})`).join("; ")}`,
+        );
       else toast.success(`${s.ok}/${s.total} planos sincronizados com a Pagar.me`);
       load();
     } finally {
@@ -284,10 +276,10 @@ function PlansAdmin() {
                 <Table2 size={16} />
               </ToggleGroupItem>
             </ToggleGroup>
-            <Button variant="outline" onClick={syncAllPlans} disabled={syncingAll}>
+            {/*<Button variant="outline" onClick={syncAllPlans} disabled={syncingAll}>
               <RefreshCw size={16} className={`mr-1 ${syncingAll ? "animate-spin" : ""}`} />
               {syncingAll ? "Sincronizando..." : "Sincronizar todos"}
-            </Button>
+            </Button>*/}
             <Dialog
               open={open}
               onOpenChange={(o) => {
@@ -307,7 +299,11 @@ function PlansAdmin() {
                 <form onSubmit={submit} className="space-y-3">
                   <div>
                     <Label>Nome</Label>
-                    <Input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <Input
+                      required
+                      value={form.name ?? ""}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    />
                   </div>
                   <div>
                     <Label>Descrição</Label>
@@ -346,7 +342,9 @@ function PlansAdmin() {
                     </div>
                   </div>
                   <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
-                    <div className="mb-3 text-sm font-semibold text-primary">Cobrança recorrente e duração do plano</div>
+                    <div className="mb-3 text-sm font-semibold text-primary">
+                      Cobrança recorrente e duração do plano
+                    </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <Label>Intervalo de cobrança</Label>
@@ -510,7 +508,8 @@ function PlansAdmin() {
                           a cada {p.billing_interval_count || 1} {intervalLabel(p.billing_interval)}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          teste {p.trial_period_days || 0} dias · {p.plan_duration_months ? `${p.plan_duration_months} meses` : "sem prazo"}
+                          teste {p.trial_period_days || 0} dias ·{" "}
+                          {p.plan_duration_months ? `${p.plan_duration_months} meses` : "sem prazo"}
                         </div>
                       </TableCell>
                       <TableCell>{renderTags(p)}</TableCell>
