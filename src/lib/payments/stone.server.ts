@@ -378,15 +378,18 @@ class StonePaymentGateway implements PaymentGateway {
 
   private planBody(input: PlanSyncInput) {
     const trialPeriodDays = validTrialPeriodDays(input.trialPeriodDays);
+    const allowedIntervals = ["day", "week", "month", "year"];
+    const interval = allowedIntervals.includes(input.interval) ? input.interval : "month";
+    const intervalCount = Math.max(1, Math.floor(Number(input.intervalCount) || 1));
     const body: Record<string, unknown> = {
       name: input.name,
       description: input.description ?? input.name,
       shippable: false,
-      interval: input.interval,
-      interval_count: input.intervalCount,
+      interval,
+      interval_count: intervalCount,
       billing_type: "prepaid",
       payment_methods: ["credit_card"],
-      installments: [input.installments || 1],
+      installments: [Math.max(1, Math.floor(Number(input.installments) || 1))],
       currency: "BRL",
       items: [
         {
@@ -417,17 +420,13 @@ class StonePaymentGateway implements PaymentGateway {
   async updatePlan(input: PlanSyncInput & { stonePlanId: string }) {
     const cfg = await getGatewayConfig();
     try {
-      // Pagar.me v5 PUT /plans/:id atualiza dados gerais; pricing_scheme via items
+      // Pagar.me v5 PUT /plans/:id exige o corpo completo (status, currency, interval, billing_type, interval_count...)
       const res = await stoneRequest<StonePlan>(cfg, {
         method: "PUT",
         path: `/plans/${encodeURIComponent(input.stonePlanId)}`,
         body: {
-          name: input.name,
-          description: input.description ?? input.name,
-          installments: [input.installments || 1],
-          payment_methods: ["credit_card"],
-          ...(validTrialPeriodDays(input.trialPeriodDays) ? { trial_period_days: validTrialPeriodDays(input.trialPeriodDays) } : {}),
-          statement_descriptor: input.name.slice(0, 13),
+          ...this.planBody(input),
+          status: "active",
         },
       });
       await logAudit("updatePlan", { id: input.stonePlanId, name: input.name }, { id: res.id }, undefined, input.actor);
