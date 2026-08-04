@@ -59,6 +59,7 @@ function PaymentsAdmin() {
     load();
     supabase.from("students").select("id,plan_id,profile:profiles!inner(full_name)").then(({ data }) => setStudents((data ?? []) as unknown as Student[]));
     supabase.from("plans").select("id,name,price").then(({ data }) => setPlans((data ?? []) as Plan[]));
+    supabase.from("financial_accounts").select("id,name").eq("is_active", true).order("name").then(({ data }) => setAccounts((data ?? []) as Account[]));
   }, []);
 
   const filtered = rows.filter((p) => {
