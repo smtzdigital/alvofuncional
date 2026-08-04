@@ -64,7 +64,7 @@ function PaymentsAdmin() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
   const [fName, setFName] = useState("");
-  const [fFrom, setFFrom] = useState<string>(() => new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10));
+  const [fFrom, setFFrom] = useState<string>(() => new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10));
   const [fTo, setFTo] = useState<string>(() => new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10));
   const [form, setForm] = useState<{
     student_id: string;
