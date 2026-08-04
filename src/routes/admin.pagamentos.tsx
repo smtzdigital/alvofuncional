@@ -85,12 +85,33 @@ function PaymentsAdmin() {
     setOpen(false); load();
   };
 
-  const markPaid = async (p: Payment) => {
-    const { error } = await supabase.from("payments").update({ status: "pago", paid_at: new Date().toISOString() }).eq("id", p.id);
-    if (error) return toast.error(error.message);
-    toast.success("Marcado como pago");
+  const openPayDialog = (p: Payment) => {
+    setPayForm({ method: p.method ?? "pix", account_id: "", paid_at: new Date().toISOString().slice(0, 10) });
+    setPayTarget(p);
+  };
+
+  const confirmPaid = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!payTarget) return;
+    setPaying(true);
+    const paidAt = new Date(`${payForm.paid_at}T12:00:00`).toISOString();
+    const { error } = await supabase.from("payments")
+      .update({ status: "pago", paid_at: paidAt, method: payForm.method as "pix" })
+      .eq("id", payTarget.id);
+    if (error) { setPaying(false); return toast.error(error.message); }
+    if (payForm.account_id) {
+      const { error: accErr } = await supabase.from("financial_transactions")
+        .update({ account_id: payForm.account_id })
+        .eq("source_type", "payment").eq("source_id", payTarget.id);
+      if (accErr) toast.warning("Pago, mas não foi possível vincular a conta: " + accErr.message);
+    }
+    setPaying(false);
+    setPayTarget(null);
+    toast.success("Pagamento registrado");
     load();
   };
+
+
 
   return (
     <div className="space-y-6">
