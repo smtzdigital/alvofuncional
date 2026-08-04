@@ -23,7 +23,21 @@ interface Payment {
 interface Student { id: string; profile: { full_name: string } | null; plan_id: string | null; }
 interface Plan { id: string; name: string; price: number; }
 
+interface Account { id: string; name: string; }
+
+const METHOD_OPTIONS = [
+  { value: "pix", label: "PIX" },
+  { value: "dinheiro", label: "Dinheiro" },
+  { value: "cartao", label: "Cartão" },
+  { value: "transferencia", label: "Transferência" },
+  { value: "outro", label: "Outro" },
+];
+
 function PaymentsAdmin() {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [payTarget, setPayTarget] = useState<Payment | null>(null);
+  const [payForm, setPayForm] = useState({ method: "pix", account_id: "", paid_at: new Date().toISOString().slice(0, 10) });
+  const [paying, setPaying] = useState(false);
   const [rows, setRows] = useState<Payment[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
