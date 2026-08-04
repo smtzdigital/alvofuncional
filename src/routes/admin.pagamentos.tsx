@@ -179,7 +179,7 @@ function PaymentsAdmin() {
                 <td className="p-3 text-right font-semibold">R$ {Number(p.amount).toFixed(2)}</td>
                 <td className="p-3"><StatusBadge status={p.status} /></td>
                 <td className="p-3 text-right">
-                  {p.status !== "pago" && <Button size="sm" variant="outline" onClick={() => markPaid(p)}><Check size={14} className="mr-1" /> Marcar pago</Button>}
+                  {p.status !== "pago" && <Button size="sm" variant="outline" onClick={() => openPayDialog(p)}><Check size={14} className="mr-1" /> Registrar pagamento</Button>}
                 </td>
               </tr>
             ))}
@@ -188,7 +188,42 @@ function PaymentsAdmin() {
           </tbody>
         </table>
       </div>
+
+      <Dialog open={!!payTarget} onOpenChange={(o) => !o && setPayTarget(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Registrar pagamento</DialogTitle></DialogHeader>
+          <form onSubmit={confirmPaid} className="space-y-3">
+            <div className="rounded-lg border border-border bg-secondary/40 p-3 text-sm">
+              <div className="font-semibold">{payTarget?.student?.profile?.full_name ?? "—"}</div>
+              <div className="text-muted-foreground">
+                {payTarget?.plan?.name ?? "Sem plano"} · R$ {Number(payTarget?.amount ?? 0).toFixed(2)}
+                {payTarget?.method ? ` · previsto: ${METHOD_OPTIONS.find((m) => m.value === payTarget.method)?.label ?? payTarget.method}` : ""}
+              </div>
+            </div>
+            <div><Label>Forma de pagamento recebida</Label>
+              <Select value={payForm.method} onValueChange={(v) => setPayForm({ ...payForm, method: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{METHOD_OPTIONS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div><Label>Conta de entrada</Label>
+              <Select value={payForm.account_id} onValueChange={(v) => setPayForm({ ...payForm, account_id: v })}>
+                <SelectTrigger><SelectValue placeholder={accounts.length ? "Selecione a conta" : "Nenhuma conta cadastrada"} /></SelectTrigger>
+                <SelectContent>{accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div><Label>Data do recebimento</Label>
+              <Input type="date" required value={payForm.paid_at} onChange={(e) => setPayForm({ ...payForm, paid_at: e.target.value })} />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setPayTarget(null)}>Cancelar</Button>
+              <Button type="submit" disabled={paying} className="bg-gradient-primary text-primary-foreground">{paying ? "Salvando..." : "Confirmar pagamento"}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
 
