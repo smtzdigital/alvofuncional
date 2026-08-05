@@ -362,6 +362,8 @@ function CreateLinkDialog({ students, plans, onDone }: { students: Student[]; pl
 // ------- Change card dialog -------
 function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => void }) {
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState<BillingForm>({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [busy, setBusy] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
