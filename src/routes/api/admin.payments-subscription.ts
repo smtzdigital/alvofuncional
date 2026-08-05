@@ -31,11 +31,14 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
         const uid = await getAdminUserId(request);
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
-          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_method?: string; start_at?: string | null };
+          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_method?: string; start_at?: string | null; billing?: BillingAddressInput };
           if (!body.student_id || !body.plan_id) return Response.json({ error: "Dados incompletos" }, { status: 400 });
           const method = body.payment_method || "credit_card";
           const isManual = method !== "credit_card";
           if (!isManual && !body.card_token) return Response.json({ error: "Cartão obrigatório para cobrança em crédito" }, { status: 400 });
+          const billing = normalizeBillingAddress(body.billing);
+          if (!isManual && !billing) return Response.json({ error: "Informe o endereço de cobrança completo (CEP, endereço, cidade e UF)" }, { status: 400 });
+
 
           const { data: plan } = await supabaseAdmin.from("plans").select("*").eq("id", body.plan_id).maybeSingle();
           if (!plan) return Response.json({ error: "Plano não encontrado" }, { status: 404 });
