@@ -224,9 +224,11 @@ class StonePaymentGateway implements PaymentGateway {
     }
   }
 
-  async createCard(input: { customerId: string; cardToken: string; actor?: string }) {
+  async createCard(input: { customerId: string; cardToken: string; billingAddress?: BillingAddressInput | null; actor?: string }) {
     const cfg = await getGatewayConfig();
-    const body = { token: input.cardToken };
+    const body: Record<string, unknown> = { token: input.cardToken };
+    const billing = normalizeBillingAddress(input.billingAddress);
+    if (billing) body.billing_address = billing;
     try {
       const res = await stoneRequest<StoneCard>(cfg, {
         method: "POST",
@@ -234,7 +236,7 @@ class StonePaymentGateway implements PaymentGateway {
         body,
         idempotencyKey: `card-${input.cardToken.slice(0, 12)}`,
       });
-      await logAudit("createCard", { customerId: input.customerId }, { id: res.id, brand: res.brand, last4: res.last_four_digits }, undefined, input.actor);
+      await logAudit("createCard", { customerId: input.customerId, billing_address: !!billing }, { id: res.id, brand: res.brand, last4: res.last_four_digits }, undefined, input.actor);
       return res;
     } catch (e) {
       const err = e as StoneError;
@@ -242,6 +244,7 @@ class StonePaymentGateway implements PaymentGateway {
       throw err;
     }
   }
+
 
   async createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null; cycles?: number | null }) {
     const cfg = await getGatewayConfig();
