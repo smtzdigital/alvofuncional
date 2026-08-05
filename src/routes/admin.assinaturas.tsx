@@ -250,7 +250,9 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           plan_id: planId,
           card_token: cardToken,
           payment_method: method,
+          billing: needsCard ? billing : undefined,
           start_at: startAt ? new Date(startAt).toISOString() : null,
+
         }),
       });
       const d = await r.json();
