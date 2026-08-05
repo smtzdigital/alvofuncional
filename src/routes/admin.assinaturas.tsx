@@ -390,8 +390,15 @@ function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => vo
   );
 }
 
+export type BillingForm = { zip_code: string; line_1: string; city: string; state: string };
+
 // Shared card fields
-function CardFields({ card, setCard }: { card: { number: string; holder: string; month: string; year: string; cvv: string }; setCard: (v: typeof card) => void }) {
+function CardFields({ card, setCard, billing, setBilling }: {
+  card: { number: string; holder: string; month: string; year: string; cvv: string };
+  setCard: (v: typeof card) => void;
+  billing: BillingForm;
+  setBilling: (v: BillingForm) => void;
+}) {
   return (
     <div className="space-y-3 rounded-lg border border-border p-3">
       <div className="text-xs text-muted-foreground">Os dados do cartão são enviados diretamente ao gateway (tokenização) e não trafegam pelo nosso servidor.</div>
@@ -402,9 +409,19 @@ function CardFields({ card, setCard }: { card: { number: string; holder: string;
         <div><Label>Ano</Label><Input value={card.year} onChange={(e) => setCard({ ...card, year: e.target.value })} placeholder="AAAA" required maxLength={4} /></div>
         <div><Label>CVV</Label><Input value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value })} inputMode="numeric" required maxLength={4} /></div>
       </div>
+      <div className="pt-1 text-xs font-semibold">Endereço de cobrança (exigido pela operadora)</div>
+      <div className="grid grid-cols-2 gap-2">
+        <div><Label>CEP</Label><Input value={billing.zip_code} onChange={(e) => setBilling({ ...billing, zip_code: e.target.value })} inputMode="numeric" maxLength={9} placeholder="00000-000" required /></div>
+        <div><Label>Cidade</Label><Input value={billing.city} onChange={(e) => setBilling({ ...billing, city: e.target.value })} required /></div>
+      </div>
+      <div className="grid grid-cols-[1fr_80px] gap-2">
+        <div><Label>Endereço e número</Label><Input value={billing.line_1} onChange={(e) => setBilling({ ...billing, line_1: e.target.value })} placeholder="Rua Exemplo, 123" required /></div>
+        <div><Label>UF</Label><Input value={billing.state} onChange={(e) => setBilling({ ...billing, state: e.target.value.toUpperCase() })} maxLength={2} placeholder="RS" required /></div>
+      </div>
     </div>
   );
 }
+
 
 // Client-side tokenization via Pagar.me public key
 export async function tokenizeCard(card: { number: string; holder: string; month: string; year: string; cvv: string }): Promise<string> {
