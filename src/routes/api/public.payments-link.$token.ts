@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { friendlyStoneError, getGatewayConfig, getPaymentGateway } from "@/lib/payments/stone.server";
+import { friendlyStoneError, getGatewayConfig, getPaymentGateway, normalizeBillingAddress, type BillingAddressInput } from "@/lib/payments/stone.server";
 
 async function ensureCustomer(studentId: string): Promise<string> {
   const { data: student, error } = await supabaseAdmin
