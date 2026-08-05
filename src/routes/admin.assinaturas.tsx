@@ -374,7 +374,7 @@ function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => vo
       const r = await fetch("/api/admin/payments-subscription", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ subscription_id: sub.id, card_token: cardToken }),
+        body: JSON.stringify({ subscription_id: sub.id, card_token: cardToken, billing }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
@@ -387,7 +387,8 @@ function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => vo
     <DialogContent>
       <DialogHeader><DialogTitle>Trocar cartão</DialogTitle><DialogDescription>{sub.student?.profile?.full_name}</DialogDescription></DialogHeader>
       <form onSubmit={submit} className="space-y-3">
-        <CardFields card={card} setCard={setCard} />
+        <CardFields card={card} setCard={setCard} billing={billing} setBilling={setBilling} />
+
         <DialogFooter><Button type="submit" disabled={busy}>{busy ? "Processando..." : "Atualizar cartão"}</Button></DialogFooter>
       </form>
     </DialogContent>
