@@ -92,7 +92,7 @@ function PagarPage() {
       const response = await fetch(`/api/public/payments-link/${encodeURIComponent(token)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ card_token: cardToken }),
+        body: JSON.stringify({ card_token: cardToken, billing }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Não foi possível concluir a assinatura");
