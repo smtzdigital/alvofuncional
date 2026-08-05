@@ -153,6 +153,37 @@ function validTrialPeriodDays(value: number | undefined): number | undefined {
   return Math.floor(value);
 }
 
+export interface BillingAddressInput {
+  line_1?: string | null;
+  line_2?: string | null;
+  zip_code?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+}
+
+/**
+ * Pagar.me exige billing_address no cartão (antifraude/adquirente).
+ * Sem ele a cobrança falha com: validation_error | billing | "value" is required.
+ */
+export function normalizeBillingAddress(input?: BillingAddressInput | null) {
+  if (!input) return null;
+  const zip = (input.zip_code ?? "").replace(/\D/g, "");
+  const line1 = (input.line_1 ?? "").trim();
+  const city = (input.city ?? "").trim();
+  const state = (input.state ?? "").trim().toUpperCase().slice(0, 2);
+  if (!zip || !line1 || !city || state.length !== 2) return null;
+  return {
+    line_1: line1,
+    ...(input.line_2 ? { line_2: String(input.line_2).trim() } : {}),
+    zip_code: zip,
+    city,
+    state,
+    country: (input.country ?? "BR").toUpperCase().slice(0, 2),
+  };
+}
+
+
 // -------------------- Gateway interface --------------------
 
 export interface PaymentGateway {
