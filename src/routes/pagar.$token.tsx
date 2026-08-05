@@ -40,6 +40,8 @@ function PagarPage() {
   const { token } = useParams({ from: "/pagar/$token" });
   const [state, setState] = useState<{ loading: boolean; error?: string; link?: LinkDTO; brand?: BrandDTO; publicKey?: string | null }>({ loading: true });
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
