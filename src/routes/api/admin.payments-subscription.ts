@@ -94,7 +94,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
           let cardId: string | null = null;
           let savedCardId: string | null = null;
           if (body.card_token) {
-            const card = await gw.createCard({ customerId, cardToken: body.card_token, actor: uid });
+            const card = await gw.createCard({ customerId, cardToken: body.card_token, billingAddress: billing, actor: uid });
             cardId = card.id;
             const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
               student_id: body.student_id,
