@@ -123,7 +123,7 @@ export const Route = createFileRoute("/api/public/payments-link/$token")({
           }
 
           const customerId = await ensureCustomer(l.student_id);
-          const card = await gw.createCard({ customerId, cardToken: body.card_token });
+          const card = await gw.createCard({ customerId, cardToken: body.card_token, billingAddress: billing });
           const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
             student_id: l.student_id,
             stone_card_id: card.id,
