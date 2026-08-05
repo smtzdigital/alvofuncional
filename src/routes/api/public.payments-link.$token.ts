@@ -71,8 +71,11 @@ export const Route = createFileRoute("/api/public/payments-link/$token")({
         if (!token) return Response.json({ error: "Token inválido" }, { status: 400 });
 
         try {
-          const body = (await request.json()) as { card_token?: string };
+          const body = (await request.json()) as { card_token?: string; billing?: BillingAddressInput };
           if (!body.card_token) return Response.json({ error: "Cartão inválido" }, { status: 400 });
+          const billing = normalizeBillingAddress(body.billing);
+          if (!billing) return Response.json({ error: "Informe o endereço de cobrança completo (CEP, endereço, cidade e UF)" }, { status: 400 });
+
 
           const { data: link, error } = await supabaseAdmin
             .from("payment_links")
