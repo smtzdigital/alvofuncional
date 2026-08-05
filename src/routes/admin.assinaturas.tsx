@@ -226,6 +226,8 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
   const [studentId, setStudentId] = useState("");
   const [planId, setPlanId] = useState("");
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState<BillingForm>({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [method, setMethod] = useState<string>("credit_card");
   const [startAt, setStartAt] = useState("");
   const [busy, setBusy] = useState(false);
