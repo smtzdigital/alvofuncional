@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdminUserId } from "@/lib/payments/admin-verify.server";
-import { friendlyStoneError, getPaymentGateway } from "@/lib/payments/stone.server";
+import { friendlyStoneError, getPaymentGateway, normalizeBillingAddress, type BillingAddressInput } from "@/lib/payments/stone.server";
 
 async function ensureCustomer(studentId: string, actor: string): Promise<string> {
   const { data: student, error } = await supabaseAdmin
@@ -31,11 +31,14 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
         const uid = await getAdminUserId(request);
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
-          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_method?: string; start_at?: string | null };
+          const body = (await request.json()) as { student_id: string; plan_id: string; card_token?: string | null; payment_method?: string; start_at?: string | null; billing?: BillingAddressInput };
           if (!body.student_id || !body.plan_id) return Response.json({ error: "Dados incompletos" }, { status: 400 });
           const method = body.payment_method || "credit_card";
           const isManual = method !== "credit_card";
           if (!isManual && !body.card_token) return Response.json({ error: "Cartão obrigatório para cobrança em crédito" }, { status: 400 });
+          const billing = normalizeBillingAddress(body.billing);
+          if (!isManual && !billing) return Response.json({ error: "Informe o endereço de cobrança completo (CEP, endereço, cidade e UF)" }, { status: 400 });
+
 
           const { data: plan } = await supabaseAdmin.from("plans").select("*").eq("id", body.plan_id).maybeSingle();
           if (!plan) return Response.json({ error: "Plano não encontrado" }, { status: 404 });
@@ -91,7 +94,7 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
           let cardId: string | null = null;
           let savedCardId: string | null = null;
           if (body.card_token) {
-            const card = await gw.createCard({ customerId, cardToken: body.card_token, actor: uid });
+            const card = await gw.createCard({ customerId, cardToken: body.card_token, billingAddress: billing, actor: uid });
             cardId = card.id;
             const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
               student_id: body.student_id,
@@ -182,14 +185,17 @@ export const Route = createFileRoute("/api/admin/payments-subscription")({
         const uid = await getAdminUserId(request);
         if (!uid) return Response.json({ error: "Acesso restrito" }, { status: 403 });
         try {
-          const body = (await request.json()) as { subscription_id: string; card_token: string };
+          const body = (await request.json()) as { subscription_id: string; card_token: string; billing?: BillingAddressInput };
           const { data: sub } = await supabaseAdmin.from("subscriptions").select("*, student:students!inner(id, stone_customer_id)").eq("id", body.subscription_id).maybeSingle();
           if (!sub) return Response.json({ error: "Assinatura não encontrada" }, { status: 404 });
           const s = sub as unknown as { student_id: string; stone_subscription_id: string; student: { stone_customer_id: string | null } };
           if (!s.student.stone_customer_id) return Response.json({ error: "Cliente não configurado" }, { status: 400 });
+          const billing = normalizeBillingAddress(body.billing);
+          if (!billing) return Response.json({ error: "Informe o endereço de cobrança completo (CEP, endereço, cidade e UF)" }, { status: 400 });
 
           const gw = getPaymentGateway();
-          const card = await gw.createCard({ customerId: s.student.stone_customer_id, cardToken: body.card_token, actor: uid });
+          const card = await gw.createCard({ customerId: s.student.stone_customer_id, cardToken: body.card_token, billingAddress: billing, actor: uid });
+
           const { data: savedCard } = await supabaseAdmin.from("payment_cards").insert({
             student_id: s.student_id,
             stone_card_id: card.id,

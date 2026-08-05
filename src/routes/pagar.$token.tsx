@@ -40,6 +40,8 @@ function PagarPage() {
   const { token } = useParams({ from: "/pagar/$token" });
   const [state, setState] = useState<{ loading: boolean; error?: string; link?: LinkDTO; brand?: BrandDTO; publicKey?: string | null }>({ loading: true });
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -90,7 +92,7 @@ function PagarPage() {
       const response = await fetch(`/api/public/payments-link/${encodeURIComponent(token)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ card_token: cardToken }),
+        body: JSON.stringify({ card_token: cardToken, billing }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Não foi possível concluir a assinatura");
@@ -175,6 +177,29 @@ function PagarPage() {
                   <Input value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value })} inputMode="numeric" maxLength={4} required />
                 </div>
               </div>
+
+              <div className="pt-2 font-semibold text-sm">Endereço de cobrança</div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Label>CEP</Label>
+                  <Input value={billing.zip_code} onChange={(e) => setBilling({ ...billing, zip_code: e.target.value })} inputMode="numeric" maxLength={9} placeholder="00000-000" autoComplete="postal-code" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Cidade</Label>
+                  <Input value={billing.city} onChange={(e) => setBilling({ ...billing, city: e.target.value })} autoComplete="address-level2" required />
+                </div>
+              </div>
+              <div className="grid grid-cols-[1fr_90px] gap-2">
+                <div className="space-y-2">
+                  <Label>Endereço e número</Label>
+                  <Input value={billing.line_1} onChange={(e) => setBilling({ ...billing, line_1: e.target.value })} placeholder="Rua Exemplo, 123" autoComplete="street-address" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>UF</Label>
+                  <Input value={billing.state} onChange={(e) => setBilling({ ...billing, state: e.target.value.toUpperCase() })} maxLength={2} placeholder="RS" autoComplete="address-level1" required />
+                </div>
+              </div>
+
               <Button size="lg" type="submit" disabled={busy} className="w-full bg-gradient-primary text-primary-foreground">
                 {busy ? <><Loader2 size={18} className="mr-2 animate-spin" /> Processando...</> : "Finalizar assinatura"}
               </Button>

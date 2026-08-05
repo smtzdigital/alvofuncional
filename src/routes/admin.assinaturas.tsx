@@ -226,6 +226,8 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
   const [studentId, setStudentId] = useState("");
   const [planId, setPlanId] = useState("");
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState<BillingForm>({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [method, setMethod] = useState<string>("credit_card");
   const [startAt, setStartAt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -248,7 +250,9 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           plan_id: planId,
           card_token: cardToken,
           payment_method: method,
+          billing: needsCard ? billing : undefined,
           start_at: startAt ? new Date(startAt).toISOString() : null,
+
         }),
       });
       const d = await r.json();
@@ -301,7 +305,7 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
             A recorrência no cartão é encerrada automaticamente na data de término do plano (duração em meses).
           </p>
         </div>
-        {needsCard && <CardFields card={card} setCard={setCard} />}
+        {needsCard && <CardFields card={card} setCard={setCard} billing={billing} setBilling={setBilling} />}
         {!needsCard && (
           <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
             Pagamento manual: as parcelas serão geradas em <b>Pagamentos</b> até o fim do plano. Ao marcar cada parcela
@@ -360,6 +364,8 @@ function CreateLinkDialog({ students, plans, onDone }: { students: Student[]; pl
 // ------- Change card dialog -------
 function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => void }) {
   const [card, setCard] = useState({ number: "", holder: "", month: "", year: "", cvv: "" });
+  const [billing, setBilling] = useState<BillingForm>({ zip_code: "", line_1: "", city: "", state: "" });
+
   const [busy, setBusy] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -370,7 +376,7 @@ function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => vo
       const r = await fetch("/api/admin/payments-subscription", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ subscription_id: sub.id, card_token: cardToken }),
+        body: JSON.stringify({ subscription_id: sub.id, card_token: cardToken, billing }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
@@ -383,15 +389,23 @@ function ChangeCardDialog({ sub, onDone }: { sub: Subscription; onDone: () => vo
     <DialogContent>
       <DialogHeader><DialogTitle>Trocar cartão</DialogTitle><DialogDescription>{sub.student?.profile?.full_name}</DialogDescription></DialogHeader>
       <form onSubmit={submit} className="space-y-3">
-        <CardFields card={card} setCard={setCard} />
+        <CardFields card={card} setCard={setCard} billing={billing} setBilling={setBilling} />
+
         <DialogFooter><Button type="submit" disabled={busy}>{busy ? "Processando..." : "Atualizar cartão"}</Button></DialogFooter>
       </form>
     </DialogContent>
   );
 }
 
+export type BillingForm = { zip_code: string; line_1: string; city: string; state: string };
+
 // Shared card fields
-function CardFields({ card, setCard }: { card: { number: string; holder: string; month: string; year: string; cvv: string }; setCard: (v: typeof card) => void }) {
+function CardFields({ card, setCard, billing, setBilling }: {
+  card: { number: string; holder: string; month: string; year: string; cvv: string };
+  setCard: (v: typeof card) => void;
+  billing: BillingForm;
+  setBilling: (v: BillingForm) => void;
+}) {
   return (
     <div className="space-y-3 rounded-lg border border-border p-3">
       <div className="text-xs text-muted-foreground">Os dados do cartão são enviados diretamente ao gateway (tokenização) e não trafegam pelo nosso servidor.</div>
@@ -402,9 +416,19 @@ function CardFields({ card, setCard }: { card: { number: string; holder: string;
         <div><Label>Ano</Label><Input value={card.year} onChange={(e) => setCard({ ...card, year: e.target.value })} placeholder="AAAA" required maxLength={4} /></div>
         <div><Label>CVV</Label><Input value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value })} inputMode="numeric" required maxLength={4} /></div>
       </div>
+      <div className="pt-1 text-xs font-semibold">Endereço de cobrança (exigido pela operadora)</div>
+      <div className="grid grid-cols-2 gap-2">
+        <div><Label>CEP</Label><Input value={billing.zip_code} onChange={(e) => setBilling({ ...billing, zip_code: e.target.value })} inputMode="numeric" maxLength={9} placeholder="00000-000" required /></div>
+        <div><Label>Cidade</Label><Input value={billing.city} onChange={(e) => setBilling({ ...billing, city: e.target.value })} required /></div>
+      </div>
+      <div className="grid grid-cols-[1fr_80px] gap-2">
+        <div><Label>Endereço e número</Label><Input value={billing.line_1} onChange={(e) => setBilling({ ...billing, line_1: e.target.value })} placeholder="Rua Exemplo, 123" required /></div>
+        <div><Label>UF</Label><Input value={billing.state} onChange={(e) => setBilling({ ...billing, state: e.target.value.toUpperCase() })} maxLength={2} placeholder="RS" required /></div>
+      </div>
     </div>
   );
 }
+
 
 // Client-side tokenization via Pagar.me public key
 export async function tokenizeCard(card: { number: string; holder: string; month: string; year: string; cvv: string }): Promise<string> {

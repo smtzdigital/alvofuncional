@@ -153,12 +153,43 @@ function validTrialPeriodDays(value: number | undefined): number | undefined {
   return Math.floor(value);
 }
 
+export interface BillingAddressInput {
+  line_1?: string | null;
+  line_2?: string | null;
+  zip_code?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+}
+
+/**
+ * Pagar.me exige billing_address no cartão (antifraude/adquirente).
+ * Sem ele a cobrança falha com: validation_error | billing | "value" is required.
+ */
+export function normalizeBillingAddress(input?: BillingAddressInput | null) {
+  if (!input) return null;
+  const zip = (input.zip_code ?? "").replace(/\D/g, "");
+  const line1 = (input.line_1 ?? "").trim();
+  const city = (input.city ?? "").trim();
+  const state = (input.state ?? "").trim().toUpperCase().slice(0, 2);
+  if (!zip || !line1 || !city || state.length !== 2) return null;
+  return {
+    line_1: line1,
+    ...(input.line_2 ? { line_2: String(input.line_2).trim() } : {}),
+    zip_code: zip,
+    city,
+    state,
+    country: (input.country ?? "BR").toUpperCase().slice(0, 2),
+  };
+}
+
+
 // -------------------- Gateway interface --------------------
 
 export interface PaymentGateway {
   createCustomer(input: { name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }): Promise<StoneCustomer>;
   updateCustomer(input: { customerId: string; name: string; email: string; document: string; documentType?: "CPF" | "CNPJ"; phone?: string; actor?: string }): Promise<StoneCustomer>;
-  createCard(input: { customerId: string; cardToken: string; actor?: string }): Promise<StoneCard>;
+  createCard(input: { customerId: string; cardToken: string; billingAddress?: BillingAddressInput | null; actor?: string }): Promise<StoneCard>;
   createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null; cycles?: number | null }): Promise<StoneSubscription>;
   cancelSubscription(input: { subscriptionId: string; actor?: string }): Promise<{ ok: true }>;
   updateSubscriptionCard(input: { subscriptionId: string; cardId: string; actor?: string }): Promise<{ ok: true }>;
@@ -224,9 +255,11 @@ class StonePaymentGateway implements PaymentGateway {
     }
   }
 
-  async createCard(input: { customerId: string; cardToken: string; actor?: string }) {
+  async createCard(input: { customerId: string; cardToken: string; billingAddress?: BillingAddressInput | null; actor?: string }) {
     const cfg = await getGatewayConfig();
-    const body = { token: input.cardToken };
+    const body: Record<string, unknown> = { token: input.cardToken };
+    const billing = normalizeBillingAddress(input.billingAddress);
+    if (billing) body.billing_address = billing;
     try {
       const res = await stoneRequest<StoneCard>(cfg, {
         method: "POST",
@@ -234,7 +267,7 @@ class StonePaymentGateway implements PaymentGateway {
         body,
         idempotencyKey: `card-${input.cardToken.slice(0, 12)}`,
       });
-      await logAudit("createCard", { customerId: input.customerId }, { id: res.id, brand: res.brand, last4: res.last_four_digits }, undefined, input.actor);
+      await logAudit("createCard", { customerId: input.customerId, billing_address: !!billing }, { id: res.id, brand: res.brand, last4: res.last_four_digits }, undefined, input.actor);
       return res;
     } catch (e) {
       const err = e as StoneError;
@@ -242,6 +275,7 @@ class StonePaymentGateway implements PaymentGateway {
       throw err;
     }
   }
+
 
   async createSubscription(input: { customerId: string; cardId: string | null; planName: string; amountCents: number; interval: string; intervalCount: number; installments: number; paymentMethods?: string[]; startAt?: string | null; actor?: string; metadata?: Record<string, string>; stonePlanId?: string | null; cycles?: number | null }) {
     const cfg = await getGatewayConfig();
