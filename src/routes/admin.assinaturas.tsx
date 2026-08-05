@@ -303,7 +303,7 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
             A recorrência no cartão é encerrada automaticamente na data de término do plano (duração em meses).
           </p>
         </div>
-        {needsCard && <CardFields card={card} setCard={setCard} />}
+        {needsCard && <CardFields card={card} setCard={setCard} billing={billing} setBilling={setBilling} />}
         {!needsCard && (
           <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
             Pagamento manual: as parcelas serão geradas em <b>Pagamentos</b> até o fim do plano. Ao marcar cada parcela
