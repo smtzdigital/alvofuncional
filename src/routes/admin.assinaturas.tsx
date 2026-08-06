@@ -276,11 +276,9 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           <StudentCombobox students={students as never} value={studentId} onChange={setStudentId} />
         </div>
         <div><Label>Plano</Label>
-          <Select value={planId} onValueChange={setPlanId}>
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
-          </Select>
+          <PlanCombobox plans={plans} value={planId} onChange={setPlanId} placeholder="Selecione" showPrice />
         </div>
+
         <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
           <div className="mb-3 text-sm font-semibold text-primary">Configurações da assinatura</div>
           <div className="grid grid-cols-2 gap-3">
