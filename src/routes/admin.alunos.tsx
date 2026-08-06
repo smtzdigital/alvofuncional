@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlanCombobox } from "@/components/PlanCombobox";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,6 +30,7 @@ import { toast } from "sonner";
 import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 import { ContractView } from "@/components/ContractView";
 import type { ContractPlan, ContractStudent, ContractDates } from "@/lib/contract";
+
 
 export const Route = createFileRoute("/admin/alunos")({
   component: AlunosAdmin,
@@ -80,11 +82,17 @@ function AlunosAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [editing, setEditing] = useState<Row | null>(null);
+  const [editingPlanId, setEditingPlanId] = useState("");
   const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [syncingAll, setSyncingAll] = useState(false);
+
+  useEffect(() => {
+    setEditingPlanId(editing?.plan_id ?? "");
+  }, [editing]);
+
 
   const syncAllStudents = async () => {
     setSyncingAll(true);
@@ -586,19 +594,15 @@ function AlunosAdmin() {
                 </div>
                 <div>
                   <Label>Plano</Label>
-                  <Select name="plan_id" defaultValue={editing.plan_id ?? ""}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {plans.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PlanCombobox
+                    plans={plans}
+                    value={editingPlanId}
+                    onChange={setEditingPlanId}
+                    placeholder="Selecione"
+                  />
+                  <input type="hidden" name="plan_id" value={editingPlanId} />
                 </div>
+
                 <div>
                   <Label>Professor responsável</Label>
                   <Select name="teacher_id" defaultValue={editing.teacher_id ?? ""}>

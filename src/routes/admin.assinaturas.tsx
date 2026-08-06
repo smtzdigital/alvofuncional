@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { StudentCombobox } from "@/components/StudentCombobox";
+import { PlanCombobox } from "@/components/PlanCombobox";
 import { toast } from "sonner";
 import { Link as LinkIcon, CreditCard, Copy, ExternalLink, MessageCircle, Ban, RefreshCw, QrCode as QrIcon } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useAppSettings } from "@/hooks/useAppSettings";
+
 
 export const Route = createFileRoute("/admin/assinaturas")({
   component: SubscriptionsPage,
@@ -274,11 +276,9 @@ function CreateSubDialog({ students, plans, onDone }: { students: Student[]; pla
           <StudentCombobox students={students as never} value={studentId} onChange={setStudentId} />
         </div>
         <div><Label>Plano</Label>
-          <Select value={planId} onValueChange={setPlanId}>
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
-          </Select>
+          <PlanCombobox plans={plans} value={planId} onChange={setPlanId} placeholder="Selecione" showPrice />
         </div>
+
         <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
           <div className="mb-3 text-sm font-semibold text-primary">Configurações da assinatura</div>
           <div className="grid grid-cols-2 gap-3">
@@ -350,11 +350,9 @@ function CreateLinkDialog({ students, plans, onDone }: { students: Student[]; pl
           <StudentCombobox students={students as never} value={studentId} onChange={setStudentId} />
         </div>
         <div><Label>Plano</Label>
-          <Select value={planId} onValueChange={setPlanId}>
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
-          </Select>
+          <PlanCombobox plans={plans} value={planId} onChange={setPlanId} placeholder="Selecione" showPrice />
         </div>
+
         <DialogFooter><Button type="submit" disabled={busy}>{busy ? "Gerando..." : "Gerar link"}</Button></DialogFooter>
       </form>
     </DialogContent>
