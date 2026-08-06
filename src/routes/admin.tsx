@@ -358,12 +358,12 @@ function AdminLayout() {
                     >
                       <Settings size={18} /> Configurações
                     </Link>
-                    <Link
+                    {/*<Link
                       to="/app"
                       className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
                     >
                       <Eye size={18} /> Ver como aluno
-                    </Link>
+                    </Link>*/}
                     <button
                       onClick={signOut}
                       className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition"
