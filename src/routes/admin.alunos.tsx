@@ -594,19 +594,15 @@ function AlunosAdmin() {
                 </div>
                 <div>
                   <Label>Plano</Label>
-                  <Select name="plan_id" defaultValue={editing.plan_id ?? ""}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {plans.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PlanCombobox
+                    plans={plans}
+                    value={editingPlanId}
+                    onChange={setEditingPlanId}
+                    placeholder="Selecione"
+                  />
+                  <input type="hidden" name="plan_id" value={editingPlanId} />
                 </div>
+
                 <div>
                   <Label>Professor responsável</Label>
                   <Select name="teacher_id" defaultValue={editing.teacher_id ?? ""}>
