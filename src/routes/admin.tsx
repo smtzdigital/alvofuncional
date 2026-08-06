@@ -241,33 +241,32 @@ function AdminLayout() {
           </nav>
 
           <div className="border-t border-border/50 p-3 space-y-1">
-            {[
-              { to: "/admin/configuracoes", label: "Configurações", icon: Settings, isLink: true as const },
-              { to: "/app", label: "Ver como aluno", icon: Eye, isLink: true as const },
-            ].map((item) => {
-              const active = path.startsWith(item.to);
-              const el = (
-                <Link
-                  to={item.to}
-                  className={`flex items-center gap-3 rounded-lg ${collapsed ? "justify-center px-2" : "px-3"} py-2 text-sm transition ${
-                    active
-                      ? "bg-primary/15 text-primary font-semibold"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
-                  }`}
-                >
-                  <item.icon size={18} className="shrink-0" />
-                  {!collapsed && <span>{item.label}</span>}
-                </Link>
-              );
-              return collapsed ? (
-                <Tooltip key={item.to}>
-                  <TooltipTrigger asChild>{el}</TooltipTrigger>
-                  <TooltipContent side="right">{item.label}</TooltipContent>
-                </Tooltip>
-              ) : (
-                <div key={item.to}>{el}</div>
-              );
-            })}
+            {[{ to: "/admin/configuracoes", label: "Configurações", icon: Settings, isLink: true as const }].map(
+              (item) => {
+                const active = path.startsWith(item.to);
+                const el = (
+                  <Link
+                    to={item.to}
+                    className={`flex items-center gap-3 rounded-lg ${collapsed ? "justify-center px-2" : "px-3"} py-2 text-sm transition ${
+                      active
+                        ? "bg-primary/15 text-primary font-semibold"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent"
+                    }`}
+                  >
+                    <item.icon size={18} className="shrink-0" />
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
+                return collapsed ? (
+                  <Tooltip key={item.to}>
+                    <TooltipTrigger asChild>{el}</TooltipTrigger>
+                    <TooltipContent side="right">{item.label}</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <div key={item.to}>{el}</div>
+                );
+              },
+            )}
 
             {collapsed ? (
               <Tooltip>
