@@ -350,11 +350,9 @@ function CreateLinkDialog({ students, plans, onDone }: { students: Student[]; pl
           <StudentCombobox students={students as never} value={studentId} onChange={setStudentId} />
         </div>
         <div><Label>Plano</Label>
-          <Select value={planId} onValueChange={setPlanId}>
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>{plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — R$ {p.price}</SelectItem>)}</SelectContent>
-          </Select>
+          <PlanCombobox plans={plans} value={planId} onChange={setPlanId} placeholder="Selecione" showPrice />
         </div>
+
         <DialogFooter><Button type="submit" disabled={busy}>{busy ? "Gerando..." : "Gerar link"}</Button></DialogFooter>
       </form>
     </DialogContent>
