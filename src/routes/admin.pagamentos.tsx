@@ -108,11 +108,18 @@ function PaymentsAdmin() {
       .then(({ data }) => setAccounts((data ?? []) as Account[]));
   }, []);
 
+  const today = new Date().toISOString().slice(0, 10);
+  const isOverdue = (p: Payment) => p.status === "atrasado" || (p.status === "pendente" && p.due_date < today);
   const filtered = rows.filter((p) => {
     const name = (p.student?.profile?.full_name ?? "").toLowerCase();
     if (fName && !name.includes(fName.toLowerCase())) return false;
     if (fFrom && p.due_date < fFrom) return false;
     if (fTo && p.due_date > fTo) return false;
+    if (fStatus && fStatus !== "todos") {
+      if (fStatus === "atrasado") return isOverdue(p);
+      if (fStatus === "pendente") return p.status === "pendente" && p.due_date >= today;
+      return p.status === fStatus;
+    }
     return true;
   });
 
