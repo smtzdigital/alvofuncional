@@ -4,11 +4,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StudentCombobox } from "@/components/StudentCombobox";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/pagamentos")({
   component: PaymentsAdmin,
@@ -59,6 +71,9 @@ function PaymentsAdmin() {
     paid_at: new Date().toISOString().slice(0, 10),
   });
   const [paying, setPaying] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [rows, setRows] = useState<Payment[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -169,6 +184,36 @@ function PaymentsAdmin() {
     toast.success("Pagamento registrado");
     load();
   };
+
+  const toggleOne = (id: string) =>
+    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const allFilteredSelected = filtered.length > 0 && filtered.every((p) => selected.includes(p.id));
+  const toggleAll = () =>
+    setSelected(allFilteredSelected ? [] : filtered.map((p) => p.id));
+
+  const doDelete = async () => {
+    if (!confirmDelete?.length) return;
+    setDeleting(true);
+    const ids = confirmDelete;
+    const { error: txErr } = await supabase
+      .from("financial_transactions")
+      .delete()
+      .eq("source_type", "payment")
+      .in("source_id", ids);
+    if (txErr) {
+      setDeleting(false);
+      return toast.error("Erro ao excluir receita: " + txErr.message);
+    }
+    const { error } = await supabase.from("payments").delete().in("id", ids);
+    setDeleting(false);
+    if (error) return toast.error(error.message);
+    setConfirmDelete(null);
+    setSelected((s) => s.filter((id) => !ids.includes(id)));
+    toast.success(ids.length > 1 ? `${ids.length} pagamentos excluídos` : "Pagamento excluído");
+    load();
+  };
+
+
 
   return (
     <div className="space-y-6">
@@ -305,10 +350,22 @@ function PaymentsAdmin() {
         </div>
       </div>
 
+      {selected.length > 0 && (
+        <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-3">
+          <span className="text-sm text-muted-foreground">{selected.length} selecionado(s)</span>
+          <Button size="sm" variant="destructive" onClick={() => setConfirmDelete(selected)}>
+            <Trash2 size={14} className="mr-1" /> Excluir selecionados
+          </Button>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-muted-foreground">
             <tr>
+              <th className="p-3 text-left">
+                <Checkbox checked={allFilteredSelected} onCheckedChange={toggleAll} aria-label="Selecionar todos" />
+              </th>
               <th className="p-3 text-left">Aluno</th>
               <th className="p-3 text-left">Plano</th>
               <th className="p-3 text-left">Vencimento</th>
@@ -320,6 +377,13 @@ function PaymentsAdmin() {
           <tbody>
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-border">
+                <td className="p-3">
+                  <Checkbox
+                    checked={selected.includes(p.id)}
+                    onCheckedChange={() => toggleOne(p.id)}
+                    aria-label="Selecionar pagamento"
+                  />
+                </td>
                 <td className="p-3">{p.student?.profile?.full_name ?? "—"}</td>
                 <td className="p-3 text-muted-foreground">{p.plan?.name ?? "—"}</td>
                 <td className="p-3">{new Date(p.due_date).toLocaleDateString("pt-BR")}</td>
@@ -328,17 +392,27 @@ function PaymentsAdmin() {
                   <StatusBadge status={p.status} />
                 </td>
                 <td className="p-3 text-right">
-                  {p.status !== "pago" && (
-                    <Button size="sm" variant="outline" onClick={() => openPayDialog(p)}>
-                      <Check size={14} className="mr-1" /> Registrar pagamento
+                  <div className="flex justify-end gap-2">
+                    {p.status !== "pago" && (
+                      <Button size="sm" variant="outline" onClick={() => openPayDialog(p)}>
+                        <Check size={14} className="mr-1" /> Registrar pagamento
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDelete([p.id])}
+                    >
+                      <Trash2 size={14} />
                     </Button>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                <td colSpan={7} className="p-8 text-center text-muted-foreground">
                   Sem pagamentos.
                 </td>
               </tr>
@@ -346,6 +420,31 @@ function PaymentsAdmin() {
           </tbody>
         </table>
       </div>
+
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pagamento(s)?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDelete?.length ?? 0} registro(s) serão excluídos permanentemente, junto com a receita gerada no
+              financeiro.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={(e) => {
+                e.preventDefault();
+                doDelete();
+              }}
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       <Dialog open={!!payTarget} onOpenChange={(o) => !o && setPayTarget(null)}>
         <DialogContent>
