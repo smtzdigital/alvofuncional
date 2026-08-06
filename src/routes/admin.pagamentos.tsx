@@ -350,10 +350,22 @@ function PaymentsAdmin() {
         </div>
       </div>
 
+      {selected.length > 0 && (
+        <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-3">
+          <span className="text-sm text-muted-foreground">{selected.length} selecionado(s)</span>
+          <Button size="sm" variant="destructive" onClick={() => setConfirmDelete(selected)}>
+            <Trash2 size={14} className="mr-1" /> Excluir selecionados
+          </Button>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-muted-foreground">
             <tr>
+              <th className="p-3 text-left">
+                <Checkbox checked={allFilteredSelected} onCheckedChange={toggleAll} aria-label="Selecionar todos" />
+              </th>
               <th className="p-3 text-left">Aluno</th>
               <th className="p-3 text-left">Plano</th>
               <th className="p-3 text-left">Vencimento</th>
@@ -365,6 +377,13 @@ function PaymentsAdmin() {
           <tbody>
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-border">
+                <td className="p-3">
+                  <Checkbox
+                    checked={selected.includes(p.id)}
+                    onCheckedChange={() => toggleOne(p.id)}
+                    aria-label="Selecionar pagamento"
+                  />
+                </td>
                 <td className="p-3">{p.student?.profile?.full_name ?? "—"}</td>
                 <td className="p-3 text-muted-foreground">{p.plan?.name ?? "—"}</td>
                 <td className="p-3">{new Date(p.due_date).toLocaleDateString("pt-BR")}</td>
@@ -373,17 +392,27 @@ function PaymentsAdmin() {
                   <StatusBadge status={p.status} />
                 </td>
                 <td className="p-3 text-right">
-                  {p.status !== "pago" && (
-                    <Button size="sm" variant="outline" onClick={() => openPayDialog(p)}>
-                      <Check size={14} className="mr-1" /> Registrar pagamento
+                  <div className="flex justify-end gap-2">
+                    {p.status !== "pago" && (
+                      <Button size="sm" variant="outline" onClick={() => openPayDialog(p)}>
+                        <Check size={14} className="mr-1" /> Registrar pagamento
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDelete([p.id])}
+                    >
+                      <Trash2 size={14} />
                     </Button>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                <td colSpan={7} className="p-8 text-center text-muted-foreground">
                   Sem pagamentos.
                 </td>
               </tr>
@@ -391,6 +420,31 @@ function PaymentsAdmin() {
           </tbody>
         </table>
       </div>
+
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pagamento(s)?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDelete?.length ?? 0} registro(s) serão excluídos permanentemente, junto com a receita gerada no
+              financeiro.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={(e) => {
+                e.preventDefault();
+                doDelete();
+              }}
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       <Dialog open={!!payTarget} onOpenChange={(o) => !o && setPayTarget(null)}>
         <DialogContent>
