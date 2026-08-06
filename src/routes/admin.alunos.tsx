@@ -82,11 +82,17 @@ function AlunosAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [editing, setEditing] = useState<Row | null>(null);
+  const [editingPlanId, setEditingPlanId] = useState("");
   const [viewing, setViewing] = useState<{ name: string; data: AssessmentData } | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [syncingAll, setSyncingAll] = useState(false);
+
+  useEffect(() => {
+    setEditingPlanId(editing?.plan_id ?? "");
+  }, [editing]);
+
 
   const syncAllStudents = async () => {
     setSyncingAll(true);
