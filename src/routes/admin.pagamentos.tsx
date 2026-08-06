@@ -64,6 +64,7 @@ function PaymentsAdmin() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
   const [fName, setFName] = useState("");
+  const [fStatus, setFStatus] = useState<string>("todos");
   const [fFrom, setFFrom] = useState<string>(() => new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10));
   const [fTo, setFTo] = useState<string>(() => new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10));
   const [form, setForm] = useState<{
@@ -107,11 +108,18 @@ function PaymentsAdmin() {
       .then(({ data }) => setAccounts((data ?? []) as Account[]));
   }, []);
 
+  const today = new Date().toISOString().slice(0, 10);
+  const isOverdue = (p: Payment) => p.status === "atrasado" || (p.status === "pendente" && p.due_date < today);
   const filtered = rows.filter((p) => {
     const name = (p.student?.profile?.full_name ?? "").toLowerCase();
     if (fName && !name.includes(fName.toLowerCase())) return false;
     if (fFrom && p.due_date < fFrom) return false;
     if (fTo && p.due_date > fTo) return false;
+    if (fStatus && fStatus !== "todos") {
+      if (fStatus === "atrasado") return isOverdue(p);
+      if (fStatus === "pendente") return p.status === "pendente" && p.due_date >= today;
+      return p.status === fStatus;
+    }
     return true;
   });
 
@@ -254,10 +262,25 @@ function PaymentsAdmin() {
         </Dialog>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <Label className="text-xs">Buscar aluno</Label>
           <Input placeholder="Nome do aluno" value={fName} onChange={(e) => setFName(e.target.value)} />
+        </div>
+        <div>
+          <Label className="text-xs">Status</Label>
+          <Select value={fStatus} onValueChange={(v) => setFStatus(v)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="atrasado">Atrasados</SelectItem>
+              <SelectItem value="pendente">Pendentes</SelectItem>
+              <SelectItem value="pago">Pagos</SelectItem>
+              <SelectItem value="cancelado">Cancelados</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label className="text-xs">Vencimento de</Label>
@@ -272,8 +295,9 @@ function PaymentsAdmin() {
             variant="outline"
             onClick={() => {
               setFName("");
-              setFFrom("");
-              setFTo("");
+              setFStatus("todos");
+              setFFrom(new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10));
+              setFTo(new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10));
             }}
           >
             Limpar
