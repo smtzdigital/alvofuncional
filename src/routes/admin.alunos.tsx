@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlanCombobox } from "@/components/PlanCombobox";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,6 +30,7 @@ import { toast } from "sonner";
 import { AvaliacaoView, type AssessmentData } from "@/components/AvaliacaoView";
 import { ContractView } from "@/components/ContractView";
 import type { ContractPlan, ContractStudent, ContractDates } from "@/lib/contract";
+
 
 export const Route = createFileRoute("/admin/alunos")({
   component: AlunosAdmin,
