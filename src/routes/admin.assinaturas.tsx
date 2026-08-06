@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { StudentCombobox } from "@/components/StudentCombobox";
+import { PlanCombobox } from "@/components/PlanCombobox";
 import { toast } from "sonner";
 import { Link as LinkIcon, CreditCard, Copy, ExternalLink, MessageCircle, Ban, RefreshCw, QrCode as QrIcon } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useAppSettings } from "@/hooks/useAppSettings";
+
 
 export const Route = createFileRoute("/admin/assinaturas")({
   component: SubscriptionsPage,
