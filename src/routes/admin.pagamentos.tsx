@@ -71,6 +71,9 @@ function PaymentsAdmin() {
     paid_at: new Date().toISOString().slice(0, 10),
   });
   const [paying, setPaying] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [rows, setRows] = useState<Payment[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
