@@ -185,6 +185,36 @@ function PaymentsAdmin() {
     load();
   };
 
+  const toggleOne = (id: string) =>
+    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const allFilteredSelected = filtered.length > 0 && filtered.every((p) => selected.includes(p.id));
+  const toggleAll = () =>
+    setSelected(allFilteredSelected ? [] : filtered.map((p) => p.id));
+
+  const doDelete = async () => {
+    if (!confirmDelete?.length) return;
+    setDeleting(true);
+    const ids = confirmDelete;
+    const { error: txErr } = await supabase
+      .from("financial_transactions")
+      .delete()
+      .eq("source_type", "payment")
+      .in("source_id", ids);
+    if (txErr) {
+      setDeleting(false);
+      return toast.error("Erro ao excluir receita: " + txErr.message);
+    }
+    const { error } = await supabase.from("payments").delete().in("id", ids);
+    setDeleting(false);
+    if (error) return toast.error(error.message);
+    setConfirmDelete(null);
+    setSelected((s) => s.filter((id) => !ids.includes(id)));
+    toast.success(ids.length > 1 ? `${ids.length} pagamentos excluídos` : "Pagamento excluído");
+    load();
+  };
+
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
