@@ -21,7 +21,6 @@ import { StudentCombobox } from "@/components/StudentCombobox";
 import { Plus, Check, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-
 export const Route = createFileRoute("/admin/pagamentos")({
   component: PaymentsAdmin,
 });
@@ -185,11 +184,9 @@ function PaymentsAdmin() {
     load();
   };
 
-  const toggleOne = (id: string) =>
-    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const toggleOne = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   const allFilteredSelected = filtered.length > 0 && filtered.every((p) => selected.includes(p.id));
-  const toggleAll = () =>
-    setSelected(allFilteredSelected ? [] : filtered.map((p) => p.id));
+  const toggleAll = () => setSelected(allFilteredSelected ? [] : filtered.map((p) => p.id));
 
   const doDelete = async () => {
     if (!confirmDelete?.length) return;
@@ -212,8 +209,6 @@ function PaymentsAdmin() {
     toast.success(ids.length > 1 ? `${ids.length} pagamentos excluídos` : "Pagamento excluído");
     load();
   };
-
-
 
   return (
     <div className="space-y-6">
@@ -341,8 +336,8 @@ function PaymentsAdmin() {
             onClick={() => {
               setFName("");
               setFStatus("todos");
-              setFFrom(new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10));
-              setFTo(new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10));
+              setFFrom("");
+              setFTo("");
             }}
           >
             Limpar
@@ -444,7 +439,6 @@ function PaymentsAdmin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
 
       <Dialog open={!!payTarget} onOpenChange={(o) => !o && setPayTarget(null)}>
         <DialogContent>
