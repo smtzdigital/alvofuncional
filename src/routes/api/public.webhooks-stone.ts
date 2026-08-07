@@ -39,14 +39,28 @@ async function handleEvent(ev: StoneWebhookEvent) {
 
   // Charge events (data is the Charge object)
   if (type.startsWith("charge.")) {
-    const charge = data as { id: string; status: string; amount: number; paid_at?: string; subscription_id?: string; last_transaction?: { acquirer_message?: string }; metadata?: Record<string, string> };
+    const charge = data as {
+      id: string; status: string; amount: number; paid_at?: string; subscription_id?: string;
+      subscription?: { id?: string };
+      invoice?: { subscriptionId?: string; subscription_id?: string };
+      customer?: { id?: string };
+      last_transaction?: { acquirer_message?: string }; metadata?: Record<string, string>;
+    };
     const failureReason = charge.last_transaction?.acquirer_message ?? null;
     const paidAt = type === "charge.paid" ? (charge.paid_at ?? new Date().toISOString()) : null;
 
+    // Stone sends the subscription id in different places depending on the event shape
+    const stoneSubId =
+      charge.subscription_id ||
+      charge.subscription?.id ||
+      charge.invoice?.subscriptionId ||
+      charge.invoice?.subscription_id ||
+      null;
+
     // Try to link to a local subscription
     let subLocalId: string | null = null;
-    if (charge.subscription_id) {
-      const { data: sub } = await supabaseAdmin.from("subscriptions").select("id, student_id, plan_id").eq("stone_subscription_id", charge.subscription_id).maybeSingle();
+    if (stoneSubId) {
+      const { data: sub } = await supabaseAdmin.from("subscriptions").select("id, student_id, plan_id").eq("stone_subscription_id", stoneSubId).maybeSingle();
       const s = sub as unknown as { id: string; student_id: string; plan_id: string | null } | null;
       subLocalId = s?.id ?? null;
 
@@ -61,13 +75,15 @@ async function handleEvent(ev: StoneWebhookEvent) {
       }
     }
 
-    // Try to link via metadata.short_token (payment link path)
+    // Try to link via metadata (short_token or payment_link_id)
     let linkLocalId: string | null = null;
     let linkStudentId: string | null = null;
     let linkPlanId: string | null = null;
     const shortToken = charge.metadata?.short_token;
-    if (shortToken) {
-      const { data: link } = await supabaseAdmin.from("payment_links").select("id, student_id, plan_id, status").eq("short_token", shortToken).maybeSingle();
+    const metaLinkId = charge.metadata?.payment_link_id;
+    if (shortToken || metaLinkId) {
+      const q = supabaseAdmin.from("payment_links").select("id, student_id, plan_id, status");
+      const { data: link } = await (metaLinkId ? q.eq("id", metaLinkId) : q.eq("short_token", shortToken!)).maybeSingle();
       const l = link as unknown as { id: string; student_id: string; plan_id: string | null; status: string } | null;
       linkLocalId = l?.id ?? null;
       linkStudentId = l?.student_id ?? null;
@@ -85,7 +101,18 @@ async function handleEvent(ev: StoneWebhookEvent) {
       }
     }
 
-    const studentId = linkStudentId || (subLocalId ? (await supabaseAdmin.from("subscriptions").select("student_id").eq("id", subLocalId).maybeSingle()).data?.student_id : null);
+    // Resolve the student: payment link -> subscription -> metadata -> stone customer
+    let studentId: string | null = linkStudentId;
+    if (!studentId && subLocalId) {
+      const { data: s } = await supabaseAdmin.from("subscriptions").select("student_id").eq("id", subLocalId).maybeSingle();
+      studentId = (s as unknown as { student_id: string } | null)?.student_id ?? null;
+    }
+    if (!studentId && charge.metadata?.student_id) studentId = charge.metadata.student_id;
+    if (!studentId && charge.customer?.id) {
+      const { data: st } = await supabaseAdmin.from("students").select("id").eq("stone_customer_id", charge.customer.id).maybeSingle();
+      studentId = (st as unknown as { id: string } | null)?.id ?? null;
+    }
+
     if (studentId) {
       await supabaseAdmin.from("payment_charges").upsert({
         student_id: studentId,
