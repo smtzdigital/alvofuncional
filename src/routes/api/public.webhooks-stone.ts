@@ -39,14 +39,28 @@ async function handleEvent(ev: StoneWebhookEvent) {
 
   // Charge events (data is the Charge object)
   if (type.startsWith("charge.")) {
-    const charge = data as { id: string; status: string; amount: number; paid_at?: string; subscription_id?: string; last_transaction?: { acquirer_message?: string }; metadata?: Record<string, string> };
+    const charge = data as {
+      id: string; status: string; amount: number; paid_at?: string; subscription_id?: string;
+      subscription?: { id?: string };
+      invoice?: { subscriptionId?: string; subscription_id?: string };
+      customer?: { id?: string };
+      last_transaction?: { acquirer_message?: string }; metadata?: Record<string, string>;
+    };
     const failureReason = charge.last_transaction?.acquirer_message ?? null;
     const paidAt = type === "charge.paid" ? (charge.paid_at ?? new Date().toISOString()) : null;
 
+    // Stone sends the subscription id in different places depending on the event shape
+    const stoneSubId =
+      charge.subscription_id ||
+      charge.subscription?.id ||
+      charge.invoice?.subscriptionId ||
+      charge.invoice?.subscription_id ||
+      null;
+
     // Try to link to a local subscription
     let subLocalId: string | null = null;
-    if (charge.subscription_id) {
-      const { data: sub } = await supabaseAdmin.from("subscriptions").select("id, student_id, plan_id").eq("stone_subscription_id", charge.subscription_id).maybeSingle();
+    if (stoneSubId) {
+      const { data: sub } = await supabaseAdmin.from("subscriptions").select("id, student_id, plan_id").eq("stone_subscription_id", stoneSubId).maybeSingle();
       const s = sub as unknown as { id: string; student_id: string; plan_id: string | null } | null;
       subLocalId = s?.id ?? null;
 
