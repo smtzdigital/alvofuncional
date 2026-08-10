@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  ArrowLeftRight,
   FolderPlus,
   ChevronDown,
   Wrench,

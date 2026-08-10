@@ -24,7 +24,7 @@ function Page() {
   useEffect(() => {
     const load = async () => {
       const [{ data: t }, { data: a }] = await Promise.all([
-        supabase.from("financial_transactions").select("id, direction, status, gross_amount, net_amount, paid_at, due_date, description").gte("due_date", from).lte("due_date", to).order("due_date"),
+        supabase.from("financial_transactions").select("id, direction, status, gross_amount, net_amount, paid_at, due_date, description").neq("origin", "transfer").gte("due_date", from).lte("due_date", to).order("due_date"),
         supabase.from("financial_accounts").select("*").eq("is_active", true),
       ]);
       setRows((t ?? []) as Tx[]); setAccs((a ?? []) as Acc[]);
