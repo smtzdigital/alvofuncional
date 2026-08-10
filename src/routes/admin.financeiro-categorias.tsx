@@ -22,14 +22,24 @@ function Page() {
   const [cats, setCats] = useState<Cat[]>([]);
   const [accs, setAccs] = useState<Acc[]>([]);
   const [ccs, setCcs] = useState<CC[]>([]);
+  const [balances, setBalances] = useState<Record<string, number>>({});
 
   const load = async () => {
-    const [{ data: c }, { data: a }, { data: cc }] = await Promise.all([
+    const [{ data: c }, { data: a }, { data: cc }, { data: tx }] = await Promise.all([
       supabase.from("financial_categories").select("*").order("kind").order("sort_order"),
       supabase.from("financial_accounts").select("*").order("name"),
       supabase.from("financial_cost_centers").select("*").order("name"),
+      supabase.from("financial_transactions").select("account_id, direction, gross_amount, net_amount").eq("status", "paid").not("account_id", "is", null).limit(5000),
     ]);
-    setCats((c ?? []) as Cat[]); setAccs((a ?? []) as Acc[]); setCcs((cc ?? []) as CC[]);
+    const accounts = (a ?? []) as Acc[];
+    setCats((c ?? []) as Cat[]); setAccs(accounts); setCcs((cc ?? []) as CC[]);
+    const bal: Record<string, number> = {};
+    accounts.forEach((acc) => { bal[acc.id] = Number(acc.opening_balance ?? 0); });
+    ((tx ?? []) as { account_id: string; direction: string; gross_amount: number; net_amount: number | null }[]).forEach((r) => {
+      if (!(r.account_id in bal)) return;
+      bal[r.account_id] += r.direction === "income" ? Number(r.net_amount ?? r.gross_amount) : -Number(r.gross_amount);
+    });
+    setBalances(bal);
   };
   useEffect(() => { load(); }, []);
 
