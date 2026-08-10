@@ -1,11 +1,11 @@
-// Cron endpoint: gera lançamentos pendentes de recorrências até hoje.
+// Cron endpoint: gera lançamentos de recorrências com antecedência (janela de lookahead).
 // Chamado por pg_cron via net.http_post (header apikey = anon).
 import { createFileRoute } from "@tanstack/react-router";
 
 interface Rec {
   id: string; direction: string; frequency: string; interval_count: number;
   end_date: string | null; next_run_date: string; is_active: boolean;
-  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null };
+  template: { description?: string; gross_amount?: number; category_id?: string | null; account_id?: string | null; supplier?: string | null; notes?: string | null; payment_method?: string | null };
 }
 
 function addFrequency(iso: string, freq: string, n: number): string {
@@ -17,39 +17,61 @@ function addFrequency(iso: string, freq: string, n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Gera até o fim do mês seguinte, para que as contas do mês apareçam com antecedência.
+function horizonDate(): string {
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 2, 0));
+  return d.toISOString().slice(0, 10);
+}
+
 export const Route = createFileRoute("/api/public/financial-run-recurring")({
   server: {
     handlers: {
       POST: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const today = new Date().toISOString().slice(0, 10);
-        const { data: recs, error } = await supabaseAdmin.from("financial_recurring").select("*").eq("is_active", true).lte("next_run_date", today);
+        const horizon = horizonDate();
+        const { data: recs, error } = await supabaseAdmin
+          .from("financial_recurring")
+          .select("*")
+          .eq("is_active", true)
+          .lte("next_run_date", horizon);
         if (error) return Response.json({ error: error.message }, { status: 500 });
 
         let total = 0;
         for (const raw of (recs ?? []) as unknown as Rec[]) {
+          // datas já geradas para esta recorrência (evita duplicidade)
+          const { data: existing } = await supabaseAdmin
+            .from("financial_transactions")
+            .select("due_date")
+            .eq("recurring_id", raw.id);
+          const seen = new Set((existing ?? []).map((e: { due_date: string | null }) => e.due_date));
+
           let next = raw.next_run_date;
-          while (next <= today && (!raw.end_date || next <= raw.end_date)) {
-            const t = raw.template ?? {};
-            await supabaseAdmin.from("financial_transactions").insert({
-              direction: raw.direction,
-              description: t.description ?? "Recorrente",
-              gross_amount: Number(t.gross_amount ?? 0),
-              status: "pending",
-              due_date: next,
-              category_id: t.category_id ?? null,
-              account_id: t.account_id ?? null,
-              supplier: t.supplier ?? null,
-              notes: t.notes ?? null,
-              origin: "recurring",
-              recurring_id: raw.id,
-            });
-            total++;
+          let guard = 0;
+          while (next <= horizon && (!raw.end_date || next <= raw.end_date) && guard++ < 500) {
+            if (!seen.has(next)) {
+              const t = raw.template ?? {};
+              await supabaseAdmin.from("financial_transactions").insert({
+                direction: raw.direction,
+                description: t.description ?? "Recorrente",
+                gross_amount: Number(t.gross_amount ?? 0),
+                status: "pending",
+                due_date: next,
+                category_id: t.category_id ?? null,
+                account_id: t.account_id ?? null,
+                supplier: t.supplier ?? null,
+                notes: t.notes ?? null,
+                payment_method: t.payment_method ?? null,
+                origin: "recurring",
+                recurring_id: raw.id,
+              });
+              total++;
+            }
             next = addFrequency(next, raw.frequency, raw.interval_count);
           }
           await supabaseAdmin.from("financial_recurring").update({ next_run_date: next }).eq("id", raw.id);
         }
-        return Response.json({ ok: true, created: total });
+        return Response.json({ ok: true, created: total, horizon });
       },
     },
   },
