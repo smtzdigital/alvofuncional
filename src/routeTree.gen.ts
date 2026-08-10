@@ -33,6 +33,7 @@ import { Route as AdminPlanosSemanaisRouteImport } from './routes/admin.planos-s
 import { Route as AdminPlanosRouteImport } from './routes/admin.planos'
 import { Route as AdminPagamentosConfigRouteImport } from './routes/admin.pagamentos-config'
 import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminFinanceiroTransferenciasRouteImport } from './routes/admin.financeiro-transferencias'
 import { Route as AdminFinanceiroTransacoesRouteImport } from './routes/admin.financeiro-transacoes'
 import { Route as AdminFinanceiroRecorrentesRouteImport } from './routes/admin.financeiro-recorrentes'
 import { Route as AdminFinanceiroFluxoRouteImport } from './routes/admin.financeiro-fluxo'
@@ -187,6 +188,12 @@ const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
   path: '/pagamentos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroTransferenciasRoute =
+  AdminFinanceiroTransferenciasRouteImport.update({
+    id: '/financeiro-transferencias',
+    path: '/financeiro-transferencias',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminFinanceiroTransacoesRoute =
   AdminFinanceiroTransacoesRouteImport.update({
     id: '/financeiro-transacoes',
@@ -383,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
   '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
   '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
+  '/admin/financeiro-transferencias': typeof AdminFinanceiroTransferenciasRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -440,6 +448,7 @@ export interface FileRoutesByTo {
   '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
   '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
   '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
+  '/admin/financeiro-transferencias': typeof AdminFinanceiroTransferenciasRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -500,6 +509,7 @@ export interface FileRoutesById {
   '/admin/financeiro-fluxo': typeof AdminFinanceiroFluxoRoute
   '/admin/financeiro-recorrentes': typeof AdminFinanceiroRecorrentesRoute
   '/admin/financeiro-transacoes': typeof AdminFinanceiroTransacoesRoute
+  '/admin/financeiro-transferencias': typeof AdminFinanceiroTransferenciasRoute
   '/admin/pagamentos': typeof AdminPagamentosRoute
   '/admin/pagamentos-config': typeof AdminPagamentosConfigRoute
   '/admin/planos': typeof AdminPlanosRoute
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/admin/financeiro-fluxo'
     | '/admin/financeiro-recorrentes'
     | '/admin/financeiro-transacoes'
+    | '/admin/financeiro-transferencias'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -618,6 +629,7 @@ export interface FileRouteTypes {
     | '/admin/financeiro-fluxo'
     | '/admin/financeiro-recorrentes'
     | '/admin/financeiro-transacoes'
+    | '/admin/financeiro-transferencias'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -677,6 +689,7 @@ export interface FileRouteTypes {
     | '/admin/financeiro-fluxo'
     | '/admin/financeiro-recorrentes'
     | '/admin/financeiro-transacoes'
+    | '/admin/financeiro-transferencias'
     | '/admin/pagamentos'
     | '/admin/pagamentos-config'
     | '/admin/planos'
@@ -911,6 +924,13 @@ declare module '@tanstack/react-router' {
       path: '/pagamentos'
       fullPath: '/admin/pagamentos'
       preLoaderRoute: typeof AdminPagamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro-transferencias': {
+      id: '/admin/financeiro-transferencias'
+      path: '/financeiro-transferencias'
+      fullPath: '/admin/financeiro-transferencias'
+      preLoaderRoute: typeof AdminFinanceiroTransferenciasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/financeiro-transacoes': {
@@ -1163,6 +1183,7 @@ interface AdminRouteChildren {
   AdminFinanceiroFluxoRoute: typeof AdminFinanceiroFluxoRoute
   AdminFinanceiroRecorrentesRoute: typeof AdminFinanceiroRecorrentesRoute
   AdminFinanceiroTransacoesRoute: typeof AdminFinanceiroTransacoesRoute
+  AdminFinanceiroTransferenciasRoute: typeof AdminFinanceiroTransferenciasRoute
   AdminPagamentosRoute: typeof AdminPagamentosRoute
   AdminPagamentosConfigRoute: typeof AdminPagamentosConfigRoute
   AdminPlanosRoute: typeof AdminPlanosRoute
@@ -1190,6 +1211,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFinanceiroFluxoRoute: AdminFinanceiroFluxoRoute,
   AdminFinanceiroRecorrentesRoute: AdminFinanceiroRecorrentesRoute,
   AdminFinanceiroTransacoesRoute: AdminFinanceiroTransacoesRoute,
+  AdminFinanceiroTransferenciasRoute: AdminFinanceiroTransferenciasRoute,
   AdminPagamentosRoute: AdminPagamentosRoute,
   AdminPagamentosConfigRoute: AdminPagamentosConfigRoute,
   AdminPlanosRoute: AdminPlanosRoute,
@@ -1256,12 +1278,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

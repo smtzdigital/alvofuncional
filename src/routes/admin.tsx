@@ -59,6 +59,7 @@ const NAV: NavItem[] = [
       { to: "/admin/financeiro-fluxo", label: "Fluxo de caixa", icon: Activity },
       { to: "/admin/financeiro-contas", label: "Contas a pagar/receber", icon: ClipboardCheck },
       { to: "/admin/financeiro-recorrentes", label: "Recorrentes", icon: Repeat },
+      { to: "/admin/financeiro-transferencias", label: "Transferências", icon: ArrowLeftRight },
       { to: "/admin/financeiro-categorias", label: "Categorias & contas", icon: FolderPlus },
       { to: "/admin/assinaturas", label: "Assinaturas & Links", icon: Repeat },
       { to: "/admin/pagamentos", label: "Registros manuais", icon: CreditCard },
