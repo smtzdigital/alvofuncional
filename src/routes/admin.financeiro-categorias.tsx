@@ -85,7 +85,7 @@ function Page() {
             <div key={a.id} className="flex items-center gap-3 rounded border p-2">
               <div className="flex-1">
                 <p className="text-sm font-medium">{a.name}</p>
-                <p className="text-xs text-muted-foreground">{a.type} · saldo inicial {brl(a.opening_balance)}</p>
+                <p className="text-xs text-muted-foreground">{a.type} · saldo inicial {brl(a.opening_balance)} · <span className="font-medium text-foreground">saldo atual {brl(balances[a.id] ?? a.opening_balance)}</span></p>
               </div>
               <AccountDialog acc={a} onSaved={load} />
               <Button variant="ghost" size="icon" onClick={async () => {
