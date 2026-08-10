@@ -70,9 +70,10 @@ function Page() {
   }, [rows, q]);
 
   const totals = useMemo(() => {
-    const inc = filtered.filter((r) => r.direction === "income" && r.status === "paid").reduce((a, b) => a + Number(b.net_amount ?? b.gross_amount), 0);
-    const exp = filtered.filter((r) => r.direction === "expense" && r.status === "paid").reduce((a, b) => a + Number(b.gross_amount), 0);
-    const pending = filtered.filter((r) => r.status === "pending").reduce((a, b) => a + Number(b.gross_amount), 0);
+    const base = filtered.filter((r) => r.origin !== "transfer");
+    const inc = base.filter((r) => r.direction === "income" && r.status === "paid").reduce((a, b) => a + Number(b.net_amount ?? b.gross_amount), 0);
+    const exp = base.filter((r) => r.direction === "expense" && r.status === "paid").reduce((a, b) => a + Number(b.gross_amount), 0);
+    const pending = base.filter((r) => r.status === "pending").reduce((a, b) => a + Number(b.gross_amount), 0);
     return { inc, exp, pending };
   }, [filtered]);
 

@@ -32,7 +32,7 @@ function FinanceDashboard() {
       setLoading(true);
       const { start, end } = monthRange(month);
       const [{ data: t }, { data: c }, { data: s }, { data: st }] = await Promise.all([
-        supabase.from("financial_transactions").select("id, direction, status, gross_amount, fees, net_amount, due_date, paid_at, category_id, origin").gte("due_date", start).lte("due_date", end),
+        supabase.from("financial_transactions").select("id, direction, status, gross_amount, fees, net_amount, due_date, paid_at, category_id, origin").neq("origin", "transfer").gte("due_date", start).lte("due_date", end),
         supabase.from("financial_categories").select("id, name, kind, color").eq("is_active", true),
         supabase.from("subscriptions").select("id, status"),
         supabase.from("students").select("id, is_active"),
