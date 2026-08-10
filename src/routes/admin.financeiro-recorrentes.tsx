@@ -69,43 +69,52 @@ function Page() {
   const clearFilters = () => { setFName(""); setFMethod("all"); setFStart(""); setFEnd(""); };
 
   const runOne = async (r: Rec, forceNext = false) => {
-    const today = new Date().toISOString().slice(0, 10);
+    // horizonte: fim do mês seguinte (contas do mês aparecem com antecedência)
+    const now = new Date();
+    const horizon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 2, 0)).toISOString().slice(0, 10);
+    const { data: existing } = await supabase
+      .from("financial_transactions").select("due_date").eq("recurring_id", r.id);
+    const seen = new Set((existing ?? []).map((e: { due_date: string | null }) => e.due_date));
+
     let next = r.next_run_date;
     let created = 0;
+    let guard = 0;
     const shouldRun = (d: string) => {
       if (r.end_date && d > r.end_date) return false;
-      if (d <= today) return true;
+      if (d <= horizon) return true;
       if (forceNext && created === 0) return true;
       return false;
     };
-    while (shouldRun(next)) {
-      const tmpl = r.template ?? {};
-      const { error } = await supabase.from("financial_transactions").insert({
-        direction: r.direction,
-        description: tmpl.description ?? "Recorrente",
-        gross_amount: Number(tmpl.gross_amount ?? 0),
-        status: "pending",
-        due_date: next,
-        category_id: tmpl.category_id ?? null,
-        account_id: tmpl.account_id ?? null,
-        supplier: tmpl.supplier ?? null,
-        notes: tmpl.notes ?? null,
-        payment_method: tmpl.payment_method ?? null,
-        origin: "recurring",
-        recurring_id: r.id,
-      });
-      if (error) { toast.error(error.message); break; }
-      created++;
+    while (shouldRun(next) && guard++ < 500) {
+      if (!seen.has(next)) {
+        const tmpl = r.template ?? {};
+        const { error } = await supabase.from("financial_transactions").insert({
+          direction: r.direction,
+          description: tmpl.description ?? "Recorrente",
+          gross_amount: Number(tmpl.gross_amount ?? 0),
+          status: "pending",
+          due_date: next,
+          category_id: tmpl.category_id ?? null,
+          account_id: tmpl.account_id ?? null,
+          supplier: tmpl.supplier ?? null,
+          notes: tmpl.notes ?? null,
+          payment_method: tmpl.payment_method ?? null,
+          origin: "recurring",
+          recurring_id: r.id,
+        });
+        if (error) { toast.error(error.message); break; }
+        created++;
+      }
       next = addFrequency(next, r.frequency, r.interval_count);
     }
-    if (created > 0) {
+    if (next !== r.next_run_date) {
       await supabase.from("financial_recurring").update({ next_run_date: next }).eq("id", r.id);
-      toast.success(`${created} lançamento(s) criado(s)`);
-    } else {
-      toast.info(`Próxima geração automática: ${r.next_run_date}`);
     }
+    if (created > 0) toast.success(`${created} lançamento(s) criado(s)`);
+    else toast.info("Nenhum lançamento novo (já gerados até o próximo mês)");
     load();
   };
+
 
   return (
     <div className="space-y-4">
