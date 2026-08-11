@@ -637,12 +637,8 @@ function UpcomingAgenda({
 }) {
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
   const [filterDate, setFilterDate] = useState("");
-  const [filterStartTime, setFilterStartTime] = useState<string>(() =>
-    new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10),
-  );
-  const [filterEndTime, setFilterEndTime] = useState<string>(() =>
-    new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10),
-  );
+  const [filterStartTime, setFilterStartTime] = useState("");
+  const [filterEndTime, setFilterEndTime] = useState("");
   const [filterName, setFilterName] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
 
