@@ -1726,11 +1726,15 @@ function TimeSlotsView({
         )}
       </div>
 
-      {days.length === 0 ? (
+      {loading && days.length === 0 ? (
+        <div className="text-muted-foreground">Carregando eventos...</div>
+      ) : days.length === 0 ? (
         <div className="text-muted-foreground">Nenhum horário encontrado.</div>
       ) : (
         <div className="space-y-6">
-          {days.map((day) => (
+          {loading && <div className="text-xs text-muted-foreground">Atualizando período...</div>}
+          {days.slice(0, visibleDays).map((day) => (
+
             <div key={day.key}>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{day.label}</h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
