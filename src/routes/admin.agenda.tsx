@@ -114,11 +114,22 @@ const STATUS_LABEL: Record<EventStatus, string> = {
   no_show: "Não compareceu",
 };
 
+const EVENT_COLUMNS =
+  "id, lead_id, student_id, type, title, scheduled_at, duration_minutes, status, notes, series_id, created_at";
+const DEFAULT_PAST_DAYS = 30;
+const DEFAULT_FUTURE_DAYS = 90;
+const DAY_MS = 24 * 3600 * 1000;
+
 function AgendaPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [events, setEvents] = useState<AgendaEvent[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [range, setRange] = useState<{ from: number; to: number }>(() => ({
+    from: Date.now() - DEFAULT_PAST_DAYS * DAY_MS,
+    to: Date.now() + DEFAULT_FUTURE_DAYS * DAY_MS,
+  }));
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [creatingLead, setCreatingLead] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
@@ -148,39 +159,89 @@ function AgendaPage() {
     setTablePage(1);
   }, [search, archivedFilter, leadView]);
 
-
-  const loadAllEvents = async () => {
+  const fetchEventsRange = async (from: number, to: number) => {
     const pageSize = 1000;
-    const all: AgendaEvent[] = [];
-    for (let from = 0; ; from += pageSize) {
-      const { data, error } = await supabase
+    const sel = (s: string): string => s;
+    const base = () =>
+      supabase
         .from("agenda_events")
-        .select("*")
-        .order("scheduled_at", { ascending: true })
-        .range(from, from + pageSize - 1);
-      if (error || !data) break;
-      all.push(...(data as AgendaEvent[]));
-      if (data.length < pageSize) break;
+        .select(sel(EVENT_COLUMNS))
+        .gte("scheduled_at", new Date(from).toISOString())
+        .lte("scheduled_at", new Date(to).toISOString())
+        .order("scheduled_at", { ascending: true });
+
+    const { data, error, count } = await base()
+      .range(0, pageSize - 1)
+      .returns<AgendaEvent[]>();
+    if (error || !data) return [] as AgendaEvent[];
+    const all: AgendaEvent[] = [...data];
+    if (data.length === pageSize) {
+      const { count: total } = await supabase
+        .from("agenda_events")
+        .select("id", { count: "exact", head: true })
+        .gte("scheduled_at", new Date(from).toISOString())
+        .lte("scheduled_at", new Date(to).toISOString());
+      const totalRows = total ?? count ?? pageSize;
+      const pages: Promise<AgendaEvent[]>[] = [];
+      for (let start = pageSize; start < totalRows; start += pageSize) {
+        pages.push(
+          base()
+            .range(start, start + pageSize - 1)
+            .returns<AgendaEvent[]>()
+            .then((r) => (r.data ?? []) as AgendaEvent[]),
+        );
+      }
+      const rest = await Promise.all(pages);
+      rest.forEach((r) => all.push(...r));
     }
     return all;
   };
 
+  const mergeEvents = (incoming: AgendaEvent[]) => {
+    setEvents((prev) => {
+      const map = new Map(prev.map((e) => [e.id, e]));
+      incoming.forEach((e) => map.set(e.id, e));
+      return Array.from(map.values()).sort(
+        (a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime(),
+      );
+    });
+  };
+
+  const loadEvents = async (from: number, to: number, replace = false) => {
+    setEventsLoading(true);
+    const rows = await fetchEventsRange(from, to);
+    if (replace) {
+      setEvents(rows);
+    } else {
+      mergeEvents(rows);
+    }
+    setEventsLoading(false);
+  };
+
+  // Amplia a janela carregada sob demanda (filtros de data / mostrar passados)
+  const ensureRange = async (from: number, to: number) => {
+    if (from >= range.from && to <= range.to) return;
+    const next = { from: Math.min(from, range.from), to: Math.max(to, range.to) };
+    setRange(next);
+    if (from < range.from) await loadEvents(from, range.from);
+    if (to > range.to) await loadEvents(range.to, to);
+  };
+
   const load = async () => {
     setLoading(true);
-    const [{ data: leadsData }, eventsData, { data: studentsData }] = await Promise.all([
+    const [{ data: leadsData }, { data: studentsData }] = await Promise.all([
       supabase.from("leads_interessados").select("*").order("created_at", { ascending: false }),
-      loadAllEvents(),
       supabase.from("students").select("id, profile:profiles!inner(full_name)").eq("is_active", true),
     ]);
     setLeads((leadsData ?? []) as Lead[]);
-    setEvents(eventsData);
     setStudents((studentsData ?? []) as unknown as StudentOption[]);
     setLoading(false);
+    await loadEvents(range.from, range.to, true);
   };
-
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const grouped = useMemo(() => {
@@ -196,12 +257,21 @@ function AgendaPage() {
     return g;
   }, [filteredLeads]);
 
+  const eventCountByLead = useMemo(() => {
+    const m = new Map<string, number>();
+    events.forEach((e) => {
+      if (e.lead_id) m.set(e.lead_id, (m.get(e.lead_id) ?? 0) + 1);
+    });
+    return m;
+  }, [events]);
+
   const upcoming = useMemo(() => {
     const now = Date.now();
     return events
       .filter((e) => e.status === "agendado" && new Date(e.scheduled_at).getTime() >= now - 24 * 3600 * 1000)
       .slice(0, 30);
   }, [events]);
+
 
   const changeStage = async (leadId: string, stage: LeadStage) => {
     setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, stage } : l)));
