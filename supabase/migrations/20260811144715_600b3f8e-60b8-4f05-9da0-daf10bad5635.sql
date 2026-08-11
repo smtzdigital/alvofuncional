@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_agenda_scheduled_status ON public.agenda_events (scheduled_at, status);
