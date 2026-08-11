@@ -272,7 +272,6 @@ function AgendaPage() {
       .slice(0, 30);
   }, [events]);
 
-
   const changeStage = async (leadId: string, stage: LeadStage) => {
     setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, stage } : l)));
     const { error } = await supabase.from("leads_interessados").update({ stage }).eq("id", leadId);
@@ -285,7 +284,10 @@ function AgendaPage() {
   const toggleArchive = async (lead: Lead) => {
     const next = !lead.archived;
     setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, archived: next } : l)));
-    const { error } = await supabase.from("leads_interessados").update({ archived: next } as never).eq("id", lead.id);
+    const { error } = await supabase
+      .from("leads_interessados")
+      .update({ archived: next } as never)
+      .eq("id", lead.id);
     if (error) {
       toast.error("Falha ao arquivar: " + error.message);
       load();
@@ -386,59 +388,53 @@ function AgendaPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredLeads
-                      .slice((tablePage - 1) * tablePageSize, tablePage * tablePageSize)
-                      .map((lead) => {
-                        const stage = STAGES.find((s) => s.id === lead.stage);
-                        return (
-                          <tr
-                            key={lead.id}
-                            className="cursor-pointer border-t border-border/60 hover:bg-muted/30"
-                            onClick={() => setOpenLead(lead)}
-                          >
-                            <td className="px-3 py-2 font-medium">
-                              {lead.full_name}
-                              {lead.archived && (
-                                <Badge variant="outline" className="ml-2 text-[10px]">
-                                  Arquivado
-                                </Badge>
-                              )}
-                            </td>
-                            <td className="px-3 py-2 text-muted-foreground">{lead.phone}</td>
-                            <td className="px-3 py-2 text-muted-foreground">{lead.email ?? "—"}</td>
-                            <td className="px-3 py-2">
-                              <Badge variant="outline" className={stage?.color}>
-                                {stage?.label ?? lead.stage}
+                    {filteredLeads.slice((tablePage - 1) * tablePageSize, tablePage * tablePageSize).map((lead) => {
+                      const stage = STAGES.find((s) => s.id === lead.stage);
+                      return (
+                        <tr
+                          key={lead.id}
+                          className="cursor-pointer border-t border-border/60 hover:bg-muted/30"
+                          onClick={() => setOpenLead(lead)}
+                        >
+                          <td className="px-3 py-2 font-medium">
+                            {lead.full_name}
+                            {lead.archived && (
+                              <Badge variant="outline" className="ml-2 text-[10px]">
+                                Arquivado
                               </Badge>
-                            </td>
-                            <td className="px-3 py-2 text-muted-foreground">
-                              {lead.next_contact_at
-                                ? format(new Date(lead.next_contact_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
-                                : "—"}
-                            </td>
-                            <td className="px-3 py-2 text-muted-foreground">
-                              {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                            </td>
-                            <td className="px-3 py-2 text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                title={lead.archived ? "Desarquivar" : "Arquivar"}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleArchive(lead);
-                                }}
-                              >
-                                {lead.archived ? (
-                                  <ArchiveRestore className="h-4 w-4" />
-                                ) : (
-                                  <Archive className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">{lead.phone}</td>
+                          <td className="px-3 py-2 text-muted-foreground">{lead.email ?? "—"}</td>
+                          <td className="px-3 py-2">
+                            <Badge variant="outline" className={stage?.color}>
+                              {stage?.label ?? lead.stage}
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">
+                            {lead.next_contact_at
+                              ? format(new Date(lead.next_contact_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+                              : "—"}
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">
+                            {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                          </td>
+                          <td className="px-3 py-2 text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title={lead.archived ? "Desarquivar" : "Arquivar"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleArchive(lead);
+                              }}
+                            >
+                              {lead.archived ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {filteredLeads.length === 0 && (
                       <tr>
                         <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">
@@ -528,7 +524,6 @@ function AgendaPage() {
                               <div className="mt-1 text-xs text-muted-foreground">
                                 {eventCountByLead.get(lead.id)} evento(s)
                               </div>
-
                             )}
                             {lead.archived && (
                               <Badge variant="outline" className="mt-1 text-[10px]">
@@ -585,7 +580,6 @@ function AgendaPage() {
             onRequestRange={ensureRange}
           />
         </TabsContent>
-
       </Tabs>
 
       {openLead && (
@@ -643,8 +637,12 @@ function UpcomingAgenda({
 }) {
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
   const [filterDate, setFilterDate] = useState("");
-  const [filterStartTime, setFilterStartTime] = useState("");
-  const [filterEndTime, setFilterEndTime] = useState("");
+  const [filterStartTime, setFilterStartTime] = useState<string>(() =>
+    new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10),
+  );
+  const [filterEndTime, setFilterEndTime] = useState<string>(() =>
+    new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10),
+  );
   const [filterName, setFilterName] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
 
@@ -1533,7 +1531,6 @@ function TimeSlotsView({
   }, [filterStartDate, filterEndDate, filterType, filterName, showPast]);
 
   const nameFor = (e: AgendaEvent) => {
-
     const lead = leads.find((l) => l.id === e.lead_id);
     const student = students.find((s) => s.id === e.student_id);
     return student?.profile?.full_name ?? lead?.full_name ?? e.title ?? "";
@@ -1734,7 +1731,6 @@ function TimeSlotsView({
         <div className="space-y-6">
           {loading && <div className="text-xs text-muted-foreground">Atualizando período...</div>}
           {days.slice(0, visibleDays).map((day) => (
-
             <div key={day.key}>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{day.label}</h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1808,7 +1804,6 @@ function TimeSlotsView({
             </div>
           )}
         </div>
-
       )}
 
       {editing && (
