@@ -182,7 +182,7 @@ function AgendaPage() {
         .gte("scheduled_at", new Date(from).toISOString())
         .lte("scheduled_at", new Date(to).toISOString());
       const totalRows = total ?? count ?? pageSize;
-      const pages: Promise<AgendaEvent[]>[] = [];
+      const pages: PromiseLike<AgendaEvent[]>[] = [];
       for (let start = pageSize; start < totalRows; start += pageSize) {
         pages.push(
           base()
