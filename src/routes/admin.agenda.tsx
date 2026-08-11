@@ -1491,11 +1491,15 @@ function TimeSlotsView({
   leads,
   students,
   onChange,
+  loading,
+  onRequestRange,
 }: {
   events: AgendaEvent[];
   leads: Lead[];
   students: StudentOption[];
   onChange: () => void;
+  loading?: boolean;
+  onRequestRange?: (from: number, to: number) => Promise<void> | void;
 }) {
   const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
@@ -1505,8 +1509,31 @@ function TimeSlotsView({
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [visibleDays, setVisibleDays] = useState(20);
+
+  // Busca no servidor períodos fora da janela já carregada
+  useEffect(() => {
+    if (!onRequestRange) return;
+    const now = Date.now();
+    let from = now - 30 * DAY_MS;
+    let to = now + 90 * DAY_MS;
+    if (filterStartDate) from = parseISO(filterStartDate).getTime();
+    if (filterEndDate) {
+      const d = parseISO(filterEndDate);
+      d.setHours(23, 59, 59, 999);
+      to = d.getTime();
+    }
+    if (showPast && !filterStartDate) from = new Date("2000-01-01").getTime();
+    onRequestRange(from, to);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterStartDate, filterEndDate, showPast]);
+
+  useEffect(() => {
+    setVisibleDays(20);
+  }, [filterStartDate, filterEndDate, filterType, filterName, showPast]);
 
   const nameFor = (e: AgendaEvent) => {
+
     const lead = leads.find((l) => l.id === e.lead_id);
     const student = students.find((s) => s.id === e.student_id);
     return student?.profile?.full_name ?? lead?.full_name ?? e.title ?? "";
