@@ -1495,8 +1495,10 @@ function TimeSlotsView({
   loading?: boolean;
   onRequestRange?: (from: number, to: number) => Promise<void> | void;
 }) {
-  const [filterStartDate, setFilterStartDate] = useState<string>(() => new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10));
-  const [filterEndDate, setFilterEndDate] = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10));
+  const [filterStartDate, setFilterStartDate] = useState<string>(() =>
+    new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10),
+  );
+  const [filterEndDate, setFilterEndDate] = useState("");
   const [filterType, setFilterType] = useState<EventType | "all">("all");
   const [filterName, setFilterName] = useState("");
   const [showPast, setShowPast] = useState(false);
