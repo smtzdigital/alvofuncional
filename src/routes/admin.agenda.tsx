@@ -568,12 +568,24 @@ function AgendaPage() {
         </TabsContent>
 
         <TabsContent value="agenda" className="mt-4">
-          <UpcomingAgenda events={upcoming} leads={leads} students={students} onChange={load} />
+          {eventsLoading && events.length === 0 ? (
+            <div className="text-muted-foreground">Carregando eventos...</div>
+          ) : (
+            <UpcomingAgenda events={upcoming} leads={leads} students={students} onChange={load} />
+          )}
         </TabsContent>
 
         <TabsContent value="horarios" className="mt-4">
-          <TimeSlotsView events={events} leads={leads} students={students} onChange={load} />
+          <TimeSlotsView
+            events={events}
+            leads={leads}
+            students={students}
+            onChange={load}
+            loading={eventsLoading}
+            onRequestRange={ensureRange}
+          />
         </TabsContent>
+
       </Tabs>
 
       {openLead && (
