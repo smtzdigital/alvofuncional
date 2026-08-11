@@ -524,10 +524,11 @@ function AgendaPage() {
                                 {format(new Date(lead.next_contact_at), "dd/MM HH:mm", { locale: ptBR })}
                               </div>
                             )}
-                            {eventsFor(lead.id).length > 0 && (
+                            {(eventCountByLead.get(lead.id) ?? 0) > 0 && (
                               <div className="mt-1 text-xs text-muted-foreground">
-                                {eventsFor(lead.id).length} evento(s)
+                                {eventCountByLead.get(lead.id)} evento(s)
                               </div>
+
                             )}
                             {lead.archived && (
                               <Badge variant="outline" className="mt-1 text-[10px]">
