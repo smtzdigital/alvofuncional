@@ -1800,7 +1800,15 @@ function TimeSlotsView({
               </div>
             </div>
           ))}
+          {days.length > visibleDays && (
+            <div className="flex justify-center">
+              <Button variant="outline" onClick={() => setVisibleDays((v) => v + 20)}>
+                Carregar mais dias ({days.length - visibleDays} restantes)
+              </Button>
+            </div>
+          )}
         </div>
+
       )}
 
       {editing && (
