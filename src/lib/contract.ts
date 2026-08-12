@@ -92,22 +92,23 @@ export function fillContract(
   const p = data.plano ?? {};
   const d = data.datas ?? {};
   const today = new Date().toLocaleDateString("pt-BR");
+  const e = escapeHtml;
   const map: Record<string, string> = {
-    "{{aluno.nome}}": s.full_name ?? "______________________________",
-    "{{aluno.cpf}}": s.document ?? "______________________",
-    "{{aluno.rg}}": s.rg ?? "______________________",
-    "{{aluno.nascimento}}": fmtDate(s.birth_date ?? null),
-    "{{aluno.telefone}}": s.whatsapp ?? s.phone ?? "______________________",
-    "{{aluno.email}}": s.email ?? "______________________",
-    "{{aluno.endereco}}": s.address ?? "______________________________",
-    "{{plano.nome}}": p.name ?? "________",
-    "{{plano.descricao}}": p.description ?? "________",
+    "{{aluno.nome}}": e(s.full_name ?? "") || "______________________________",
+    "{{aluno.cpf}}": e(s.document ?? "") || "______________________",
+    "{{aluno.rg}}": e(s.rg ?? "") || "______________________",
+    "{{aluno.nascimento}}": e(fmtDate(s.birth_date ?? null)),
+    "{{aluno.telefone}}": e(s.whatsapp ?? s.phone ?? "") || "______________________",
+    "{{aluno.email}}": e(s.email ?? "") || "______________________",
+    "{{aluno.endereco}}": e(s.address ?? "") || "______________________________",
+    "{{plano.nome}}": e(p.name ?? "") || "________",
+    "{{plano.descricao}}": e(p.description ?? "") || "________",
     "{{plano.valor}}": fmtMoney(p.price ?? null),
     "{{plano.duracao_dias}}": p.duration_days != null ? String(p.duration_days) : "____",
     "{{plano.aulas_semana}}": p.presential_per_week != null ? String(p.presential_per_week) : "____",
-    "{{data.hoje}}": d.today ?? today,
-    "{{data.inicio}}": fmtDate(d.start ?? null),
-    "{{data.fim}}": fmtDate(d.end ?? null),
+    "{{data.hoje}}": e(d.today ?? today),
+    "{{data.inicio}}": e(fmtDate(d.start ?? null)),
+    "{{data.fim}}": e(fmtDate(d.end ?? null)),
   };
   return template.replace(/\{\{[^}]+\}\}/g, (m) => (m in map ? map[m] : m));
 }
