@@ -69,6 +69,13 @@ function Page() {
     return rows.filter((r) => r.description.toLowerCase().includes(s) || (r.supplier ?? "").toLowerCase().includes(s));
   }, [rows, q]);
 
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => { setPage(1); }, [q, tab, statusFilter, from, to]);
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+  const paged = useMemo(() => filtered.slice((page - 1) * pageSize, page * pageSize), [filtered, page]);
+
   const totals = useMemo(() => {
     const base = filtered.filter((r) => r.origin !== "transfer");
     const inc = base.filter((r) => r.direction === "income" && r.status === "paid").reduce((a, b) => a + Number(b.net_amount ?? b.gross_amount), 0);
