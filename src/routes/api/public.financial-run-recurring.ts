@@ -27,8 +27,22 @@ function horizonDate(): string {
 export const Route = createFileRoute("/api/public/financial-run-recurring")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const provided =
+          request.headers.get("x-cron-secret") ??
+          new URL(request.url).searchParams.get("token");
+        if (!provided) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: cfg } = await supabaseAdmin
+          .from("cron_config")
+          .select("value")
+          .eq("key", "cron_secret")
+          .maybeSingle();
+        const expected = (cfg as { value?: string } | null)?.value ?? process.env["CRON_SECRET"];
+        if (!expected || provided !== expected) {
+          return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
         const horizon = horizonDate();
         const { data: recs, error } = await supabaseAdmin
           .from("financial_recurring")
