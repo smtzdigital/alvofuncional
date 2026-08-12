@@ -160,7 +160,7 @@ function Page() {
             <tbody>
               {loading && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>}
               {!loading && filtered.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Nenhum lançamento.</td></tr>}
-              {filtered.map((r) => (
+              {paged.map((r) => (
                 <tr key={r.id} className="border-t">
                   <td className="p-3">{r.due_date ?? "—"}</td>
                   <td className="p-3">
