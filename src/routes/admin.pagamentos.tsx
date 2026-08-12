@@ -18,7 +18,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StudentCombobox } from "@/components/StudentCombobox";
-import { Plus, Check, Trash2 } from "lucide-react";
+import { Plus, Check, Trash2, FilterX } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/pagamentos")({
@@ -302,7 +302,7 @@ function PaymentsAdmin() {
         </Dialog>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <Label className="text-xs">Buscar aluno</Label>
           <Input placeholder="Nome do aluno" value={fName} onChange={(e) => setFName(e.target.value)} />
@@ -326,21 +326,23 @@ function PaymentsAdmin() {
           <Label className="text-xs">Vencimento de</Label>
           <Input type="date" value={fFrom} onChange={(e) => setFFrom(e.target.value)} />
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <Label className="text-xs">até</Label>
-            <Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} />
-          </div>
+        <div>
+          <Label className="text-xs">Vencimento até</Label>
+          <Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} />
+        </div>
+        <div className="flex items-end">
           <Button
             variant="outline"
+            className="w-full"
             onClick={() => {
               setFName("");
               setFStatus("todos");
               setFFrom("");
               setFTo("");
+              setSelected([]);
             }}
           >
-            Limpar
+            <FilterX className="mr-2 h-4 w-4" /> Limpar filtros
           </Button>
         </div>
       </div>
