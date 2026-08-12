@@ -196,6 +196,18 @@ function Page() {
               ))}
             </tbody>
           </table>
+          {!loading && filtered.length > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t p-3 text-sm">
+              <span className="text-muted-foreground">
+                Mostrando {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} de {filtered.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Anterior</Button>
+                <span className="text-muted-foreground">Página {page} de {totalPages}</span>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Próxima</Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
