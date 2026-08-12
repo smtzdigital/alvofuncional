@@ -198,6 +198,7 @@ function TxDialog({ tx, cats, accs, ccs, students, onSaved }: {
   tx?: Tx; cats: Cat[]; accs: Acc[]; ccs: CC[]; students: Student[]; onSaved: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [direction, setDirection] = useState(tx?.direction ?? "expense");
   const [description, setDescription] = useState(tx?.description ?? "");
   const [gross, setGross] = useState(tx?.gross_amount ?? 0);
@@ -215,8 +216,26 @@ function TxDialog({ tx, cats, accs, ccs, students, onSaved }: {
 
   const filteredCats = cats.filter((c) => c.kind === direction);
 
+  const reset = () => {
+    setDirection("expense");
+    setDescription("");
+    setGross(0);
+    setFees(0);
+    setStatus("pending");
+    setDue(new Date().toISOString().slice(0, 10));
+    setPaidAt("");
+    setMethod("");
+    setCatId("");
+    setAccId("");
+    setCcId("");
+    setStudentId("");
+    setSupplier("");
+    setNotes("");
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     const payload = {
       direction, description, gross_amount: gross, fees, status,
       due_date: due || null, paid_at: status === "paid" ? (paidAt ? new Date(paidAt).toISOString() : new Date().toISOString()) : null,
@@ -227,8 +246,12 @@ function TxDialog({ tx, cats, accs, ccs, students, onSaved }: {
       ? supabase.from("financial_transactions").update(payload).eq("id", tx.id)
       : supabase.from("financial_transactions").insert(payload);
     const { error } = await q;
+    setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Salvo"); setOpen(false); onSaved();
+    toast.success("Salvo");
+    if (!tx) reset();
+    setOpen(false);
+    onSaved();
   };
 
   return (
