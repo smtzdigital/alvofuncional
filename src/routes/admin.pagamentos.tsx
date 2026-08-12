@@ -302,7 +302,7 @@ function PaymentsAdmin() {
         </Dialog>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <Label className="text-xs">Buscar aluno</Label>
           <Input placeholder="Nome do aluno" value={fName} onChange={(e) => setFName(e.target.value)} />
