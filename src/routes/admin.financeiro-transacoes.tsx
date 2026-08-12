@@ -329,7 +329,7 @@ function TxDialog({ tx, cats, accs, ccs, students, onSaved }: {
             )}
           </div>
           <div><Label>Observações</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} /></div>
-          <DialogFooter><Button type="submit">Salvar</Button></DialogFooter>
+          <DialogFooter><Button type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar"}</Button></DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
