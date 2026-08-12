@@ -133,6 +133,7 @@ function Page() {
         <div><Label className="text-xs">De</Label><Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" /></div>
         <div><Label className="text-xs">Até</Label><Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" /></div>
         <div className="flex-1 min-w-[160px]"><Label className="text-xs">Buscar</Label><Input placeholder="descrição ou fornecedor" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+        <Button variant="outline" onClick={() => { setTab("all"); setStatusFilter("all"); setFrom(new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)); setTo(new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10)); setQ(""); }}>Limpar filtros</Button>
       </div>
 
       <Card>
