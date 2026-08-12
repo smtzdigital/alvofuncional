@@ -326,21 +326,23 @@ function PaymentsAdmin() {
           <Label className="text-xs">Vencimento de</Label>
           <Input type="date" value={fFrom} onChange={(e) => setFFrom(e.target.value)} />
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <Label className="text-xs">até</Label>
-            <Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} />
-          </div>
+        <div>
+          <Label className="text-xs">Vencimento até</Label>
+          <Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} />
+        </div>
+        <div className="flex items-end">
           <Button
             variant="outline"
+            className="w-full"
             onClick={() => {
               setFName("");
               setFStatus("todos");
               setFFrom("");
               setFTo("");
+              setSelected([]);
             }}
           >
-            Limpar
+            <FilterX className="mr-2 h-4 w-4" /> Limpar filtros
           </Button>
         </div>
       </div>
