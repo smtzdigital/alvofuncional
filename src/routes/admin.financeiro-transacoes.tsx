@@ -69,6 +69,13 @@ function Page() {
     return rows.filter((r) => r.description.toLowerCase().includes(s) || (r.supplier ?? "").toLowerCase().includes(s));
   }, [rows, q]);
 
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => { setPage(1); }, [q, tab, statusFilter, from, to]);
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+  const paged = useMemo(() => filtered.slice((page - 1) * pageSize, page * pageSize), [filtered, page]);
+
   const totals = useMemo(() => {
     const base = filtered.filter((r) => r.origin !== "transfer");
     const inc = base.filter((r) => r.direction === "income" && r.status === "paid").reduce((a, b) => a + Number(b.net_amount ?? b.gross_amount), 0);
@@ -153,7 +160,7 @@ function Page() {
             <tbody>
               {loading && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>}
               {!loading && filtered.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Nenhum lançamento.</td></tr>}
-              {filtered.map((r) => (
+              {paged.map((r) => (
                 <tr key={r.id} className="border-t">
                   <td className="p-3">{r.due_date ?? "—"}</td>
                   <td className="p-3">
@@ -189,6 +196,18 @@ function Page() {
               ))}
             </tbody>
           </table>
+          {!loading && filtered.length > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t p-3 text-sm">
+              <span className="text-muted-foreground">
+                Mostrando {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} de {filtered.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Anterior</Button>
+                <span className="text-muted-foreground">Página {page} de {totalPages}</span>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Próxima</Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
